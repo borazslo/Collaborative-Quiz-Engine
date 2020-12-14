@@ -1,0 +1,45 @@
+
+<table class="table table-striped table-sm">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Osztály</th>
+      <th scope="col">Pont</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% if ranglistaRovid %}
+            {% if ranglista[user.tanosztaly].rang > ranglista|length -1 %}
+                {% set kezdo = ranglista[user.tanosztaly].rang - 3 %}
+            {% elseif ranglista[user.tanosztaly].rang > 1 %}
+                {% set kezdo = ranglista[user.tanosztaly].rang - 2 %}     
+            {% else %}
+                {% set kezdo = ranglista[user.tanosztaly].rang - 1 %}
+             {% endif %}
+             {% set darab = 3 %}
+       {% else %}
+           {%  set darab = 40 %}
+           {%  set kezdo = 0 %}
+      {% endif %}
+       
+    {% for rang in ranglista|slice( kezdo ,darab) %}      
+         <tr {% if rang.tanosztaly == user.tanosztaly %} class="table-success" {% endif %}}>
+          <th scope="row">
+              {% if rang.rang == 1 %}
+                  <img src="templates/summer.png" class="img-fluid" style="height:1.5em;">
+              {% elseif rang.rang == 2 %}
+                  <img src="templates/pizza.png" class="img-fluid" style="height:1.5em;">
+              {% elseif rang.rang == 3 %}
+                  <img src="templates/snack.png" class="img-fluid" style="height:1.5em;">                  
+              {% else %}
+                  {{ rang.rang  }}
+              {%  endif %}
+                
+          </th>
+          <td>{{ rang.tanosztaly }}</td>
+          <td>{{ rang.pont }}</td>      
+        </tr>
+    {% endfor %}    
+  </tbody>
+</table>
+  <div class="text-muted"><small>Ikonok: <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> </small></div>

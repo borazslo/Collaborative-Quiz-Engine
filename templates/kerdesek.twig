@@ -1,0 +1,165 @@
+{%  extends 'html.twig' %}
+
+{% block container %}
+    <form action="index.php" enctype="multipart/form-data" method="post">
+   
+        
+    <nav class="navbar dfixed-top navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.php">Ignác Nap</a>
+        <span class="navbar-text">
+        {{ user.tannev }} ({{ user.tanosztaly }} - {{ ranglista[user.tanosztaly].rang }}. helyen)
+        <input type="hidden" name="tanaz" value="{{ user.tanaz }}">
+        <input type="hidden" name="tanazonosito" value="{{ user.tanazonosito }}">        
+        </span>
+    </nav>           
+        <hr>
+    <div class="row justify-content-center">
+        <div class="col-mb-2 col">
+  <!--
+            <div class="alert alert-primary">A feladatok reggel kilenctől három percenként érkeznek majd és mindegyik fél órán keresztül lesz látható. Fogjatok össze, beszéljétek meg, és oldjátok meg minél többen!<br/>
+                Találkozunk utána délben <a href="https://www.youtube.com/user/jezsuvideo/live">Jezsu YouTube csatornán</a>!</div>-->
+            {% if development %}
+                <div class="alert alert-warning">Fejlesztői üzemmódban vagyunk. Sok valótlan tartalommal, meg csak úgy.</div>
+                <div class="alert alert-warning">A kérdések google sheet táblázatból legutóbb frissítve lettek: {{ csv.updated_at }}.</div>
+                {% for devMessage in devMessages %}
+                    <div class="alert alert-warning">{{ devMessage | raw}}</div>
+                {% endfor %}
+            {% endif %}
+
+	<!--<div class="alert alert-warning">Későn csatlakozott be az osztályod? Nem sikerült az első kérdésekre válaszolni? VAN REMÉNY! 11:05-kor tizenöt percre láthatóvá válik minden kérdés megint! Térjetek vissza!</div>-->
+
+<!--
+	 <div class="alert alert-info">
+	{% if user.tanosztaly == '9A' %}Ne keseredjetek el! Ha hoztok még embert és nem csak hárman dolgoztok, akkor a végén talán újra megmutatjuk az első kérdéseket is, és akkor sokat lehet javítani a rangsoron!
+	{% elseif user.tanosztaly == '10C' %}Ezaz! Mutassátok meg!
+    {% elseif user.tanosztaly == '5B' %}Újra legnagyobb létszámmal! Gyerünk!
+    {% elseif user.tanosztaly in ['5A','6A'] %}Majdnem (!) annyian vagytok mint az 5B. Meglesz!
+	{% else %}
+	Hívj még embert! Hajrá!
+	{% endif %}
+	</div>
+-->
+    {% if kerdesek|length == 0 %}<div class="alert alert-info">Nincsenek elérhető kérdések. Talán túl korán van. Vagy már túl késő.</div>{% endif %}
+    {% for id, kerdes in kerdesek %}
+    <div class="card mt-1" id="card{{ id }}">
+    <div class="card-header">
+      <h5 class="">
+          {% if kerdes.eredmeny == 1 %}
+                <svg class="bi bi-check-square-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="green" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                </svg>    
+          {% elseif kerdes.eredmeny == -1 %}
+                <svg class="bi bi-x-square-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="red" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm9.854 4.854a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
+                </svg>  
+          {% else %}
+                <svg class="bi bi-question-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                  <path d="M5.25 6.033h1.32c0-.781.458-1.384 1.36-1.384.685 0 1.313.343 1.313 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.007.463h1.307v-.355c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.326 0-2.786.647-2.754 2.533zm1.562 5.516c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                </svg>
+            {% endif %}
+                                        
+        <a class="btn btn-link" href="#" data-toggle="collapse" data-target="#kerdes{{ id }}" aria-expanded="true" aria-controls="kerdes{{ id }}">
+            {{ id }}. kérdés</a> {% if kerdes.place %}<small>- {{ kerdes.place }}</small>{% endif %}
+        
+        {% if kerdes.masok and kerdes.eredmeny == 1 %}<small id="input{{ id }}HelpBlock" class="text-muted">Már {{ kerdes.masok }} jó válasz jött az osztályból. Segíts a többieknek!</small>{% endif %}
+        
+      </h5>
+    </div>
+
+    <div id="kerdes{{ id }}" class="collapse {{ kerdes.eredmeny == 1 ? 'collapsed' : 'show' }}" aria-labelledby="headingOne">
+      <div class="card-body">
+          <p class="text-justify"><strong>{{ kerdes.teaching|raw }}</strong></p>
+          <p>{{ kerdes.question | raw }}</p>
+          <p class="font-weight-light">{{ kerdes.hint |raw }}</p>
+          <hr />
+          {% if kerdes.messages %}
+              {% for message in kerdes.messages %}
+                    <div class="alert alert-{{ message.0 }}">{{ message[1] }}</div>
+               {% endfor %}
+          {% endif %}
+          
+          <div class="input-group">              
+            <label for="inputId{{ id }}" class="sr-only">{{ id }}. kérdés, {{ kerdes.place }}</label>
+            
+         
+            
+
+            {% if kerdes.inputType == 'select' %}
+                {% if kerdes.eredmeny < 1 %}
+                    <select class="form-control {{ kerdes.eredmeny == -1 ? 'text-danger' }}" name="kerdes[{{ id }}]" id="inputId{{ id }}">
+                        <option value="">Válassz a lehetőségek közül...</option>
+                        {% for option in kerdes.options  %}
+                              <option value="{{ option }}" {% if kerdes.valasz == option %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>                                
+                {% else %} 
+                    <input type="text" class="{{ kerdes.eredmeny == 1 ? 'text-success' }}{{ kerdes.eredmeny == -1 ? 'text-danger' }} form-control" name="kerdes[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ kerdes.valasz }}" {{ kerdes.eredmeny == 1 ? 'readonly'  }}>
+                {% endif %}
+
+             {% elseif kerdes.inputType == 'file' %}   
+                        {% if kerdes.valasz != "" %}
+                            <img src="{{ kerdes.valasz }}" class="img-thumbnail mx-auto d-block">
+                        {% endif %}
+                        {% if kerdes.helyes < 2 %}
+                            <input  name="kerdes_{{ id }}"  type="file" id="inputId{{ id }}" />                                  
+                        {% endif %}
+                        {% if kerdes.helyes == 1 %}
+                                <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">Újat küld be</button></div>          
+                        {% endif %}
+                
+            {% elseif kerdes.inputType == 'text' %}    
+             
+                <input type="text" class="{{ kerdes.eredmeny == 1 ? 'text-success' }}{{ kerdes.eredmeny == -1 ? 'text-danger' }} form-control" name="kerdes[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ kerdes.valasz }}" {{ kerdes.eredmeny == 1 ? 'readonly'  }}>
+            
+            
+            {% endif %}
+            
+                     
+            
+            {% if kerdes.eredmeny != 1 %}
+                <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">{{ kerdes.eredmeny == 0 ? 'Beküld' : 'Javít'}}</button></div>          
+            {% endif %}
+          </div>
+            {% if kerdes.masok and kerdes.eredmeny < 1 %}<small id="input{{ id }}HelpBlock" class="form-text text-muted">Az osztályodból már {{ kerdes.masok }} ember megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>{% endif %}
+            {% if kerdes.tarsak %}
+                {% if kerdes.eredmeny < 1 and kerdes.tarsak.helyes > 0  %}
+                    <small id="input{{ id }}HelpBlock" class="form-text text-muted">Már {{ kerdes.tarsak.helyes }} osztálytársad megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>
+                {% elseif kerdes.eredmeny %}
+                    {% if kerdes.tarsak.hibas > 0 %}
+                        <small id="input{{ id }}HelpBlock" class="form-text text-muted">Még van {{ kerdes.tarsak.hibas}} társad, aki hibás választ írt. Segíts nekik!</small>
+                    {% elseif kerdes.tarsak.helyes > 0 %} 
+                        <small id="input{{ id }}HelpBlock" class="form-text text-muted">Már {{ kerdes.tarsak.helyes}} helyes válasz érkezett az csapatodból. Van még, aki nem válaszolt?</small>
+                    {% endif %}
+                {% endif %}
+           {% endif %}
+      </div>
+    </div>
+  </div>
+            
+        {% endfor %}
+        
+  
+            
+            
+            
+</div>
+        
+        <div class="col-lg-2">
+                    {% include 'ranglista.twig' %}
+                    
+        </div>
+            </div>
+            
+            </form>     
+
+        
+        {% if focusId %}
+            <script>    
+                window.onload = function (event) {
+                    window.location.hash = "#{{ focusId }}";
+                };
+            </script>
+        {% endif %}
+{% endblock %}
+{# empty Twig template #}
