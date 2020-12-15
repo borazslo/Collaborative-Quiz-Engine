@@ -10,6 +10,13 @@ $config = [
   ]      
 ];
 
+$config['lang'] = 'hu_HU';
+
+$config['game'] = [
+    'title' => 'Ez a neve a játéknak',
+    'description' => '<p>És mindenféle okosat tudunk róla írni.</p>'    
+];
+
 $config['authentication'] 
      = [
         'pdo' => [ # mysql vagy sok más minden is lehet 

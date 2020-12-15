@@ -13,6 +13,38 @@ $connection = new PDO($config['dbconnection']['dsn'], $config['dbconnection']['u
 
 $bulkDate = '2010-01-01 12:12:12' ;
 
+$trans = loadTranslation('hu_HU');
+
+function t($string, $arg = false) {
+    global $trans;
+    
+    if(isset($trans[$string]) AND array_key_exists(1, $trans[$string])) {
+            $newstring = $trans[$string][1];
+    }  else
+        $newstring = $string;
+    
+    if($arg != false ) {
+        if(is_numeric($arg)) {
+            $newstring = preg_replace('/%d/', $arg, $newstring);
+        }                
+    }
+    
+    return $newstring;       
+}
+
+function loadTranslation($lang) {
+    $filePath = 'locale/'.$lang.'.csv';
+    if(!file_exists($filePath)) 
+        return false;
+       
+    $rows = array_map(function($v){return str_getcsv($v, ";","\"");}, file($filePath));
+    
+    $csv = [];
+    foreach($rows as $row) {
+        $csv[$row[0]] = $row; 
+    }   
+    return $csv;
+}
 
 // TODO: Biztonsági rés? A belépési oldalon rögtön be lehet lépni ha küldik a haselt változatot
 function getUser($username, $passwd) {     

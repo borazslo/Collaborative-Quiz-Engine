@@ -14,9 +14,15 @@ require_once 'functions.php';
 $loader = new \Twig\Loader\FilesystemLoader(['templates']);
 $twig = new \Twig\Environment($loader);
 
+$filter = new \Twig\TwigFilter('t', 't');
+$twig->addFilter($filter);
+
+
 $page = new stdClass();
 $page->data = [];
 if($development == true) $page->data['development'] = true;
+
+$page->data['game'] = $config['game'];
 
 if(!isset($_REQUEST['tanaz']) OR !isset($_REQUEST['tanazonosito'])) {
     $page->templateFile = 'koszonto';
