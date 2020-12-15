@@ -8,7 +8,7 @@ include_once 'config.php';
  */
 
 $imageFolder = 'images';
-$connection = new PDO("mysql:host=$server;dbname=$dbname;charset=utf8", $dbuser, $dbpassword);
+$connection = new PDO($config['dbconnection']['dsn'], $config['dbconnection']['username'], $config['dbconnection']['passwd']);
 
 
 $bulkDate = '2010-01-01 12:12:12' ;

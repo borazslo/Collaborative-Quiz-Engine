@@ -2,11 +2,16 @@
 
 $development = false;
 
-
-
-
 $config = [
-    'authentication' => [
+  'dbconnection' => [
+        'dsn' => 'mysql:host=localhost;dbname=DBNAME;charset=utf8',
+        'username' => 'USERNAME',
+        'passwd' => 'PASSWD',
+  ]      
+];
+
+$config['authentication'] 
+     = [
         'pdo' => [ # mysql vagy sok más minden is lehet 
             'dsn' => 'mysql:host=localhost;dbname=DBNAME;charset=utf8',
             'username' => 'USER',
@@ -34,14 +39,14 @@ $config = [
             'delimeter' => ';', #default: ;
             ],
         'salt' => 'vacskamati' # required random string, hogy mégse egyenesbe küldjük ki a jelszavakat oldalról oldalra
-    ],
-    'scoring' => [
+    ];
+$config['scoring'] = [
         'badAnswer' => 1, # (int), default: 1
         'goodAnswer' => 5, # (int), default: 5
         'groupSizeCorrection' => 1, #false: nincs, avg: átlag csoportmérethez igazítunk, max: legnagyobbhoz igazítunk, min: legkisebbhez igazítunk, (int): konkrét csoportmérethez, default: avg
         'forEachParticipants' => 12 # (int), default: 5
-    ]
-];
+    ];
+
 
 /* Special settings for Development environment */
 if($development) {
