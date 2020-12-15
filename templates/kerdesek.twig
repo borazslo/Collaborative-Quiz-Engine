@@ -5,7 +5,7 @@
    
         
     <nav class="navbar dfixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="index.php">Ignác Nap</a>
+        <a class="navbar-brand" href="index.php">{{ game.title }}</a>
         <span class="navbar-text">
         {{ user.tannev }} ({{ user.tanosztaly }} - {{ ranglista[user.tanosztaly].rang }}. helyen)
         <input type="hidden" name="tanaz" value="{{ user.tanaz }}">
@@ -39,7 +39,7 @@
 	{% endif %}
 	</div>
 -->
-    {% if kerdesek|length == 0 %}<div class="alert alert-info">Nincsenek elérhető kérdések. Talán túl korán van. Vagy már túl késő.</div>{% endif %}
+    {% if kerdesek|length == 0 %}<div class="alert alert-info">{{ "There are no questions right now. Is it too early or too late?"|t }}</div>{% endif %}
     {% for id, kerdes in kerdesek %}
     <div class="card mt-1" id="card{{ id }}">
     <div class="card-header">

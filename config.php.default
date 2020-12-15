@@ -7,7 +7,8 @@ $config = [
         'dsn' => 'mysql:host=localhost;dbname=DBNAME;charset=utf8',
         'username' => 'USERNAME',
         'passwd' => 'PASSWD',
-  ]      
+  ],
+  'debug' => false
 ];
 
 $config['lang'] = 'hu_HU';
@@ -57,7 +58,8 @@ $config['scoring'] = [
 
 /* Special settings for Development environment */
 if($development) {
-    
+    $config['debug'] = true;
+
     $config['authentication'] = [
         'array' => [
             ['99990','943741IGN','Klára','Dev'],

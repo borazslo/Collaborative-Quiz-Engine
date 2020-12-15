@@ -26,6 +26,8 @@ function t($string, $arg = false) {
     if($arg != false ) {
         if(is_numeric($arg)) {
             $newstring = preg_replace('/%d/', $arg, $newstring);
+        } elseif (is_string($arg)) {
+            $newstring = preg_replace('/%s/', htmlentities($arg, ENT_QUOTES, 'UTF-8'), $newstring);
         }                
     }
     
@@ -240,21 +242,23 @@ function getGroupSizes() {
 
 
    if(isset($config['authentication']['csv'])) {
+       
         $csv = $config['authentication']['csv'];
         #defaults
         if(!isset($csv['delimeter'])) $csv['delimeter'] = ';';
 
-        $rows = str_getcsv(file_get_contents($csv['path']),"\n");
-        foreach($rows as $row) {
-            $data = str_getcsv($row,$csv['delimeter']);
+        if(file_exists($csv['path'])) {            
+            $rows = str_getcsv(file_get_contents($csv['path']),"\n");
+            foreach($rows as $row) {
+                $data = str_getcsv($row,$csv['delimeter']);
 
-            if(!isset($groups[$data[3]])) $groups[$data[3]] = 0;
-            $groups[$data[3]]++;
-
-
-        }
+                if(!isset($groups[$data[3]])) $groups[$data[3]] = 0;
+                $groups[$data[3]]++;
+            }
+        } else if ($config['debug']) {
+            throw new Exception(t('File not found: %s',$csv['path']));
+        } 
     }
-
    return $groups;
 }
 
@@ -268,7 +272,14 @@ function getValaszok($tanaz) {
 }
 
 function loadCSV(string $filename) {
-     $lines = explode( "\n", file_get_contents( $filename ) );   
+    global $config;
+    if(!file_exists($filename)) {
+        if($config['debug'])
+            throw new Exception (t("File not found: %s",$filename));
+        else
+            return [];
+    }
+    $lines = explode( "\n", file_get_contents( $filename ) );   
     $headers = str_getcsv( array_shift( $lines ) );
     $data = array();
     foreach ( $lines as $line ) {
@@ -289,11 +300,11 @@ function loadCSV(string $filename) {
 function loadKerdesek(string $filename) {
    global $user, $imageFolder, $development;
 
-   $kerdesek = loadCSV($filename);
+   $kerdesek = loadCSV($filename);   
    unset($kerdesek[0]); unset($kerdesek[1]);
    
    $scores = getScores();
-   
+      
    foreach($kerdesek as $key => $kerdes) {
        if(!array_key_exists('question', $kerdes) OR !array_key_exists('answer', $kerdes)) {
            unset($kerdesek[$key]);
