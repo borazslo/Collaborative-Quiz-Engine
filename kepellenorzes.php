@@ -6,6 +6,11 @@ require_once 'functions.php';
 $loader = new \Twig\Loader\FilesystemLoader(['templates']);
 $twig = new \Twig\Environment($loader);
 
+$twig->addExtension(new Twig_Extensions_Extension_Date());
+
+$filter = new \Twig\TwigFilter('t', 't');
+$twig->addFilter($filter);
+
 $page = new stdClass();
 $page->data = [];
 
@@ -67,16 +72,19 @@ $kepesKerdes = [];
 $kerdesek = loadKerdesek($config['game']['localFile']);
 foreach($kerdesek as $key => $kerdes) {
     // Csak azok érdekelnek minket, ahol képeket kellett feltölteni
-    if($kerdes['answer'] == '[file]') {
+    if($kerdes['answer'] == '[file]' OR $kerdes['answer'] == '[manual]') {
         
         
         $stmt = $connection->prepare("SELECT id, id, tanaz, tanosztaly, kerdesid, valasz, timestamp FROM valaszok WHERE kerdesid = :kerdesid AND helyes = 1 ORDER BY RAND()");
         $stmt->execute(['kerdesid'=>$key]);
-        $kerdes['kepek'] = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
-               
+        $kerdes['answersToCheck'] = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+        foreach($kerdes['answersToCheck'] as $k => $answer) {
+            $kerdes['answersToCheck'][$k]['timestamp'] = strtotime($answer['timestamp']);
+        }
         $kepesKerdes[] = $kerdes;
     }
 }
+
 $page->data['kerdesek'] = $kepesKerdes;
 
 $page->data['ranglista'] = getScores();

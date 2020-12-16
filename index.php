@@ -118,9 +118,7 @@ foreach($kerdesek as $key => $kerdes) {
                 }                
             }                 
         }
-        
-        
-        
+
     }
     
     
@@ -130,6 +128,7 @@ foreach($kerdesek as $key => $kerdes) {
             $kerdesek[$key]['valasz'] = $regivalaszok[$key]['valasz'];
             
         } else {
+            
             $kerdesek[$key]['valasz'] = trim($request['kerdes'][$key]);
         }
                      
@@ -137,13 +136,35 @@ foreach($kerdesek as $key => $kerdes) {
         //echo "<pre>"; print_R($kerdesek[$key]);
         if( $kerdesek[$key]['valasz'] == '') {
             $kerdesek[$key]['eredmeny'] = 0; 
+        
+        /* Manuálisan ellenőrizendő szöveges kérdések */
+        } else if ( $kerdesek[$key]['answer'] == '[manual]' ) {
+            
+            //Új cucc ellenőrzésre
+            if( $kerdesek[$key]['valasz'] != $regivalaszok[$key]['valasz'] ) {                
+                $kerdesek[$key]['messages'][] = ['warning','Még le kell ellenőriznünk, de addig is megelőlegeztük a pontokat.'];
+                $kerdesek[$key]['eredmeny'] = 1;                         
+            // Semmi új nem érkezett.                
+            } else {                
+                if($regivalaszok[$key]['helyes'] == 2 ){
+                    //$kerdesek[$key]['messages'][] = ['warning','Ellenőriztük és elfogatuk.'];
+                    $kerdesek[$key]['eredmeny'] = 2;
+                } else if($regivalaszok[$key]['helyes'] == 1 ){
+                    $kerdesek[$key]['messages'][] = ['warning','Még le kell ellenőriznünk, de addig is megelőlegeztük a pontokat.'];
+                    $kerdesek[$key]['eredmeny'] = 1;
+                }  else {
+                    $kerdesek[$key]['messages'][] = ['danger','Megnéztük és sajnos nem tudtuk elfogadni a választ. Küldj be egy másikat!'];
+                    $kerdesek[$key]['eredmeny'] == -1;
+                }                                
+            }
+            
         } else if(osszehasonlit ($kerdesek[$key]['valasz'],$kerdesek[$key]['answer']) )  {
             $kerdesek[$key]['eredmeny'] = 1; 
         } else {
             $kerdesek[$key]['eredmeny'] = -1; 
         }         
         
-        if($kerdesek[$key]['eredmeny'] == 1 ) $helyes = 1;
+        if($kerdesek[$key]['eredmeny'] > 0 ) $helyes = $kerdesek[$key]['eredmeny'];
         else $helyes = 0;
         $kerdesek[$key]['helyes'] = $helyes;
         

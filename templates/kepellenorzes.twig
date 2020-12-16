@@ -77,22 +77,26 @@ bottom: .5em;
       
       
       
-      <br/><h2>Képfeltöltős kérdések ellenőrzése</h2>
+      <br/><h2>{{ 'Questions that require manual attention'|t }}</h2>
       {% for kerdes in kerdesek %}
           <h2>{{ kerdes.id }}. kérdés: <small>{{ kerdes.question }}</small></h2>
-          {% if kerdes.kepek.length == 0 %}<div class="alert alert-info">Nincs ellenőrízendő kép. De, ha frissíted az oldalt, akkor talán lesz.</div>{% endif %}
-          {% for kep in kerdes.kepek %}
+          {% if kerdes.answersToCheck.length == 0 %}<div class="alert alert-info">{{ "There is nothing to check. But if you refresh the page, you could find new answers."|t }}</div>{% endif %}
+          {% for kep in kerdes.answersToCheck %}
           <div class="card" id="cardid{{ kep.id }}" data-id="{{ kep.id }}" >
             <div class="row no-gutters">
               <div class="col-md-8 col">
-                <img src="{{ kep.valasz }}" class="card-img" >
+                  {% if kerdes.answer == '[FILE]' %}
+                    <img src="{{ kep.valasz }}" class="card-img" >
+                  {% else %}
+                      <p style="padding:20px">{{ kep.valasz }}</p>
+                  {% endif %}
               </div>
               <div class="col-md-4 col">
                 <div class="card-body">
                   <h5 class="card-title">{{ users[kep.tanaz].tannev }} ({{ kep.tanosztaly }})</h5>
-                  <p class="card-text"><small class="text-muted">Feltöltve: {{ kep.timestamp }}</small></p>
-                  <button type="button" class="action btn btn-success" data-action="ok" data-id="{{ kep.id }}">Elfogad</button>
-                  <button type="button" class="action btn btn-danger" data-action="no" data-id="{{ kep.id }}">Elutasít</button>
+                  <p class="card-text"><small class="text-muted">{{ "Uploaded"|t }}: <span title="{{ kep.timestamp|date('Y-m-d H:i:s') }}">{{ kep.timestamp|time_diff }}</span></small></p>
+                  <button type="button" class="action btn btn-success" data-action="ok" data-id="{{ kep.id }}">{{ "Accept"|t }}</button>
+                  <button type="button" class="action btn btn-danger" data-action="no" data-id="{{ kep.id }}">{{ "Deny"|t }}</button>
                 </div>
               </div>
             </div>
