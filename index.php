@@ -36,6 +36,10 @@ if(!$user) {
 }
 $page->data['user'] = $user;
 
+if($user['tanaz'] == 'elek.laszlo' ) {
+    $page->data['config']['debug'] = $config['debug'] = true;
+}
+
 $page->templateFile = 'kerdesek';
 
 /* Fókusz oda, ahova nyomkodott */
