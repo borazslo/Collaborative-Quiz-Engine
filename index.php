@@ -154,7 +154,7 @@ foreach($kerdesek as $key => $kerdes) {
                     $kerdesek[$key]['eredmeny'] = 1;
                 }  else {
                     $kerdesek[$key]['messages'][] = ['danger','Megnéztük és sajnos nem tudtuk elfogadni a választ. Küldj be egy másikat!'];
-                    $kerdesek[$key]['eredmeny'] == -1;
+                    $kerdesek[$key]['eredmeny'] = -1;
                 }                                
             }
             
