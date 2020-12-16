@@ -53,7 +53,7 @@ if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
 
 /* Load the csv with questions */
 if(array_key_exists('remoteGoogleSheet',$config['game']) AND $config['game']['remoteGoogleSheet'] ) {    
-    getGoogleSheetCSV('1gKneHLvZTvD7vCjo0bDJ1oQ0lIvAO0HNimXGj0QKS4A', $config['game']['localFile'], array_key_exists('remoteGoogleSheetCache',$config['game']) ? $config['game']['remoteGoogleSheetCache'] : false );        
+    getGoogleSheetCSV($config['game']['remoteGoogleSheet'], $config['game']['localFile'], array_key_exists('remoteGoogleSheetCache',$config['game']) ? $config['game']['remoteGoogleSheetCache'] : false );        
 }
 $kerdesek = loadKerdesek($config['game']['localFile']);
 $page->data['csv_updated_at'] = date('Y-m-d H:i:s',filemtime($config['game']['localFile']));    
