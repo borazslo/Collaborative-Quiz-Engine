@@ -1,12 +1,5 @@
 <?php
 
- //
- //$startTime = strtotime(date('H').':00:00');
-$startTime = strtotime('00:00:00');
- $questionFrequency = "1 sec";
- $questionVisibility = "1 day";
- 
-
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
@@ -68,19 +61,7 @@ $request = $_REQUEST;
 /* 
  * Kérdések kitakarítása láthatóság alapján 
  */
-$frequency = strtotime("+".$questionFrequency) - time();
-$lastQuestion = (int) ( ( time() - $startTime ) / $frequency );
-$visibleQuestions = (int) ( (time() - strtotime("-".$questionVisibility) ) / $frequency );
-$page->data['devMessages'][] = "Kezdő időpont: ".date('Y-m-d H:i:s',$startTime)." (Most: ".date('Y-m-d H:i:s').")<br/>"
-        . " Új kérdések sűrűsége: ".$questionFrequency.". Egy-egy kérdés láthatóság: ".$questionVisibility.". <br/>"
-        . "Összes kérdés: ".count($kerdesek).". Ebből megjelenítve: ".($lastQuestion - $visibleQuestions).". -> ".$lastQuestion.".";
-$i = 1;
-foreach($kerdesek as $key => $kerdes) {
-    if($i < $lastQuestion - $visibleQuestions OR $i > $lastQuestion ) {
-        unset($kerdesek[$key]);        
-    }        
-    $i++;
-}
+$kerdesek = currentQuestions($kerdesek, $config['game']);
 
 
 /*

@@ -444,6 +444,42 @@ function loadKerdesek(string $filename) {
     
 }
 
+function currentQuestions($kerdesek, $gameConfig) {
+    global $config;
+    
+    $gameConfig['startTime'];
+    $c = 0;
+    foreach($kerdesek as $key => $kerdes ) {
+        if($c == 0) {
+            $lastStart = $currentStart = $kerdesek[$key]['startTime'] = $gameConfig['startTime'];            
+        } else {
+            if(!isset($kerdes['relativeStart'])) {
+                $currentStart = strtotime('+'.$gameConfig['questionDefaultFrequency'], $lastStart);
+            } else {
+                $currentStart = strtotime('+'.$kerdes['relativeStart'], $lastStart);
+            }
+            $lastStart = $kerdesek[$key]['startTime'] = $currentStart;                                                
+        }
+        
+        if(!isset($kerdes['duration'])) {
+            $currentEnd = $kerdesek[$key]['endTime'] = strtotime('+'.$gameConfig['questionDefaultDuration'], $currentStart);
+        } else {
+            $currentEnd = $kerdesek[$key]['endTime'] = strtotime('+'.$kerdes['duration'], $currentStart);
+        }        
+        $c++;
+        
+        /*
+         * Delete non active questions
+         */
+        $now = time();
+        if( ( $currentStart > $now OR $currentEnd < $now ) AND !$config['debug']) {
+            unset($kerdesek[$key]);
+        }                
+    }
+    return $kerdesek;
+        
+}
+
 function uploadImage($_file) {
     
     if( ! file_exists($_file['tmp_name']) ) {
