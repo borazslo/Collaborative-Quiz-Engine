@@ -79,13 +79,14 @@ bottom: .5em;
       
       <br/><h2>{{ 'Questions that require manual attention'|t }}</h2>
       {% for kerdes in kerdesek %}
-          <h2>{{ kerdes.id }}. kérdés: <small>{{ kerdes.question|raw }}</small></h2>
+          <h2>{{ kerdes.id }}. kérdés: <small>{{ kerdes.question|striptags  }}</small></h2>
           {% if kerdes.answersToCheck is  empty  %}<div class="alert alert-info">{{ "There is nothing to check. But if you refresh the page, you could find new answers."|t }}</div>{% endif %}
+          {{ kerdes.forAdmin }}
           {% for kep in kerdes.answersToCheck %}
           <div class="card" id="cardid{{ kep.id }}" data-id="{{ kep.id }}" >
             <div class="row no-gutters">
               <div class="col-md-8 col">
-                  {% if kerdes.answer == '[FILE]' %}
+                  {% if kerdes.answer == '[file]' %}
                     <img src="{{ kep.valasz }}" class="card-img" >
                   {% else %}
                       <p style="padding:20px">{{ kep.valasz }}</p>
