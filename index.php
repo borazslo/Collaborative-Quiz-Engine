@@ -14,13 +14,15 @@ require_once 'functions.php';
 $loader = new \Twig\Loader\FilesystemLoader(['templates']);
 $twig = new \Twig\Environment($loader);
 
+$twig->addExtension(new Twig_Extensions_Extension_Date());
+
 $filter = new \Twig\TwigFilter('t', 't');
 $twig->addFilter($filter);
-
 
 $page = new stdClass();
 $page->data = [];
 if($development == true) $page->data['development'] = true;
+$page->data['config']['debug'] = $config['debug'];
 
 $page->data['game'] = $config['game'];
 
@@ -49,16 +51,15 @@ if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
     $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
 }
 
-if($development) {
-    $page->data['csv'] = getGoogleSheetCSV('ID', 'kerdesek.csv');
-    $page->data['csv']['updated_at'] = date('Y-m-d H:i:s',$page->data['csv']['filemtime']);    
+/* Load the csv with questions */
+if(array_key_exists('remoteGoogleSheet',$config['game']) AND $config['game']['remoteGoogleSheet'] ) {    
+    getGoogleSheetCSV('1gKneHLvZTvD7vCjo0bDJ1oQ0lIvAO0HNimXGj0QKS4A', $config['game']['localFile'], array_key_exists('remoteGoogleSheetCache',$config['game']) ? $config['game']['remoteGoogleSheetCache'] : false );        
 }
-
-$kerdesek = loadKerdesek('kerdesek.csv');
-
+$kerdesek = loadKerdesek($config['game']['localFile']);
+$page->data['csv_updated_at'] = date('Y-m-d H:i:s',filemtime($config['game']['localFile']));    
 $kerdesek = addOsztalyValaszok($kerdesek, $user['tanosztaly']);
-
 ksort($kerdesek);
+
 $regivalaszok = getValaszok($user['tanaz']);
 
 $request = filter_input_array(INPUT_POST | INPUT_GET);

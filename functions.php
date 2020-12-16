@@ -671,12 +671,11 @@ function osszehasonlit($valasz, $helyes) {
 
     
 define("TMPFOLDER", 'tmp/');     
-function getGoogleSheetCSV($fileId, $filename) {
-	
-	$tmpfilename = TMPFOLDER.'ignacnap_'.$fileId.'.csv';
+function getGoogleSheetCSV($fileId, $filename, $cache = false) {	
+        if($cache == false) $cache = '10 minutes';
         $tmpfilename = $filename;
-	if (file_exists($tmpfilename) AND filemtime($tmpfilename) > strtotime("-1 minutes") AND (!isset($_REQUEST['update']) OR $_REQUEST['update'] == false)) {
-		
+	if (file_exists($tmpfilename) AND filemtime($tmpfilename) > strtotime("-".$cache) AND (!isset($_REQUEST['update']) OR $_REQUEST['update'] == false)) {
+
 	} else {
 		//echo "kell nekünk";
 		//Download the file.
