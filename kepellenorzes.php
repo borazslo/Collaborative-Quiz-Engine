@@ -12,7 +12,7 @@ $page->data = [];
 $page->templateFile = "kepellenorzes";
 
 //Ez igazából nem biztonságos. Mert ha egyszer valaki bejut, akkor kinézheti a forrásból és átveheti.
-$page->data['auth'] = 'MZperX';
+$page->data['auth'] = $config['admin']['key'];
 
 if(isset($_REQUEST['auth'])) {
     
@@ -46,7 +46,7 @@ if(isset($_REQUEST['auth'])) {
     }
 }
 
-if(!isset($_REQUEST['jelszo']) OR $_REQUEST['jelszo'] != 'mitoKÓNdrium') {
+if(!isset($_REQUEST['jelszo']) OR $_REQUEST['jelszo'] != $config['admin']['pwd']) {
     echo $twig->render($page->templateFile.".twig", $page->data);
     exit;
 }
@@ -55,8 +55,8 @@ if(!isset($_REQUEST['jelszo']) OR $_REQUEST['jelszo'] != 'mitoKÓNdrium') {
 $page->data['isadmin'] = true;
 
 //Összes diák
-#global $server, $dbname2, $dbuser, $dbpassword;
-$connectionJezsu = new PDO("mysql:host=$server;dbname=$dbname2;charset=utf8", $dbuser, $dbpassword);
+#global $connection;
+$connectionJezsu = $connection; 
     
 $stmt = $connectionJezsu->prepare("SELECT tanaz, tanaz, tannev FROM tanulok");
 $stmt->execute();
@@ -64,7 +64,7 @@ $page->data['users'] = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::F
 
 
 $kepesKerdes = [];
-$kerdesek = loadKerdesek('kerdesek.csv');
+$kerdesek = loadKerdesek($config['game']['localFile']);
 foreach($kerdesek as $key => $kerdes) {
     // Csak azok érdekelnek minket, ahol képeket kellett feltölteni
     if($kerdes['answer'] == '[file]') {

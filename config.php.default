@@ -51,6 +51,12 @@ $config['authentication']
             ],
         'salt' => 'vacskamati' # required random string, hogy mégse egyenesbe küldjük ki a jelszavakat oldalról oldalra
     ];
+
+$config['admin'] = [
+    'pwd' => 'passwordForKepellenorzes',
+    'key' => 'randomStringForKepellenorzes'
+];
+
 $config['scoring'] = [
         'badAnswer' => 1, # (int), default: 1
         'goodAnswer' => 5, # (int), default: 5
