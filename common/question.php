@@ -91,9 +91,8 @@ class Question {
         $stmt = $connection->prepare("SELECT * FROM answers WHERE quiz_id = :quiz_id AND user_id = :user_id AND question_id = :question_id  LIMIT 1");
         $stmt->execute($params); 
         
-        $result = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);        
-        $old_answer = isset($result[1]) ? $result[1]['answer'] : false;
-        
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);                
+        $old_answer = isset($result[0]) ? $result[0]['answer'] : false;
                 
         if(isset($_REQUEST['questions']) AND isset($_REQUEST['questions'][$this->id])) {
                 $new_answer = $_REQUEST['questions'][$this->id];            
