@@ -2,12 +2,12 @@
  
 <div class="card mt-1" id="card{{ id }}">
     <div class="card-header">
-      <h5 class="">{{ inputType }}
-          {% if kerdes.eredmeny >= 1 %}
+      <h5 class="">{{ user_result }}
+          {% if user_result >= 1 %}
                 <svg class="bi bi-check-square-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="green" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                 </svg>    
-          {% elseif kerdes.eredmeny == -1 %}
+          {% elseif user_result == -1 %}
                 <svg class="bi bi-x-square-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="red" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm9.854 4.854a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/>
                 </svg>  
@@ -21,7 +21,7 @@
         <a class="btn btn-link" href="#" data-toggle="collapse" data-target="#kerdes{{ id }}" aria-expanded="true" aria-controls="kerdes{{ id }}">
             {{ id }}. kérdés</a> {% if prefix %}<small>- {{ prefix}}</small>{% endif %}
         
-        {% if kerdes.masok and kerdes.eredmeny == 1 %}<small id="input{{ id }}HelpBlock" class="text-muted">Már {{ kerdes.masok }} jó válasz jött az osztályból. Segíts a többieknek!</small>{% endif %}
+        {% if kerdes.masok and user_result == 1 %}<small id="input{{ id }}HelpBlock" class="text-muted">Már {{ kerdes.masok }} jó válasz jött az osztályból. Segíts a többieknek!</small>{% endif %}
         
         {% if config.debug %}
             <small style="float:right">Start: <span title="{{ kerdes.startTime|date('Y-m-d H:i:s') }}">{{ kerdes.startTime|time_diff }}</span>. End: <span title="{{ kerdes.endTime|date('Y-m-d H:i:s') }}">{{ kerdes.endTime|time_diff }}</span></small>
@@ -30,7 +30,7 @@
       </h5>
     </div>
 
-    <div id="kerdes{{ id }}" class="collapse {{ kerdes.eredmeny >= 1 ? 'collapsed' : 'show' }}" aria-labelledby="headingOne">
+    <div id="kerdes{{ id }}" class="collapse {{ user_result >= 1 ? 'collapsed' : 'show' }}" aria-labelledby="headingOne">
       <div class="card-body">
           <p class="text-justify"><strong>{{ context|striptags(allow)|raw }}{{ quote|striptags(allow)|raw }}</strong></p>
           <p>{{ question|striptags(allow)|raw }}</p>
@@ -49,46 +49,46 @@
             
 
             {% if inputType == 'select' %}
-                {% if kerdes.eredmeny < 1 %}
-                    <select class="form-control {{ kerdes.eredmeny == -1 ? 'text-danger' }}" name="kerdes[{{ id }}]" id="inputId{{ id }}">
+                {% if user_result < 1 %}
+                    <select class="form-control {{ user_result == -1 ? 'text-danger' }}" name="questions[{{ id }}]" id="inputId{{ id }}">
                         <option value="">Válassz a lehetőségek közül...</option>
                         {% for option in options  %}
-                              <option value="{{ option }}" {% if kerdes.valasz == option %}selected{% endif %}>{{ option }}</option>
+                              <option value="{{ option }}" {% if user_answer == option %}selected{% endif %}>{{ option }}</option>
                         {% endfor %}
                     </select>                                
                 {% else %} 
-                    <input type="text" class="{{ kerdes.eredmeny == 1 ? 'text-success' }}{{ kerdes.eredmeny == -1 ? 'text-danger' }} form-control" name="kerdes[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ kerdes.valasz }}" {{ kerdes.eredmeny == 1 ? 'readonly'  }}>
+                    <input type="text" class="{{ user_result == 1 ? 'text-success' }}{{ user_result == -1 ? 'text-danger' }} form-control" name="kerdes[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ user_answer }}" {{ user_result == 1 ? 'readonly'  }}>
                 {% endif %}
 
              {% elseif inputType == 'file' %}   
-                        {% if kerdes.valasz != "" %}
+                        {% if user_answer != "" %}
                             <img src="{{ kerdes.valasz }}" class="img-thumbnail mx-auto d-block">
                         {% endif %}
-                        {% if kerdes.helyes < 2 %}
-                            <input  name="kerdes_{{ id }}"  type="file" id="inputId{{ id }}" />                                  
+                        {% if user_result < 2 %}
+                            <input  name="questions[{{ id }}]"  type="file" id="inputId{{ id }}" />                                  
                         {% endif %}
-                        {% if kerdes.helyes == 1 %}
+                        {% if user_result == 1 %}
                                 <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">Újat küld be</button></div>          
                         {% endif %}
                 
             {% elseif inputType == 'text' %}    
              
-                <input type="text" class="{{ kerdes.eredmeny >= 1 ? 'text-success' }}{{ kerdes.eredmeny == -1 ? 'text-danger' }} form-control" name="kerdes[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ kerdes.valasz }}" {{ ( kerdes.eredmeny >= 1 and ( kerdes.answer != '[manual]' or kerdes.eredmeny >=2 ) ) ? 'readonly'  }}>
+                <input type="text" class="{{ user_result >= 1 ? 'text-success' }}{{ user_result == -1 ? 'text-danger' }} form-control" name="questions[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ user_answer}}" {{ ( user_result >= 1 and ( kerdes.answer != '[manual]' or kerdes.eredmeny >=2 ) ) ? 'readonly'  }}>
             
             
             {% endif %}
             
                      
             
-            {% if kerdes.eredmeny < 1 or ( kerdes.answer == '[manual]' and kerdes.eredmeny < 2 ) %}
-                <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">{{ kerdes.eredmeny == 0 ? 'Beküld' : 'Javít'}}</button></div>          
+            {% if user_result < 1 or ( kerdes.answer == '[manual]' and user_result < 2 ) %}
+                <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">{{ user_result == 0 ? 'Beküld' : 'Javít'}}</button></div>          
             {% endif %}
           </div>
-            {% if kerdes.masok and kerdes.eredmeny < 1 %}<small id="input{{ id }}HelpBlock" class="form-text text-muted">Az osztályodból már {{ kerdes.masok }} ember megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>{% endif %}
+            {% if kerdes.masok and user_result < 1 %}<small id="input{{ id }}HelpBlock" class="form-text text-muted">Az osztályodból már {{ kerdes.masok }} ember megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>{% endif %}
             {% if kerdes.tarsak %}
-                {% if kerdes.eredmeny < 1 and kerdes.tarsak.helyes > 0  %}
+                {% if user_result < 1 and kerdes.tarsak.helyes > 0  %}
                     <small id="input{{ id }}HelpBlock" class="form-text text-muted">Már {{ kerdes.tarsak.helyes }} osztálytársad megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>
-                {% elseif kerdes.eredmeny %}
+                {% elseif user_result %}
                     {% if kerdes.tarsak.hibas > 0 %}
                         <small id="input{{ id }}HelpBlock" class="form-text text-muted">Még van {{ kerdes.tarsak.hibas}} társad, aki hibás választ írt. Segíts nekik!</small>
                     {% elseif kerdes.tarsak.helyes > 0 %} 

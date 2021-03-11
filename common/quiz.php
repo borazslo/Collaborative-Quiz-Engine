@@ -22,11 +22,14 @@ class Quiz {
             if($key != 'questions') 
                 $this->$key = $val;
         }
+                
+        if(!isset($this->id))
+            $this->id = $jsonFile;
         
-       
         if(isset($settings->questions)) {
             foreach($settings->questions as $key => $question) {
                 $question->id = $key + 1;
+                $question->quiz_id = $this->id;
                 $className = "question".ucfirst($question->type);
                 //if(!class_exists($className)) $className = 'Question';
                 $this->questions[] = new $className($question);

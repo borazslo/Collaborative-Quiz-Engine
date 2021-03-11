@@ -26,6 +26,8 @@ class Question {
         $this->prepareQuestion();
         $this->prepareInput();
         
+        $this->getUserAnswer();
+        
     }
     
     function prepareHint() {
@@ -75,5 +77,54 @@ class Question {
     
     function prepareInput() {
         
+    }
+    
+    function getUserAnswer() {
+        global $connection, $user;
+    
+        $params = [
+            'quiz_id' => $this->quiz_id,
+            'user_id' => $user->id,
+            'question_id' => $this->id
+            ];
+        
+        $stmt = $connection->prepare("SELECT * FROM answers WHERE quiz_id = :quiz_id AND user_id = :user_id AND question_id = :question_id  LIMIT 1");
+        $stmt->execute($params); 
+        
+        $result = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);        
+        $old_answer = isset($result[1]) ? $result[1]['answer'] : false;
+        
+                
+        if(isset($_REQUEST['questions']) AND isset($_REQUEST['questions'][$this->id])) {
+                $new_answer = $_REQUEST['questions'][$this->id];            
+        } else {
+            $new_answer = $old_answer;
+        }
+        
+        //validet, get result
+        // -1 = wrong answer
+        // 0 = no answer
+        // 2 = good answer
+        // 1 = answer needs manual revision
+        $result = rand(-1,2);
+        
+        if($new_answer != false and $new_answer != $old_answer) {
+            if($old_answer != false ) {
+                $stmt = $connection->prepare("UPDATE answers SET "
+                . "answer = :answer, result = :result, timestamp = CURRENT_TIMESTAMP() "
+                . " WHERE quiz_id = :quiz_id AND question_id = :question_id AND user_id = :user_id ");
+            } else {
+                $stmt = $connection->prepare("INSERT INTO answers (quiz_id, question_id, user_id, answer, result)"
+                        . "VALUES (:quiz_id, :question_id, :user_id, :answer, :result)");
+
+            }
+            $params['answer'] = $new_answer;
+            $params['result'] = $result;
+            $stmt->execute($params);    
+        }
+        
+        $this->user_answer = $new_answer;
+        $this->user_result = $result;
+                    
     }
 }
