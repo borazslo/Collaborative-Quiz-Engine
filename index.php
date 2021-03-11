@@ -18,7 +18,7 @@ if($development == true) $page->data['development'] = true;
 $page->data['config']['debug'] = $config['debug'];
 
 $page->data['game'] = $config['game'];
-
+/*
 if(!isset($_REQUEST['tanaz']) OR !isset($_REQUEST['tanazonosito'])) {
     $page->templateFile = 'koszonto';
     echo $twig->render($page->templateFile.".twig", $page->data);
@@ -26,6 +26,10 @@ if(!isset($_REQUEST['tanaz']) OR !isset($_REQUEST['tanazonosito'])) {
 } 
 
 $user = getUser($_REQUEST['tanaz'],$_REQUEST['tanazonosito']);
+*/
+
+$user = new User();        
+
 if(!$user) {
     $page->data['tanaz'] = $_REQUEST['tanaz'];
     $page->data['tanazonosito'] = $_REQUEST['tanazonosito'];
@@ -36,7 +40,7 @@ if(!$user) {
 }
 $page->data['user'] = $user;
 
-if($user['tanaz'] == 'elek.laszlo' ) {
+if($user->isAdmin) {
     $page->data['config']['debug'] = $config['debug'] = true;
 }
 
@@ -47,15 +51,13 @@ $page->templateFile = 'kerdesek';
 if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
     $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
 }
+include('common/Quiz.php');
+$quiz = new Quiz('szentignac.json');
 
-/* Load the csv with questions */
-if(array_key_exists('remoteGoogleSheet',$config['game']) AND $config['game']['remoteGoogleSheet'] ) {    
-    getGoogleSheetCSV($config['game']['remoteGoogleSheet'], $config['game']['localFile'], array_key_exists('remoteGoogleSheetCache',$config['game']) ? $config['game']['remoteGoogleSheetCache'] : false );        
-}
-$kerdesek = loadKerdesek($config['game']['localFile']);
-$page->data['csv_updated_at'] = date('Y-m-d H:i:s',filemtime($config['game']['localFile']));    
-$kerdesek = addOsztalyValaszok($kerdesek, $user['tanosztaly']);
-ksort($kerdesek);
+
+/* 
+//$kerdesek = addOsztalyValaszok($kerdesek, $user['tanosztaly']);
+//ksort($kerdesek);
 
 $regivalaszok = getValaszok($user['tanaz']);
 
@@ -64,7 +66,7 @@ $request = $_REQUEST;
 
 /* 
  * Kérdések kitakarítása láthatóság alapján 
- */
+ *
 $kerdesek = currentQuestions($kerdesek, $config['game']);
 
 
@@ -72,9 +74,9 @@ $kerdesek = currentQuestions($kerdesek, $config['game']);
  * Mivel a megjelenő kérdéseket pörgetjük végig, így, 
  * ha valaki régen beöltötte az oldat, de későn kattint
  * akkor a már nem élő kérdésekre nem tud válaszolni.
- */
+ *
 foreach($kerdesek as $key => $kerdes) {
-    /* FILE feltöltős kérdések tökre mások */
+    // FILE feltöltős kérdések tökre mások
     if($kerdes['answer'] == '[file]') {
          // TOGO ha még semmi nem volt elköldve        
          
@@ -90,7 +92,7 @@ foreach($kerdesek as $key => $kerdes) {
                 $kerdesek[$key]['messages'][] = ['danger','Megnéztük és sajnos nem tudtuk elfogadni ezt a képet. Készíts másikat!'];
             }                    
         }        
-        /* Ha volt beküldés akár csak üresen */
+        // Ha volt beküldés akár csak üresen 
         if(isset($_FILES['kerdes_'.$key])) {
             if($_FILES['kerdes_'.$key]['error'] == 4) {
                 // Nincs kép feltöltve. Valószínűleg egyszerűen azért, mert nem nyomott még rá.
@@ -136,12 +138,12 @@ foreach($kerdesek as $key => $kerdes) {
             $kerdesek[$key]['valasz'] = trim($request['kerdes'][$key]);
         }
                      
-        /* Válasz ellenőrzése */
+        // Válasz ellenőrzése 
         //echo "<pre>"; print_R($kerdesek[$key]);
         if( $kerdesek[$key]['valasz'] == '') {
             $kerdesek[$key]['eredmeny'] = 0; 
         
-        /* Manuálisan ellenőrizendő szöveges kérdések */
+        // Manuálisan ellenőrizendő szöveges kérdések 
         } else if ( $kerdesek[$key]['answer'] == '[manual]' ) {
             
             //Új cucc ellenőrzésre
@@ -196,13 +198,14 @@ foreach($kerdesek as $key => $kerdes) {
 VALUES ("734152.979166667","2010-01-14 23:30:00.000")
 ON DUPLICATE KEY UPDATE 
   Timestamp=VALUES(Timestamp)
-        ű*/
+        
     } 
 }
+/* */
+$page->data['kerdesek'] = json_decode(json_encode($quiz->questions), true);
 
-$page->data['kerdesek'] = $kerdesek;
 //$page->data['user']['tanosztaly'] = '11B';
-
+/*
 $ranglista = getScores();
 //echo "<pre>"; print_r($ranglista); exit;
 if(!array_key_exists($user['tanosztaly'],$ranglista)) {
@@ -213,7 +216,7 @@ if(!array_key_exists($user['tanosztaly'],$ranglista)) {
     ];
 }
 $page->data['ranglista'] = $ranglista;
-
+*/
 
 
 echo $twig->render($page->templateFile.".twig", $page->data);

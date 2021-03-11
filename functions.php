@@ -371,52 +371,12 @@ function loadKerdesek(string $filename) {
                }
                                      
            }
-           
-        /* Van, hogy több kérdés van egy sorban, több válasszal. Akkor választ egyet. */
-        if(preg_match('/\|/',$kerdes['question'])) {
-            $questions = explode('|',$kerdes['question']);
-            $answers = explode('|',$kerdes['answer']);
-            #$variation = round(1 + (hexdec(md5($user['tanazonosito'])) / hexdec("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")) * (count($questions) - 1));            
-            $variation = bindec(md5($user['tanazonosito'])) % count($questions);
-            
-            
-            $kerdesek[$key]['question'] = $questions[$variation];
-            $kerdesek[$key]['answer'] = $answers[$variation];            
-        }
+
            
            
         $kerdesek[$key]['id'] = $key;
         $kerdesek[$key]['inputType'] = 'text';
         
-        /* Ha van link, akkor beformázzuk a tippet */
-        if(array_key_exists('url1', $kerdes)) {
-            
-            //Ha van könnyebb url, akkor azt kapják a kicsik         
-            if(array_key_exists('url2', $kerdes) AND preg_match('/^[5-8]{1}(A|B|S)$/', $user['tanosztaly'])) {
-                $kerdesek[$key]['url1'] = $kerdes['url1'] = $kerdesek[$key]['url2'];
-            }
-
-            
-            
-            if(preg_match('/\/maps\//i', $kerdes['url1'])) {
-                $kerdesek[$key]['hint'] = 'Talán errefelé érdemes körülnézni: <a class="text-decoration-none" target="_blank" href="'.$kerdes['url1'].'">Google Street View</a>.';
-                                
-            } elseif (preg_match('/youtube/i', $kerdes['url1'])) {
-                                
-                $kerdesek[$key]['hint'] = ''
-                        . '<div class="embed-responsive embed-responsive-16by9">'
-                        . '<iframe class="embed-responsive-item" src="'.preg_replace('/watch\?v=/','embed/',$kerdes['url1']).'" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-                        . '</div>';
-                $kerdesek[$key]['hint'] .= '<br/>Itt egy videó, ami segíthet: <a class="text-decoration-none" target="_blank" href="'.$kerdes['url1'].'">YouTube</a>.';           
-                                
-                
-            } elseif (preg_match('/^http/i', $kerdes['url1'])) {
-                $kerdesek[$key]['hint'] = 'Itt egy link, ami segíthet: <a class="text-decoration-none" target="_blank"  href="'.$kerdes['url1'].'">KATTINTS</a>!';
-            } else {
-               $kerdesek[$key]['hint'] = 'Egy tipp: '.$kerdes['url1']; 
-            }             
-                    
-        }
         
         
        /* Ha listából lehet választani, akkor betöltjük */
@@ -799,3 +759,13 @@ function createImagePuzzle($path,$percentage,$felosztas = [6,12]) {
     imagejpeg ($image,$newPath);
     return $newPath;
 }
+
+function printr($anything) {
+    echo "<pre>".print_r($anything,1)."</pre>";
+}
+
+spl_autoload_register(function ($class_name) {
+    $filename = $class_name . '.php';
+    if(file_exists($filename)) include $filename;
+    elseif(file_exists('common/'.$filename)) include 'common/'.$filename;    
+});
