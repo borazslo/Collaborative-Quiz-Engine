@@ -100,13 +100,8 @@ class Question {
         } else {
             $new_answer = $old_answer;
         }
-        
-        //validet, get result
-        // -1 = wrong answer
-        // 0 = no answer
-        // 2 = good answer
-        // 1 = answer needs manual revision
-        $result = rand(-1,2);
+                
+        $result = $this->getUserResult($new_answer);
         
         if($new_answer != false and $new_answer != $old_answer) {
             if($old_answer != false ) {
@@ -126,5 +121,22 @@ class Question {
         $this->user_answer = $new_answer;
         $this->user_result = $result;
                     
+    }
+    
+    /**
+     * 
+     * @param type $user_answer
+     * @return int -1 = wrong, 0 = null, 1 = manual validation needed, 2 = ok
+     */
+    function getUserResult($user_answer) {
+        if(!is_array($this->answer)) $this->answer = [$this->answer];
+        
+        foreach($this->answer as $good_answer) {
+            if( strcasecmp(trim($user_answer),trim($good_answer)) == 0 ) return 2;    
+        }
+        
+        if($user_answer == '') return 0;
+       
+        return -1;
     }
 }
