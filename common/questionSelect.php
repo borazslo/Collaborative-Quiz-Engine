@@ -15,10 +15,6 @@ class questionSelect extends Question {
     
     public $inputType = 'select';
 
-    
-    function prepareInput() {
-        
-        
-    }
+  
     
 }

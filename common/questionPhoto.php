@@ -62,7 +62,9 @@ class questionPhoto extends Question {
     
     
     function uploadImage($_file) {
-    
+        //TODO!
+        global $imageFolder;
+        
         if( ! file_exists($_file['tmp_name']) ) {
             return ['error' => 'Nem található az ideiglenesen feltöltött file. Mi hibánk.'];
         }
@@ -89,12 +91,11 @@ class questionPhoto extends Question {
            $image = imagescale($image, $box);
         }    
         //Mentés
-        global $imageFolder;
+
         $filename = md5(date('Y-m-d H:i:s')."-".rand(100,999)).".jpg"; //Igénytelen random név
         imagejpeg ($image,$imageFolder."/".$filename);
         return $imageFolder."/".$filename;    
     }
-  
+    
+    
 }
-
-
