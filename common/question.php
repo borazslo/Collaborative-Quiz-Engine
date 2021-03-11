@@ -26,7 +26,7 @@ class Question {
         $this->prepareQuestion();
         $this->prepareInput();
         
-        $this->getUserAnswer();
+        $this->loadUserAnswer();
         
     }
     
@@ -79,27 +79,20 @@ class Question {
         
     }
     
-    function getUserAnswer() {
-        global $connection, $user;
-    
-        $params = [
+    function loadUserAnswer() {
+        global $user, $connection;
+        $this->params = [
             'quiz_id' => $this->quiz_id,
             'user_id' => $user->id,
             'question_id' => $this->id
             ];
         
-        $stmt = $connection->prepare("SELECT * FROM answers WHERE quiz_id = :quiz_id AND user_id = :user_id AND question_id = :question_id  LIMIT 1");
-        $stmt->execute($params); 
+        $old_answer = $this->getOldAnswer();
+        $new_answer = $this->getNewAnswer();
         
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);                
-        $old_answer = isset($result[0]) ? $result[0]['answer'] : false;
-                
-        if(isset($_REQUEST['questions']) AND isset($_REQUEST['questions'][$this->id])) {
-                $new_answer = $_REQUEST['questions'][$this->id];            
-        } else {
-            $new_answer = $old_answer;
-        }
-                
+        if(!$new_answer) $new_answer = $old_answer;
+        
+        
         $result = $this->getUserResult($new_answer);
         
         if($new_answer != false and $new_answer != $old_answer) {
@@ -112,14 +105,35 @@ class Question {
                         . "VALUES (:quiz_id, :question_id, :user_id, :answer, :result)");
 
             }
-            $params['answer'] = $new_answer;
-            $params['result'] = $result;
-            $stmt->execute($params);    
+            $this->params['answer'] = $new_answer;
+            $this->params['result'] = $result;
+            $stmt->execute($this->params);    
         }
         
         $this->user_answer = $new_answer;
         $this->user_result = $result;
                     
+    }
+    
+    function getOldAnswer() {
+        global $connection;
+                   
+        $stmt = $connection->prepare("SELECT * FROM answers WHERE quiz_id = :quiz_id AND user_id = :user_id AND question_id = :question_id  LIMIT 1");
+        $stmt->execute($this->params); 
+        
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->old_answer = $result;
+        $old_answer = isset($result[0]) ? $result[0]['answer'] : false;
+        
+        return $old_answer;        
+    }
+    
+    function getNewAnswer() {
+        if(isset($_REQUEST['questions']) AND isset($_REQUEST['questions'][$this->id])) {
+                return $_REQUEST['questions'][$this->id];            
+        } else {
+            return false;
+        }
     }
     
     /**
@@ -128,14 +142,14 @@ class Question {
      * @return int -1 = wrong, 0 = null, 1 = manual validation needed, 2 = ok
      */
     function getUserResult($user_answer) {
+        if($user_answer == '') return 0;
+        
         if(!is_array($this->answer)) $this->answer = [$this->answer];
         
         foreach($this->answer as $good_answer) {
             if( strcasecmp(trim($user_answer),trim($good_answer)) == 0 ) return 2;    
         }
         
-        if($user_answer == '') return 0;
-       
         return -1;
     }
 }

@@ -262,14 +262,7 @@ function getGroupSizes() {
    return $groups;
 }
 
-function getValaszok($tanaz) {
-    global $connection;
-    
-    $stmt = $connection->prepare("SELECT kerdesid, kerdesid, valasz, helyes, timestamp FROM valaszok WHERE tanaz = :tanaz ");
-    $stmt->execute(['tanaz' => $tanaz]); 
-    return $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
-            
-}
+
 
 function loadCSV(string $filename) {
     global $config;
@@ -440,39 +433,7 @@ function currentQuestions($kerdesek, $gameConfig) {
         
 }
 
-function uploadImage($_file) {
-    
-    if( ! file_exists($_file['tmp_name']) ) {
-        return ['error' => 'Nem található az ideiglenesen feltöltött file. Mi hibánk.'];
-    }
-    
-    //Képség ellenőrzése, mert másképp át lehetne verni.
-    $image_data = @getimagesize($_file['tmp_name']);    
-    if( $image_data === false ) {
-        return ['error' => 'Uupsz, '.$_file['name'].' nem is kép. Képet kérünk!'];
-    }
-       
-    // Ha nincs GD, akkor gond van. TODO: nagy képekkel de úgyis működjön
-    if(!function_exists('imagecreatefromstring')) {
-       return ['error' => 'Nem tudunk képeket  átméretezni. Mihibánk.'];
-       // Megoldás: GD azaz apt-get install php7.3-dev ÉS? apt-get install libjpeg-dev libfreetype6-dev
-    }
- 
-    // Átméretezés, ha szükséges
-    $image = imagecreatefromstring( file_get_contents( $_file['tmp_name']));
-    $box = 1200;
-    if($image_data[1] > $image_data[0] AND $image_data[1] > $box ) { //álló és túl nagy
-        $newWidth = $image_data[0] * ( $box / $image_data[1]);
-        $image = imagescale($image, $newWidth);
-    } else if($image_data[0] > $image_data[1] AND $image_data[0] > $box ) { // fekvő és túl nagy
-       $image = imagescale($image, $box);
-    }    
-    //Mentés
-    global $imageFolder;
-    $filename = md5(date('Y-m-d H:i:s')."-".rand(100,999)).".jpg"; //Igénytelen random név
-    imagejpeg ($image,$imageFolder."/".$filename);
-    return $imageFolder."/".$filename;    
-}
+
 
 function bulkAnswers() {
     global $connection;
@@ -650,69 +611,10 @@ function getScores() {
    
 }
 
-function osszehasonlit($valasz, $helyes) {
-    
-    if( strcasecmp($valasz,trim($helyes)) == 0 ) return true;
-    $helyesek = explode(';',$helyes);
-    if(count($helyesek) > 1 ) {
-        foreach($helyesek as $helyes) {
-            if( strcasecmp($valasz,trim($helyes)) == 0 ) return true;
-        }
-    }
-               
-    return false;
-}
-
 
 
     
 define("TMPFOLDER", 'tmp/');     
-function getGoogleSheetCSV($fileId, $filename, $cache = false) {	
-        if($cache == false) $cache = '10 minutes';
-        $tmpfilename = $filename;
-	if (file_exists($tmpfilename) AND filemtime($tmpfilename) > strtotime("-".$cache) AND (!isset($_REQUEST['update']) OR $_REQUEST['update'] == false)) {
-
-	} else {
-		//echo "kell nekünk";
-		//Download the file.
-		$content = file_get_contents('https://docs.google.com/spreadsheets/d/'.$fileId.'/export?format=csv');
-		file_put_contents($tmpfilename, $content);
-		//echo "$tmpfilename has been downloaded ";
-	}
-	$return = file_get_contents($tmpfilename);	
-        
-	return array(
-		'fileId' => $fileId,
-		'content' => $return,
-		'filemtime' => filemtime($tmpfilename)
-	);
-}
-
-function insertValasz($valasz, $user) {
-    global $connection;
-    $stmt = $connection->prepare("INSERT INTO valaszok (tanaz, tanosztaly, kerdesid, valasz, helyes)"
-                        . "VALUES (:tanaz, :tanosztaly, :kerdesid, :valasz, :helyes)");
-    return $stmt->execute([
-        'tanaz' => $user['tanaz'], 
-        'tanosztaly'=>$user['tanosztaly'], 
-        'kerdesid' => $valasz['id'], 
-        'valasz' => $valasz['valasz'], 
-        'helyes' => $valasz['helyes']
-            ]);    
-}
-
-function updateValasz($valasz, $user) {
-    global $connection;    
-    $stmt = $connection->prepare("UPDATE valaszok SET "
-                . "valasz = :valasz, helyes = :helyes, timestamp = CURRENT_TIMESTAMP() "
-                . " WHERE tanaz = :tanaz AND kerdesid = :kerdesid ");
-    return $stmt->execute([
-        'tanaz' => $user['tanaz'], 
-        'kerdesid' => $valasz['id'], 
-        'valasz' => $valasz['valasz'], 
-        'helyes' => $valasz['helyes']
-            ]);
-}
 
 function randomNumber($darab, $max) {
     $numbers = []; for($i=1;$i<=$max;$i++) $numbers[] = $i;
