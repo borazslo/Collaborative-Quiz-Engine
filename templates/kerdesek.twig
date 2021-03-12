@@ -41,9 +41,10 @@
 	{% endif %}
 	</div>
 -->
-    {% if kerdesek|length == 0 %}<div class="alert alert-info">{{ "There are no questions right now. Is it too early or too late?"|t }}</div>{% endif %}
+    {% if quiz.questions|length == 0 %}<div class="alert alert-info">{{ "There are no questions right now. Is it too early or too late?"|t }}</div>{% endif %}
+
     {% for question in quiz.questions %}
-        {% include 'question.twig' with question only %}          
+        {% include 'question.twig' with question  %}          
     {% endfor %}
         
   

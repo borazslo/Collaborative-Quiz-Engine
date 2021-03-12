@@ -23,8 +23,8 @@
         
         {% if kerdes.masok and user_result == 1 %}<small id="input{{ id }}HelpBlock" class="text-muted">Már {{ kerdes.masok }} jó válasz jött az osztályból. Segíts a többieknek!</small>{% endif %}
         
-        {% if config.debug %}
-            <small style="float:right">Start: <span title="{{ kerdes.startTime|date('Y-m-d H:i:s') }}">{{ kerdes.startTime|time_diff }}</span>. End: <span title="{{ kerdes.endTime|date('Y-m-d H:i:s') }}">{{ kerdes.endTime|time_diff }}</span></small>
+        {% if user.isAdmin %}
+            <small style="float:right">Start: <span title="{{ startTime|date('Y-m-d H:i:s') }}">{{ startTime|time_diff }}</span>. End: <span title="{{ endTime|date('Y-m-d H:i:s') }}">{{ endTime|time_diff }}</span></small>
         {% endif %}
         
       </h5>
