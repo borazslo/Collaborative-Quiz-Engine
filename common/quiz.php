@@ -33,9 +33,13 @@ class Quiz {
                 $question->id = $key + 1;
                 $question->quiz_id = $this->id;
                 
-                if(isset($question->folder)) {                    
+                if(isset($question->folder)) {                                        
                     $question->folder = $this->folder.$question->folder;
+                    if(!is_dir($question->folder)) throw new Exception('There is no folder called '.$question->folder);
                 }
+                
+                //Miért futtatjuk sokszor? Bár ráérünk
+                if(in_array($question->type,['multi','puzzle']) AND !is_dir(TMP_FOLDER.$this->id)) throw new Exception('There is a need for folder called '.TMP_FOLDER.$this->id);
                 
                 $className = "question".ucfirst($question->type);
                 //if(!class_exists($className)) $className = 'Question';
