@@ -5,9 +5,9 @@
    
         
     <nav class="navbar dfixed-top navbar-dark bg-dark">
-        <a class="navbar-brand" href="index.php">{{ game.title }}</a>
+        <a class="navbar-brand" href="index.php">{{ quiz.title }}</a>
         <span class="navbar-text">
-        {{ user.tannev }} ({{ user.tanosztaly }} - {{ ranglista[user.tanosztaly].rang }}. helyen)
+        {{ user.name }} ({{ user.group }} - {{ ranglista[user.tanosztaly].rang }}. helyen)
         <input type="hidden" name="tanaz" value="{{ user.tanaz }}">
         <input type="hidden" name="tanazonosito" value="{{ user.tanazonosito }}">        
         </span>
