@@ -1,16 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of questionNumber
- *
- * @author webdev
- */
 class questionPhoto extends Question {
     
     public $inputType = 'file';
@@ -62,8 +51,6 @@ class questionPhoto extends Question {
     
     
     function uploadImage($_file) {
-        //TODO!
-        global $imageFolder;
         
         if( ! file_exists($_file['tmp_name']) ) {
             return ['error' => 'Nem található az ideiglenesen feltöltött file. Mi hibánk.'];
@@ -93,8 +80,8 @@ class questionPhoto extends Question {
         //Mentés
 
         $filename = md5(date('Y-m-d H:i:s')."-".rand(100,999)).".jpg"; //Igénytelen random név
-        imagejpeg ($image,$imageFolder."/".$filename);
-        return $imageFolder."/".$filename;    
+        imagejpeg ($image,$this->folder."/".$filename);
+        return $this->folder."/".$filename;    
     }
     
     

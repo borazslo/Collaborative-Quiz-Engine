@@ -3,7 +3,7 @@
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
- 
+
 $loader = new \Twig\Loader\FilesystemLoader(['templates']);
 $twig = new \Twig\Environment($loader);
 
@@ -12,12 +12,14 @@ $twig->addExtension(new Twig_Extensions_Extension_Date());
 $filter = new \Twig\TwigFilter('t', 't');
 $twig->addFilter($filter);
 
+
 $page = new stdClass();
 $page->data = [];
+
+$page->data['base_url'] = $_SERVER['BASE'];
 if($development == true) $page->data['development'] = true;
 $page->data['config']['debug'] = $config['debug'];
 
-$page->data['game'] = $config['game'];
 /*
 if(!isset($_REQUEST['tanaz']) OR !isset($_REQUEST['tanazonosito'])) {
     $page->templateFile = 'koszonto';
@@ -51,8 +53,9 @@ $page->templateFile = 'kerdesek';
 if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
     $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
 }
-include('common/Quiz.php');
-$quiz = new Quiz('szentignac.json');
+
+$quizId = explode('/',str_replace($_SERVER['BASE'], '', $_SERVER['REQUEST_URI']))[0];
+$quiz = new Quiz($quizId.'.json');
 
 
 

@@ -1,12 +1,10 @@
 <?php
 
 class questionPuzzle extends Question {
-    
+
     public $inputType = 'select';
     
     function prepareQuestion() {
-        global $imageFolder;
-
         $extensions = "JPG|jpeg|jpg|png";
 
         if(!isset($this->folder)) throw new Exception("Question ".$this->id.": 'puzzle' type question needs a folder.");
@@ -45,8 +43,8 @@ class questionPuzzle extends Question {
             $percentage = $scores[$user['tanosztaly']]['jatekos'];
         */
         $percentage = 8; //rand(1,15);
-
-        $filename = $imageFolder."/puzzle_".md5($file."-".$percentage).'.jpg';
+                
+        $filename = TMP_FOLDER.$this->quiz_id."/puzzle_".md5($file."-".$percentage).'.jpg';
 
         if(!file_exists($filename)) {
            //Nem az igazi, mert egészen újat generál mindig, nem pedig növekszik szépen.

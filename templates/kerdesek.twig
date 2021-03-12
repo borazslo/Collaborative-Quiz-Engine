@@ -1,7 +1,7 @@
 {%  extends 'html.twig' %}
 
-{% block container %}
-    <form action="index.php" enctype="multipart/form-data" method="post">
+{% block container %}   
+    <form action="{{ base_url }}{{ quiz.id }}" enctype="multipart/form-data" method="post">
    
         
     <nav class="navbar dfixed-top navbar-dark bg-dark">
