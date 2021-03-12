@@ -94,7 +94,7 @@ $quiz = new Quiz('szentignac.json');
        
  
 /* */
-$page->data['kerdesek'] = json_decode(json_encode($quiz->questions), true);
+
 
 //$page->data['user']['tanosztaly'] = '11B';
 /*
@@ -110,5 +110,6 @@ if(!array_key_exists($user['tanosztaly'],$ranglista)) {
 $page->data['ranglista'] = $ranglista;
 */
 
+$page->data['quiz'] = json_decode(json_encode($quiz), true);
 
 echo $twig->render($page->templateFile.".twig", $page->data);
