@@ -1,0 +1,171 @@
+{   
+    "type"              : "object",
+    "properties": {
+        "title" : {
+            "type": "string",
+            "description" : "A kvíz neve."
+        },
+        "description_html" : {
+            "type": "string",
+            "description" : "A kvíz leírása, ami html elemeket is tartalmazhat."
+        },
+        "copyright" : {
+            "type": "string",
+            "description" : "Copyright leírás a láblécbe."
+        },
+        "author" : {
+            "type": "string",
+            "description" : "A kérdőíiv készítője."
+        },
+        "author_url" : {
+            "type": "string",
+            "description" : "Ha van 'author' akkor lehet hozzá egy link is."
+        },
+        
+        "timing" : {
+            "type": "object",
+            "description" : "Ha kérdések ütemezését meghatározó beállítások.",
+            "properties" : {
+                "start" : {
+                    "type" : "string",
+                    "description" : "A játék kezdete olyan formában amit a strtotime() fel tud ismerni."
+                },
+                "frequency" : {
+                    "type" : "string",
+                    "description" : "A kérdések egymás utáni követése olyan formában amit strtotime() fel tud ismerni. Például: '+1 minute' "
+                },
+                "duration" : {
+                    "type" : "string",
+                    "description" : "Egy-egy kérdésnek az ideje, amíg látszik olyan formában amit a strtotime() fel tud ismerni. Például: '1 week' "
+                }
+            },
+            "additionalProperties": false
+        },
+        
+        "questions" : {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "object",
+                "description" : "Egy kérdés/feladat minden adata",
+                "properties" : {
+                    "type" : {
+                        "type": "string",
+                        "enum": ["text", "manual", "multi", "photo", "puzzle", "select", "wait"],
+                        "description" : "A kérdés fajtája. "
+                    },
+                    "prefix" : {
+                        "type": "string",
+                        "description": "Rövid kifejezés, ami a kérdés sorszáma után jelenik meg összecsukott módban.",
+                        "maxLength" :  25
+                    },
+                    "question" : {
+                        "type" : "string",
+                        "description": "A kérdés amit fel akarunk tenni. Kötelező, ha type!=multi. Máskor felesleges."
+                    },
+                    "answer" : {
+                        "type" : ["string","integer","array"],
+                        "description" : "A helyes válasz ill. a helyes válasz minden variánsa. Kötelező, ha type=(text,select). Máskor felesleges.",
+                        "items" : {
+                            "type" : ["string", "integer"]
+                        },
+                        "uniqueItems": true
+                    },
+                    
+                    "questions" : {
+                        "type" : "array",
+                        "description" : "Több kérdés, ami közül véletlenszerűen választ a rendszer. Kötelező, ha type=multi. Máskor felesleges.",
+                        "items" : {
+                            "type" : "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "answers" : {
+                        "type" : "array",
+                        "description" : "Az előző 'qestions'-höz tartozó válaszok. Pont ugyan annyi legyen! Kötelező, ha type=multi. Máskor felesleges.",
+                        "items" : {
+                            "type" : ["string", "array"],
+                            "description" :  "A helyes válasz ill. a helyes válasz minden variánsa.",
+                            "items" : {
+                                "type" : ["string", "integer"]
+                            }
+                        }
+                    },
+                    
+                    "context" : {
+                        "type" : "string",
+                        "description" : "Egy bekezdésnyi gondolat, tanítás, vagy magyarázat a témában."
+                    },
+                    "quote" : {
+                        "type" : "string",
+                        "description" : "Egy idézet a témakörben. A 'context'-el egyenrangú."
+                    },
+                    "video" : {
+                        "type" : "string",
+                        "description" : "A kérdéshez tartozó videó url-je. YouTube esetén beágyazza."
+                    },
+                    "image" : {
+                        "type" : "string",
+                        "description" : "A kérdéshez tartozó fénykép src-je. Beágyazza"
+                    },                    
+                    "hint" : {
+                        "type" : ["string", "array"],
+                        "description" : "Segítséget adó link vagy szöveg. Több esetén egyre kevésbé segítő tippek jöhetnek a felhasználó szintjéhez igazodva. Ha nincs akkor mint a felhasználó szintje, akkor ő már nem kap segítséget.",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    
+                    "options" : {
+                        "type" : "array",
+                        "description" : "Legördülő lista a választható válaszokkal. Kötelező, ha type=select. Máskor felesleges.",
+                        "items" : {
+                            "type" : ["string", "integer"]
+                        }                        
+                    },
+                    
+
+                    "relativeStart" : {
+                        "type" : "string",
+                        "description" : "A kérdés megjelenésének ideje az előző kérdéshez képest. Olyan formában amit a strtotime() fel tud ismerni. Felülírja a 'timing.start'-ot!"
+                    },
+                    "duration" : {
+                        "type" : "string",
+                        "description" : "Az idő amíg látszik ez a kérdés. Olyan formában amit a strtotime() fel tud ismerni. Például: '1 week'. Felülírja a 'timing.duration'-t!"
+                    },
+                    
+                    "folder" : {
+                        "type" : "string",
+                        "description" : "A könyvtár ahonnan szedi vagy ahova feltölti a képeket. Relatív útvonal a kvíz json fájljához képest."
+                    },
+                    
+                    "unique" : {
+                        "type" : ["string", "array"],
+                        "description" : "Mindenki különbözőt kapjon, vagy csoportonként azonosat? Kötelező, ha type=puzzle. Máskor felesleges.",
+                        "anyOf" : [
+                            {
+                                "type" : "string",
+                                "enum" : ["user", "group", "group2"]
+                            },
+                            {
+                                "type" : "array",                                
+                                "items" : {
+                                    "type" : "string",
+                                    "enum" : ["user", "group", "group2"]
+                                }                                
+                            }
+                        ]
+                    },
+                    
+                    "forAdmin" : {
+                        "type" : "string",
+                        "description" : "Csak adminisztrátorok számára olvasható üzenet. Például 'type=manual' esetén pár szó a kiértékelés szempontjairól"
+                    }                    
+                },                        
+                "additionalProperties": false                
+            }
+        }
+    },
+    "required": [ "title", "questions"],
+    "additionalProperties": false   
+}

@@ -2,6 +2,7 @@
     "require": {
         "twbs/bootstrap": "4.5",
         "twig/twig": "^2.0",
-        "twig/extensions": "^1.5"
+        "twig/extensions": "^1.5",
+        "justinrainbow/json-schema": "^5.2"        
     }
 }

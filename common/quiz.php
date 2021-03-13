@@ -20,6 +20,23 @@ class Quiz {
         $file = $this->folder.$jsonFile;
                 
         if(!file_exists($file)) throw new Exception("Config file '". $file."' does not exists.");
+        
+        $data = json_decode(file_get_contents($file));
+
+        // Validate
+        $validator = new JsonSchema\Validator;
+        $validator->validate($data, (object)['$ref' => 'file:///vagrant/Collaborative-Quiz-Engine/quizzes/quizSchema.json']); //file://' . realpath('schema.json')]);
+
+        if ($validator->isValid()) {
+            //echo "The supplied JSON validates against the schema.\n";
+        } else {
+            echo "JSON does not validate. Violations:<br>\n";
+            foreach ($validator->getErrors() as $error) {
+                printf("[%s] %s<br>\n", $error['property'], $error['message']);
+            }
+        }
+
+        
         if(! $settings = json_decode(file_get_contents($file)) ) throw new Exception("Config file '". $file."' is not valid Json.");
         foreach($settings as $key => $val) {
             if($key != 'questions') 
