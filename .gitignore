@@ -1,6 +1,4 @@
 vendor/*
 nbproject/*
 config.php
-quizzes/*
-!quizzes/quizschema.json
 tmp/*
