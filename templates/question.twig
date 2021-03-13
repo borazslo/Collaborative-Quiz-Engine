@@ -81,18 +81,19 @@
                 <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">{{ user_result == 0 ? 'Beküld' : 'Javít'}}</button></div>          
             {% endif %}
           </div>
-            {% if kerdes.masok and user_result < 1 %}<small id="input{{ id }}HelpBlock" class="form-text text-muted">Az osztályodból már {{ kerdes.masok }} ember megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>{% endif %}
-            {% if kerdes.tarsak %}
-                {% if user_result < 1 and kerdes.tarsak.helyes > 0  %}
-                    <small id="input{{ id }}HelpBlock" class="form-text text-muted">Már {{ kerdes.tarsak.helyes }} osztálytársad megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>
+
+            {% if others %}
+                {% if user_result < 1 and others.right > 0  %}
+                    <small id="input{{ id }}HelpBlock" class="form-text text-muted">Már {{ others.right }} ember megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>
                 {% elseif user_result %}
-                    {% if kerdes.tarsak.hibas > 0 %}
-                        <small id="input{{ id }}HelpBlock" class="form-text text-muted">Még van {{ kerdes.tarsak.hibas}} társad, aki hibás választ írt. Segíts nekik!</small>
-                    {% elseif kerdes.tarsak.helyes > 0 %} 
-                        <small id="input{{ id }}HelpBlock" class="form-text text-muted">Már {{ kerdes.tarsak.helyes}} helyes válasz érkezett az csapatodból. Van még, aki nem válaszolt?</small>
+                    {% if others.wrong > 0 %}
+                        <small id="input{{ id }}HelpBlock" class="form-text text-muted">Még van {{ others.wrong }} ember, aki hibás választ írt. Segíts nekik!</small>
+                    {% elseif others.right > 0 %} 
+                        <small id="input{{ id }}HelpBlock" class="form-text text-muted">Már {{ others.right }} helyes válasz érkezett. Van még, aki nem válaszolt?</small>
                     {% endif %}
                 {% endif %}
            {% endif %}
+           
       </div>
     </div>
   </div>

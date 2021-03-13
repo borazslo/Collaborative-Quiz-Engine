@@ -264,44 +264,6 @@ function getGroupSizes() {
 
 
 
-function currentQuestions($kerdesek, $gameConfig) {
-    global $config;
-    
-    $gameConfig['startTime'];
-    $c = 0;
-    foreach($kerdesek as $key => $kerdes ) {
-        if($c == 0) {
-            $lastStart = $currentStart = $kerdesek[$key]['startTime'] = $gameConfig['startTime'];            
-        } else {
-            if(!isset($kerdes['relativeStart'])) {
-                $currentStart = strtotime('+'.$gameConfig['questionDefaultFrequency'], $lastStart);
-            } else {
-                $currentStart = strtotime('+'.$kerdes['relativeStart'], $lastStart);
-            }
-            $lastStart = $kerdesek[$key]['startTime'] = $currentStart;                                                
-        }
-        
-        if(!isset($kerdes['duration'])) {
-            $currentEnd = $kerdesek[$key]['endTime'] = strtotime('+'.$gameConfig['questionDefaultDuration'], $currentStart);
-        } else {
-            $currentEnd = $kerdesek[$key]['endTime'] = strtotime('+'.$kerdes['duration'], $currentStart);
-        }        
-        $c++;
-        
-        /*
-         * Delete non active questions
-         */
-        $now = time();
-        if( ( $currentStart > $now OR $currentEnd < $now ) AND !$config['debug']) {
-            unset($kerdesek[$key]);
-        }                
-    }
-    return $kerdesek;
-        
-}
-
-
-
 function bulkAnswers() {
     global $connection;
     
@@ -372,33 +334,6 @@ function bulkAnswers() {
     }
     
     return true;
-}
-
-function getEredmenyek(string $osztaly) {
-    global $connection, $development, $bulkDate;
-    
-    $sql = "select kerdesid, 
-	count(if(helyes = 1, 1, null)) as helyes, 
-        count(if(helyes = 0 AND valasz='', 1, null)) as ures, 
-        count(if(helyes = 0 AND valasz<>'', 1, null)) as hibas 
-		from valaszok where tanosztaly = :osztaly ";
-    if(!$development) $sql .= "AND timestamp <> '$bulkDate'";
-    $sql .= " group by kerdesid  ";
-    $stmt = $connection->prepare($sql);
-    $stmt->execute(['osztaly'=>$osztaly]);
-    $eredmenyek = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
-    return $eredmenyek;
-}
-
-function addOsztalyValaszok($kerdesek, $osztaly) {    
-    
-    $eredmenyek = getEredmenyek($osztaly);
-    foreach($kerdesek as $key => $kerdes) {
-        if(array_key_exists($key,$eredmenyek)) {
-            $kerdesek[$key]['tarsak'] = $eredmenyek[$key];
-        }               
-    }
-    return $kerdesek;
 }
 
 function getScores() {
@@ -477,16 +412,6 @@ function getScores() {
     return $return; 
    
 }
-
-
-
-    
-define("TMPFOLDER", 'tmp/');     
-
-
-
-
-
 
 function printr($anything) {
     echo "<pre>".print_r($anything,1)."</pre>";

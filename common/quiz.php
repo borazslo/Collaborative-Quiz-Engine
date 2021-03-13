@@ -11,6 +11,15 @@ class Quiz {
         
         $this->id = preg_replace('/\.([a-zA-Z0-9]*?)$/i','',$jsonFile);
         
+        $this->loadAndValidateFile($jsonFile);
+        
+        $this->loadQuestionsStartEnd();
+        $this->deleteInactiveQuestions();
+        
+    }    
+    
+    function loadAndValidateFile($jsonFile) {
+        
         // Get Json data file
         $file = $this->folder.$jsonFile;                
         if(!file_exists($file)) throw new Exception("Config file '". $file."' does not exists.");                        
@@ -50,14 +59,10 @@ class Quiz {
                 //Load question
                 $className = "question".ucfirst($question->type);
                 $this->questions[] = new $className($question);
-            }
-            $this->loadQuestionsStartEnd();
-            $this->deleteInactiveQuestions();
-            
+            }                        
         }
-        
-        
-    }    
+                
+    }
     
     function loadQuestionsStartEnd() {
         $start = strtotime(isset($this->timing->start) ? $this->timing->start : "today midnight" ); 

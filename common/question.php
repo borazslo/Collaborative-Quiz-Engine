@@ -27,6 +27,8 @@ class Question {
         $this->prepareInput();
         
         $this->loadUserAnswer();
+        $this->loadOtherAnswers();
+        
         
     }
     
@@ -151,5 +153,25 @@ class Question {
         }
         
         return -1;
+    }
+    
+    function loadOtherAnswers() {
+        global $connection;
+    
+        $sql = "SELECT  
+                    SUM(if(result = '2', 1, 0)) as 'right', 
+                    SUM(if(result = '-1', 1, 0)) as 'wrong'
+                FROM answers
+                WHERE 
+                    quiz_id = :quiz_id AND
+                    question_id = :question_id AND
+                    user_id != :user_id
+                GROUP BY 
+                    question_id ";
+                        
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($this->params);
+        $this->others = $stmt->fetch(PDO::FETCH_ASSOC);
+        
     }
 }
