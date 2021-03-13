@@ -21,7 +21,7 @@
         <a class="btn btn-link" href="#" data-toggle="collapse" data-target="#kerdes{{ id }}" aria-expanded="true" aria-controls="kerdes{{ id }}">
             {{ id }}. kérdés</a> {% if prefix %}<small>- {{ prefix}}</small>{% endif %}
         
-        {% if kerdes.masok and user_result == 1 %}<small id="input{{ id }}HelpBlock" class="text-muted">Már {{ kerdes.masok }} jó válasz jött az osztályból. Segíts a többieknek!</small>{% endif %}
+        {% if others.right > 0 and user_result == 2 %}<small id="input{{ id }}HelpBlock" class="text-muted">Már {{ others.right }} jó válasz jött másoktól. Segíts a maradéknak!</small>{% endif %}
         
         {% if user.isAdmin %}
             <small style="float:right">Start: <span title="{{ startTime|date('Y-m-d H:i:s') }}">{{ startTime|time_diff }}</span>. End: <span title="{{ endTime|date('Y-m-d H:i:s') }}">{{ endTime|time_diff }}</span></small>
@@ -32,8 +32,15 @@
 
     <div id="kerdes{{ id }}" class="collapse {{ user_result >= 1 ? 'collapsed' : 'show' }}" aria-labelledby="headingOne">
       <div class="card-body">
-          <p class="text-justify"><strong>{{ context|striptags(allow)|raw }}{{ quote|striptags(allow)|raw }}</strong></p>
+          
+          {% if context %}<p class="text-justify"><strong>{{ context|striptags(allow)|raw }}</strong></p>{% endif %}
+          {% if quote %}<blocquote>{{ quote|striptags(allow)|raw }}<strong></blockquote>{% endif %}
+                  
           <p>{{ question|striptags(allow)|raw }}</p>
+          
+          {% if image %}<center><img src="{{ image }}"></center>{% endif %}
+          {% if video %}<center>{{ video_embed|raw }}</center>{% endif %}
+          
           <p class="font-weight-light">{{ hint|striptags(allow)|raw }}</p>
           <hr />
           {% if messages %}
@@ -77,7 +84,7 @@
             
                      
             
-            {% if user_result < 1 or ( kerdes.answer == '[manual]' and user_result < 2 ) %}
+            {% if user_result < 2  %}
                 <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">{{ user_result == 0 ? 'Beküld' : 'Javít'}}</button></div>          
             {% endif %}
           </div>
@@ -93,6 +100,10 @@
                     {% endif %}
                 {% endif %}
            {% endif %}
+           
+           {% if forAdmin %}
+               <small id="input{{ id }}HelpBlock" class="form-text text-muted">Adminisztrátoroknak: {{ forAdmin }}</small>
+            {% endif %}
            
       </div>
     </div>

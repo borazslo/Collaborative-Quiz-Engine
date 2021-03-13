@@ -21,13 +21,24 @@ class Question {
         foreach($settings as $key => $val) {
             $this->$key = $val;
         }
-                                
-        $this->prepareHint();
+        
+        global $user;
+        $this->params = [
+            'quiz_id' => $this->quiz_id,
+            'user_id' => $user->id,
+            'question_id' => $this->id
+        ];
+
+                                        
         $this->prepareQuestion();
         $this->prepareInput();
         
-        $this->loadUserAnswer();
+        $this->prepareHint();
+        if(isset($this->video))
+            $this->prepareVideo();
+        
         $this->loadOtherAnswers();
+        $this->loadUserAnswer();
         
         
     }
@@ -54,23 +65,27 @@ class Question {
         if(preg_match('/\/maps\//i', $url)) {            
             return 'Talán errefelé érdemes körülnézni: <a class="text-decoration-none" target="_blank" href="'.$url.'">Google Street View</a>.';                                            
             
-        } elseif (preg_match('/youtube/i', $url )) {
-                                
-            return  ''
-                    . '<div class="embed-responsive embed-responsive-16by9">'
-                    . '<iframe class="embed-responsive-item" src="'.preg_replace('/watch\?v=/','embed/',$url).'" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-                    . '</div>'
-                    . '<br/>Itt egy videó, ami segíthet: <a class="text-decoration-none" target="_blank" href="'.$url.'">YouTube</a>.';           
+        } elseif (preg_match('/youtube/i', $url )) {                                
+            return  'Itt egy videó, ami segíthet: <a class="text-decoration-none" target="_blank" href="'.$url.'">YouTube</a>.';           
                                                 
         } elseif (preg_match('/^http/i', $url )) {
             return 'Itt egy link, ami segíthet: <a class="text-decoration-none" target="_blank"  href="'.$url.'">KATTINTS</a>!';
-        
-            
+                    
         } else {
                return $url; 
         }             
+                
+    }
+    
+    function prepareVideo() {
+
+        if(preg_match('/youtube/i', $this->video)) $src = preg_replace('/watch\?v=/','embed/',$this->video);
+        else $src = $this->video;
         
-        
+        $this->video_embed = ''
+                . '<div class="embed-responsive embed-responsive-16by9">'
+                . '<iframe class="embed-responsive-item" src="'.$src.'" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+                . '</div>';
     }
     
     function prepareQuestion() {
@@ -82,12 +97,7 @@ class Question {
     }
     
     function loadUserAnswer() {
-        global $user, $connection;
-        $this->params = [
-            'quiz_id' => $this->quiz_id,
-            'user_id' => $user->id,
-            'question_id' => $this->id
-            ];
+        global $connection;
         
         $old_answer = $this->getOldAnswer();
         $new_answer = $this->getNewAnswer();
@@ -106,10 +116,8 @@ class Question {
                 $stmt = $connection->prepare("INSERT INTO answers (quiz_id, question_id, user_id, answer, result)"
                         . "VALUES (:quiz_id, :question_id, :user_id, :answer, :result)");
 
-            }
-            $this->params['answer'] = $new_answer;
-            $this->params['result'] = $result;
-            $stmt->execute($this->params);    
+            }            
+            $stmt->execute(array_merge($this->params, ['answer' => $new_answer, 'result' => $result]));    
         }
         
         $this->user_answer = $new_answer;
