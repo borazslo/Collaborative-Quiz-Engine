@@ -1,0 +1,3 @@
+[submodule "quizzes"]
+	path = quizzes
+	url = https://github.com/borazslo/quizzes.git
