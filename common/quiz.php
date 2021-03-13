@@ -1,52 +1,42 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+use JsonSchema\Validator;
+use JsonSchema\Constraints\Constraint;
 
-/**
- * Description of Quiz
- *
- * @author webdev
- */
 class Quiz {
     
     public $folder = 'quizzes/';
     
     function __construct($jsonFile) {
         
-        $file = $this->folder.$jsonFile;
-                
-        if(!file_exists($file)) throw new Exception("Config file '". $file."' does not exists.");
+        $this->id = preg_replace('/\.([a-zA-Z0-9]*?)$/i','',$jsonFile);
         
-        $data = json_decode(file_get_contents($file));
+        // Get Json data file
+        $file = $this->folder.$jsonFile;                
+        if(!file_exists($file)) throw new Exception("Config file '". $file."' does not exists.");                        
+        if(! $data = json_decode(file_get_contents($file)) ) throw new Exception("Config file '". $file."' is not valid Json.");
 
-        // Validate
+        // Validate Json data settings against schema
         $validator = new JsonSchema\Validator;
-        $validator->validate($data, (object)['$ref' => 'file:///vagrant/Collaborative-Quiz-Engine/quizzes/quizSchema.json']); //file://' . realpath('schema.json')]);
+        $validator->validate($data, (object)['$ref' => 'file://'.dirname(__FILE__)."/../quizSchema.json"], Constraint::CHECK_MODE_APPLY_DEFAULTS); //file://' . realpath('schema.json')]);
 
-        if ($validator->isValid()) {
-            //echo "The supplied JSON validates against the schema.\n";
-        } else {
-            echo "JSON does not validate. Violations:<br>\n";
+        if (!$validator->isValid()) {
+            $errortext = "JSON does not validate. Violations:<br>\n";
             foreach ($validator->getErrors() as $error) {
-                printf("[%s] %s<br>\n", $error['property'], $error['message']);
+                $errortext .= sprintf("[%s] %s<br>\n", $error['property'], $error['message']);
             }
+            throw new Exception($errortext);
         }
-
         
-        if(! $settings = json_decode(file_get_contents($file)) ) throw new Exception("Config file '". $file."' is not valid Json.");
-        foreach($settings as $key => $val) {
+        // Load from Json data setting to $this
+        foreach($data as $key => $val) {
             if($key != 'questions') 
                 $this->$key = $val;
         }
                 
-        $this->id = preg_replace('/\.([a-zA-Z0-9]*?)$/i','',$jsonFile);
-        
-        if(isset($settings->questions)) {
-            foreach($settings->questions as $key => $question) {
+        // Process questions one by one         
+        if(isset($data->questions)) {
+            foreach($data->questions as $key => $question) {
                 $question->id = $key + 1;
                 $question->quiz_id = $this->id;
                                 
@@ -103,5 +93,5 @@ class Quiz {
                 unset($this->questions[$key]);            
             }
         }
-    }
+    }    
 }

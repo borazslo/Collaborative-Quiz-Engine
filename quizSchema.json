@@ -161,7 +161,8 @@
                         "type" : "string",
                         "description" : "Csak adminisztrátorok számára olvasható üzenet. Például 'type=manual' esetén pár szó a kiértékelés szempontjairól"
                     }                    
-                },                        
+                },
+                "required" : ["type"],
                 "additionalProperties": false                
             }
         }
