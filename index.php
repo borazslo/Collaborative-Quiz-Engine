@@ -16,7 +16,9 @@ $twig->addFilter($filter);
 $page = new stdClass();
 $page->data = [];
 
-$page->data['base_url'] = $_SERVER['BASE'];
+if(isset($_SERVER['BASE'])){
+  $page->data['base_url'] = $_SERVER['BASE'];
+}
 if($development == true) $page->data['development'] = true;
 $page->data['config']['debug'] = $config['debug'];
 
@@ -30,7 +32,16 @@ if(!isset($_REQUEST['tanaz']) OR !isset($_REQUEST['tanazonosito'])) {
 $user = getUser($_REQUEST['tanaz'],$_REQUEST['tanazonosito']);
 */
 
-$user = new User();        
+require_once 'common/user.php';
+require_once('common/login.php');
+
+$user = new User($_SESSION['user']);
+
+
+CheckLogin();
+
+//var_dump($user);
+echo '<a href="index3.php?task=logout">'. t('Logout') . '</a>';
 
 if(!$user) {
     $page->data['tanaz'] = $_REQUEST['tanaz'];
@@ -54,7 +65,7 @@ if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
     $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
 }
 
-$quizId = explode('/',str_replace($_SERVER['BASE'], '', $_SERVER['REQUEST_URI']))[0];
+$quizId = getParam($_REQUEST, 'q', 'betlehem'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
 $quiz = new Quiz($quizId.'.json');
 
 

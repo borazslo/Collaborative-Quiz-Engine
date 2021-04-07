@@ -422,3 +422,14 @@ spl_autoload_register(function ($class_name) {
     if(file_exists($filename)) include $filename;
     elseif(file_exists('common/'.$filename)) include 'common/'.$filename;    
 });
+
+
+function getParam( &$arr, $name, $def=null, $type=null) {
+    if (isset( $arr[$name] )) {
+        if ($type == 'int') return intval($arr[$name]);
+        if ($type == 'f') return floatval($arr[$name]);
+            return $arr[$name];
+    } else {
+        return $def;
+    }
+}

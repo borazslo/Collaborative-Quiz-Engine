@@ -8,7 +8,8 @@ $config = [
         'username' => 'USERNAME',
         'passwd' => 'PASSWD',
   ],
-  'debug' => false
+  'debug' => false,
+  'loginHelper' => false  // use login system of loginHelper (true) or not (false) 
 ];
 
 $config['lang'] = 'hu_HU';
