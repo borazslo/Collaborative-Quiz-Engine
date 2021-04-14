@@ -9,3 +9,24 @@ Uploaded;Feltöltve
 Accept;Elfogad
 Deny;Elutasít
 There is nothing to check. But if you refresh the page, you could find new answers.;Nincs ellenőrízendő kép. De, ha frissíted az oldalt, akkor talán lesz.
+email;email
+RMgroup;regnumi néped neve
+Registration;Regisztráció
+EmailTaken;Ez az emailcím már foglalt.
+LostPassword;Elfelejtettem a jelszavam...
+NewPasswordSaved;Most már beléphetsz az új jelszavaddal.
+Login;Bejelentkezés
+LoginWelcome;Kérem jelentkezz be
+SendPassword;Jelszó elküldése
+RegConfirmationEmail;Kedves {name},<br/> az alábbi linken megerősítheted a regisztrációt: {url}.
+RegConfirmationSent;A regisztráció megerősítéséhez szükséges linket elküldtük az emailcímedre.
+LostPasswordDetails;A megadott emailcímre elküldjük a jelszómódosításhoz szükséges információkat
+LostPassword_Subject;Elfelejtett jelszó
+LostPassword_Email;Kedves {name},<br/> az alábbi linken megváltoztathatod a jelszavadat: {url}.
+Password_Sent;Az jelszómódosításhoz szükséges linket elküldtük az emailcímedre.
+UnknownEmail;ismeretlen email cím
+WrongPassword;Érvénytelen email vagy jelszó
+InvalidToken;Érvénytelen token
+AddNewPassword;Megadhatsz egy új jelszót.
+AccessDenied;Az oldal megtekintéséhez nincs elegendő jogosultságod.
+logout;Kijelentkezés

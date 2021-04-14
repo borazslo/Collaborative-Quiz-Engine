@@ -1,0 +1,124 @@
+{%  extends 'html.twig' %}
+
+{% block container %}
+  <div class="jumbotron text-center ">
+        <h1 class="jumbotron-heading">{{ game.title }}</h1>
+        {{ game.description|raw }}
+  </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-4 col">
+             {% if development %}
+                <div class="alert alert-primary">Kezdés csütörtökön reggel 9-kor!</div>               
+	         {% endif %}
+ 			 {% if registration %}   
+				<div class="alert alert-primary">{{ 'Registration'|t }}</div>               
+			 {% endif %}     
+         
+		     {% if info %}
+				<div class="alert alert-info" role="alert">
+						{{ info|t }}
+				</div>
+			{% endif %}
+			{% if error %}
+               {% if error is same as(true) %}
+                <div class="alert alert-danger" role="alert">
+                        {{ 'Cannot login. Please check your credentials'|t }}
+                </div>
+				{% else %}
+				<div class="alert alert-danger" role="alert">
+						{{ error|t }}
+                </div>
+	             {% endif %}
+		    {% endif %}
+        <form class="form-signin" action="" method="post">
+		
+			{% if registration %}   	
+				<label for="name" class="sr-only">name</label>
+				<input type="text" id="name" name="name" class="form-control" placeholder="{{ 'name'|t }}" required {% if name %} value={{name}} {% endif %} >
+			{% endif %}
+			
+			{% if task != 'modifyPassword' %}
+			<label for="tanaz" class="sr-only">tanaz</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="{{ 'email'|t }}" required autofocus {% if email %} value={{email}} {% endif %}>
+			{% endif %}
+			
+			{% if task != 'sendPassword' %}
+            <label for="password" class="sr-only">tanazonosito</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="{{ 'password'|t }}" required>    
+			{% endif %}
+            
+            {% if registration %}   
+				<label for="check">Show password</label> <input type='checkbox' id='check' />
+				
+				<select class="form-control basicAutoSelect" name="rmgroupid" 
+								placeholder="{{ 'RMgroup'|t }}" 
+								data-url="?task=rm" autocomplete="off" required 
+								{% if rmgroupId %}
+								data-default-value="{{ rmgroupId }}" data-default-text="{{ rmgroupName }}"
+								{% endif %}
+								
+								></select>
+				<code class="basicAutoSelectSelected"></code>
+				
+				
+            {% endif %}  
+			{% if task == 'login' %}
+            <small>
+			<a href="?task=reg&">{{ 'Registration'|t }}</a> |
+			<a href="?task=lostPassword&">{{ 'LostPassword'|t }}</a>
+			
+			{% endif %}
+            <input type="hidden" name="next_page" value="{{ next_page }}">  
+            <input type="hidden" name="task" value="{{ task }}" /> 
+			
+			{% if task == 'modifyPassword' %}
+			<input type="hidden" name="token" value="{{ token }}" /> 
+			{% endif %}
+                                         
+            <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top:10px">{{ button_caption }}</button>   
+			<small>{{ details }}</small>			
+            
+        </form>
+        
+		
+        <script type='text/javascript'>
+        window.addEventListener('load', function() { 
+        
+		
+		{% if registration %}   
+			var s = document.createElement('script');
+			s.setAttribute('src','https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js');
+			s.onload=function(){$('.basicAutoSelect').autoComplete({minLength: 1});};
+			document.head.appendChild(s);
+		{% endif %}
+		
+            $('#check').click(function(){
+                let t = 'text';
+                if ($('#password').attr('type') ==='text')
+					t = 'password';
+				$('#password').attr('type', t);
+            });
+            
+         
+		});
+		</script>
+
+
+        </div>
+
+     </div>
+    
+  
+  
+  
+     <script>
+         /* show file value after file select */
+window.addEventListener('load', function() {
+	document.querySelector('.custom-file-input').addEventListener('change',function(e){
+	  var fileName = document.getElementById("inputGroupFile01").files[0].name;
+	  var nextSibling = e.target.nextElementSibling
+	  nextSibling.innerText = fileName
+	})
+});
+         </script>
+{% endblock %}

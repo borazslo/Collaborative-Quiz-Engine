@@ -13,14 +13,16 @@
  */
 class User {
     //put your code here
-    public function __construct() {
+    public function __construct(&$d=array()) {
         
-        $this->name = 'Kis Elemér';
-        $this->id = 1487;
-        $this->level = 2;
-        $this->group = 'Medve';
-        $this->group2 = "Emlős";
-        $this->isAdmin = true;
+	if (!isset($d) || count($d) < 6)
+		return;
+        $this->name = $d['name'];//'Kis Elemér';
+        $this->id = $d['id'];//1487;
+        $this->level = $d['level'];//2;
+        $this->group = $d['group'];//'Medve';
+        $this->group2 = $d['group2'];//"Emlős";
+        $this->isAdmin = $d['admin'];//true;
 
     }
 }
