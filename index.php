@@ -1,5 +1,7 @@
 <?php
 
+$_REQUEST['q'] = 'majalis';
+
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
@@ -38,10 +40,14 @@ require_once('common/login.php');
 $user = new User($_SESSION['user']);
 
 
-CheckLogin();
+var_dump($user);
 
-//var_dump($user);
-echo '<a href="index3.php?task=logout">'. t('Logout') . '</a>';
+
+$quizId = getParam($_REQUEST, 'q', 'betlehem'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
+$quiz = new Quiz($quizId.'.json');
+$page->data['quiz'] = json_decode(json_encode($quiz), true);
+
+CheckLogin();
 
 if(!$user) {
     $page->data['tanaz'] = $_REQUEST['tanaz'];
@@ -65,8 +71,6 @@ if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
     $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
 }
 
-$quizId = getParam($_REQUEST, 'q', 'betlehem'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
-$quiz = new Quiz($quizId.'.json');
 
 
 
@@ -124,6 +128,6 @@ if(!array_key_exists($user['tanosztaly'],$ranglista)) {
 $page->data['ranglista'] = $ranglista;
 */
 
-$page->data['quiz'] = json_decode(json_encode($quiz), true);
+
 
 echo $twig->render($page->templateFile.".twig", $page->data);

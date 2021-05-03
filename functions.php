@@ -420,7 +420,8 @@ function printr($anything) {
 spl_autoload_register(function ($class_name) {
     $filename = $class_name . '.php';
     if(file_exists($filename)) include $filename;
-    elseif(file_exists('common/'.$filename)) include 'common/'.$filename;    
+    elseif(file_exists('common/'.$filename)) include 'common/'.$filename;
+    elseif(file_exists(strtolower('common/'.$filename))) include strtolower('common/'.$filename);    
 });
 
 

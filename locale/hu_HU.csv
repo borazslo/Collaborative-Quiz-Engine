@@ -29,4 +29,4 @@ WrongPassword;Érvénytelen email vagy jelszó
 InvalidToken;Érvénytelen token
 AddNewPassword;Megadhatsz egy új jelszót.
 AccessDenied;Az oldal megtekintéséhez nincs elegendő jogosultságod.
-logout;Kijelentkezés
+Logout;Kijelentkezés
