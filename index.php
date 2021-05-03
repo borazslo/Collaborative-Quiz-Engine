@@ -1,5 +1,5 @@
 <?php
-
+echo 'RM Majális - "Újratervezés" - 2021. május 15. '; exit ;
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
@@ -36,7 +36,6 @@ require_once 'common/user.php';
 require_once('common/login.php');
 
 $user = new User($_SESSION['user']);
-
 
 CheckLogin();
 
