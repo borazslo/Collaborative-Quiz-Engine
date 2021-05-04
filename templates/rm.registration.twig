@@ -50,16 +50,17 @@
             {% if registration %}   
 				<label for="check">{{ 'Show password'|t }}</label> <input type='checkbox' id='check' />
 				
-				<select class="form-control basicAutoSelect" name="rmgroupid" 
+				<input type="text" class="form-control basicAutoSelect" name="groupName" 
 								placeholder="{{ 'RMgroup'|t }}" 
 								autocomplete="off" required 
-								{% if rmgroupId %}
-								data-default-value="{{ rmgroupId }}" data-default-text="{{ rmgroupName }}"
+								{% if groupName %}
+                                                                    value="{{ groupName }}" 
 								{% endif %}
 								
-								></select>
+								>
                                                                 * Ha nem tartozol néphez, akkor válassz egy 'Nép nélkül' csoportot a helyi regnumod szerint.
 				<code class="basicAutoSelectSelected"></code>
+                                {{ groupName }}
 				
 				
             {% endif %}  

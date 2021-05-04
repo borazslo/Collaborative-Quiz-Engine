@@ -1,27 +1,5 @@
 <?php
 
-/**
-
-CREATE TABLE `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `active` int NOT NULL DEFAULT '0',
-  `admin` int NOT NULL DEFAULT '0',
-  `token` varchar(128),
-  `tokenexpire` DATETIME,
-  `rmGroupId` int NOT NULL,
-
-PRIMARY KEY (`id`),
--- UNIQUE KEY `name` (`name`),
-UNIQUE KEY `Email` (`email`),
-INDEX rm_ind (rmGroupId),
-    FOREIGN KEY (rmGroupId)
-        REFERENCES regnum_communities(id)
-);
-
-*/
 
 class SqlParameters{
     var $name;
@@ -115,16 +93,51 @@ class LoginHelper
 		return 0;
 	}
 
-    $stmt = $connection->prepare("INSERT into users (email, password, admin, name, token, tokenexpire, rmgroupid) VALUES (:email, :password, :admin, :name, :token, ADDDATE(NOW(), INTERVAL 3 DAY), :rmgroupid)");
+        
+        //Validate groupName
+        $d['groupName'] = trim($d['groupName']);
+        if(!preg_match('/^[\(\) _\-0-9\p{L}]{1,100}$/ui',$d['groupName'])) {
+            $this->registrationForm(t('InvalidGroupName'), $d);
+            exit;
+            return 0;
+        } 
+               
+        //Get groupId by groupName. Create if does not exists
+        $stmt = $connection->prepare("SELECT * FROM groups WHERE name = :name LIMIT 1");       
+        $stmt->execute(array(":name"=>$d['groupName']));
+        $group = $stmt->fetch();
+        if(!$group) {
+            
+            //Ha létező regnumi népről van szó, akkor csnáljunk belőle megfeleő level szintű regnumi népet
+            // TODO
+            
+            
+            $stmt = $connection->prepare("INSERT INTO groups (name) VALUES (:name)");       
+            $stmt->execute(array(":name"=>$d['groupName']));
+            $groupId = $connection->lastInsertId();
+            
+        } else {
+            $groupId = $group['id'];
+        }
+        
+        
+        $stmt = $connection->prepare("INSERT into users (email, password, admin, name, token, tokenexpire, group_id) VALUES (:email, :password, :admin, :name, :token, ADDDATE(NOW(), INTERVAL 3 DAY), :group_id)");
 	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
 	$stmt->bindValue(':password', crypt($d['password'], $config['authentication']['salt']), PDO::PARAM_STR);  
 	$stmt->bindValue(':admin', 0, PDO::PARAM_INT);  // $d['level']
 	$stmt->bindValue(':name', $d['name'], PDO::PARAM_STR);  
 	$token = $this->generateRandomToken();
 	$stmt->bindValue(':token', $token, PDO::PARAM_STR);  
-	$stmt->bindValue(':rmgroupid', $d['rmgroupid'], PDO::PARAM_INT);  
+        print_r($d);
+	$stmt->bindValue(':group_id', $groupId, PDO::PARAM_INT);  
 	
-	$stmt->execute();
+	if(!$stmt->execute()) {
+            print_r($stmt->errorInfo());
+            $this->registrationForm(t('NewUserError'), $d);
+            exit;
+            return 0;
+        }
+
 
 	//$next_page = GetParam($_REQUEST, "next_page");
 	$body = t('RegConfirmationEmail');
@@ -135,7 +148,7 @@ class LoginHelper
 	$this->send_email("noreply@" . $_SERVER['HTTP_HOST'], $d["email"], t('LostPassword_Subject'), $body);
 	//echo $body . $d["email"];
              
-        $this->loginForm(t('RegConfirmationSent'));
+        $this->loginForm(t('RegConfirmationSent'), $d);
 
     return 1;
   }
@@ -222,13 +235,13 @@ class LoginHelper
   function login(&$d){
 	  global $connection, $config;
 
-    $stmt = $connection->prepare("SELECT u.password, u.admin, u.id, u.name as username, rm.name as groupname, rm.group, rm.localRM, rm.averAge FROM users u left join regnum_communities rm ON u.rmGroupId=rm.id WHERE email=:email");
+    $stmt = $connection->prepare("SELECT u.password, u.admin, u.id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
 	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
 	$stmt->execute();
 	
     if ($stmt->rowCount() > 0){
       $r = $stmt->fetch(PDO::FETCH_ASSOC);
-      //var_dump($r);
+      var_dump($r);
       if ($r['password'] == crypt($d['password'], $config['authentication']['salt'])){
 		  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
 		  $_SESSION['user_id'] = $r['id'];
@@ -240,8 +253,8 @@ class LoginHelper
 		  $result['name'] = $r['username'];
 		  $result['admin'] = $r['admin'] == 1;
 		  $result['group'] = $r['groupname'];
-		  $result['group2'] = $r['group'];
-		  $result['level'] = $this->countLevelByAge($r['averAge']);
+		  $result['group2'] = false; // $r['group'];
+		  $result['level'] = $r['level']; // $this->countLevelByAge($r['averAge']);
 		  $_SESSION['user'] = $result;
 		  
 		  return true;
@@ -396,8 +409,8 @@ class LoginHelper
 	$page->data['task'] = 'registration';
 	if (count($d) > 0){
 		$page->data['name'] = $d['name'];
-		$page->data['rmgroupId'] = isset($d['rmgroupid']) ? $d['rmgroupid'] : '';
-		$page->data['rmgroupName'] = isset($d['rmgroupid_text']) ? $d['rmgroupid_text'] : '';
+		$page->data['groupName'] = isset($d['groupName']) ? $d['groupName'] : '';
+                $page->data['email'] = isset($d['email']) ? $d['email'] : '';
 	}
 	echo $twig->render("rm.registration.twig", $page->data);
 	exit;

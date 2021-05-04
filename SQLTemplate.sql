@@ -5,8 +5,19 @@
  */
 /**
  * Author:  borazslo
- * Created: Apr 14, 2021
+ * Updated: May 4, 2021
  */
+
+CREATE TABLE `groups` ( 
+    `id` INT NOT NULL AUTO_INCREMENT ,
+    `name` VARCHAR(100) NOT NULL , 
+    `level` INT NOT NULL DEFAULT '1' , 
+
+PRIMARY KEY (`id`),
+UNIQUE KEY `name` (`name`)
+
+) ENGINE = InnoDB;
+
 
 
 CREATE TABLE `users` (
@@ -18,14 +29,14 @@ CREATE TABLE `users` (
   `admin` int NOT NULL DEFAULT '0',
   `token` varchar(128),
   `tokenexpire` DATETIME,
-  `rmGroupId` int NOT NULL,
+  `group_id` int NOT NULL,
 
 PRIMARY KEY (`id`),
 -- UNIQUE KEY `name` (`name`),
 UNIQUE KEY `Email` (`email`),
-INDEX rm_ind (rmGroupId),
-    FOREIGN KEY (rmGroupId)
-        REFERENCES regnum_communities(id)
+INDEX group_ind (group_id),
+    FOREIGN KEY (group_id)
+        REFERENCES groups(id)
 );
 
 
