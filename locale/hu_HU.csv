@@ -10,7 +10,8 @@ Accept;Elfogad
 Deny;Elutasít
 There is nothing to check. But if you refresh the page, you could find new answers.;Nincs ellenőrízendő kép. De, ha frissíted az oldalt, akkor talán lesz.
 email;email
-RMgroup;regnumi néped neve
+RMgroup;regnumi néped neve*
+RMgroupNotFound;nincs ilyen regnumi nép
 Registration;Regisztráció
 EmailTaken;Ez az emailcím már foglalt.
 LostPassword;Elfelejtettem a jelszavam...
@@ -30,3 +31,4 @@ InvalidToken;Érvénytelen token
 AddNewPassword;Megadhatsz egy új jelszót.
 AccessDenied;Az oldal megtekintéséhez nincs elegendő jogosultságod.
 Logout;Kijelentkezés
+Show password;Mutasd a jelszót

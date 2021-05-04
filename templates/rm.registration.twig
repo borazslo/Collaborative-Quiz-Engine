@@ -18,7 +18,7 @@
 				<div class="alert alert-info" role="alert">
 						{{ info|t }}
 				</div>
-			{% endif %}
+			{% endif %}                        
 			{% if error %}
                {% if error is same as(true) %}
                 <div class="alert alert-danger" role="alert">
@@ -48,7 +48,7 @@
 			{% endif %}
             
             {% if registration %}   
-				<label for="check">Show password</label> <input type='checkbox' id='check' />
+				<label for="check">{{ 'Show password'|t }}</label> <input type='checkbox' id='check' />
 				
 				<select class="form-control basicAutoSelect" name="rmgroupid" 
 								placeholder="{{ 'RMgroup'|t }}" 
@@ -58,6 +58,7 @@
 								{% endif %}
 								
 								></select>
+                                                                * Ha nem tartozol néphez, akkor válassz egy 'Nép nélkül' csoportot a helyi regnumod szerint.
 				<code class="basicAutoSelectSelected"></code>
 				
 				
@@ -80,7 +81,7 @@
             
         </form>
         
-		
+	
         <script type='text/javascript'>
         window.addEventListener('load', function() { 
         
@@ -90,6 +91,7 @@
 			s.setAttribute('src','https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js');
 			s.onload=function(){$('.basicAutoSelect').autoComplete({    
                                 minLength: 1, 
+                                noResultsText: '{{ 'RMgroupNotFound'|t }}',
                                 resolver: 'custom',
                                 events: {
                                     search: function (qry, callback) {

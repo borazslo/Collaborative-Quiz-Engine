@@ -45,15 +45,15 @@ class LoginHelper
 	// https://raw.githack.com/xcash/bootstrap-autocomplete/master/dist/latest/index.html
   function getRMgroupsJSON($s){
     global $connection;
-	  
-	$q = $connection->prepare("SELECT `id`, `name`, `group` FROM regnum_communities" . ($s == "" ? "" : " WHERE `name` COLLATE UTF8_GENERAL_CI like :prefix OR `name` COLLATE UTF8_GENERAL_CI like :prefix2 "));
+    
+    $q = $connection->prepare("SELECT `id`, `name`, `group` FROM regnum_communities" . ($s == "" ? "" : " WHERE `name` like :prefix OR `name` like :prefix2 "));
 	if ($s != ''){
 		$q->bindValue(':prefix', $s.'%', PDO::PARAM_STR);  
 		$q->bindValue(':prefix2', '% '.$s.'%', PDO::PARAM_STR);  
 	}
 
 	$q->execute();
-    $result = $q->fetchAll(PDO::FETCH_ASSOC);
+    $result = $q->fetchAll(PDO::FETCH_ASSOC);    
 
     $arr = [];
 	foreach($result as $row){
@@ -134,7 +134,8 @@ class LoginHelper
 	$body = str_replace("{name}", $d["name"], $body);
 	$this->send_email("noreply@" . $_SERVER['HTTP_HOST'], $d["email"], t('LostPassword_Subject'), $body);
 	//echo $body . $d["email"];
-	printr(t('RegConfirmationSent'));
+             
+        $this->loginForm(t('RegConfirmationSent'));
 
     return 1;
   }
@@ -227,7 +228,7 @@ class LoginHelper
 	
     if ($stmt->rowCount() > 0){
       $r = $stmt->fetch(PDO::FETCH_ASSOC);
-//      var_dump($r);
+      //var_dump($r);
       if ($r['password'] == crypt($d['password'], $config['authentication']['salt'])){
 		  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
 		  $_SESSION['user_id'] = $r['id'];
@@ -353,8 +354,8 @@ class LoginHelper
   function send_email($from, $to, $subject, $body){
     $headers = "From: <" . $from . ">\r\n"; //optional headerfields
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-    //mail($to, $subject, $body, $headers);
-	echo $body;
+    mail($to, $subject, $body, $headers);
+//	echo $body;
   }
 
   

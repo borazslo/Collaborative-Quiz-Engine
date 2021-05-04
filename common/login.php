@@ -11,6 +11,10 @@ $loginHelper = new LoginHelper();
 $next_page = $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
 $next_page = getParam( $_REQUEST, "next_page", $next_page);
 
+$quizId = getParam($_REQUEST, 'q', 'majalis'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
+$quiz = new Quiz($quizId.'.json');
+$page->data['quiz'] = json_decode(json_encode($quiz), true);
+unset($page->data['quiz']['description_html']);
 
 if ($action == "login"){
 	$loginHelper->login($_REQUEST);

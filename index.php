@@ -1,7 +1,5 @@
 <?php
 
-$_REQUEST['q'] = 'majalis';
-
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
@@ -43,7 +41,7 @@ $user = new User($_SESSION['user']);
 var_dump($user);
 
 
-$quizId = getParam($_REQUEST, 'q', 'betlehem'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
+$quizId = getParam($_REQUEST, 'q', 'majalis'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
 $quiz = new Quiz($quizId.'.json');
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
 
