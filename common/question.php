@@ -22,13 +22,6 @@ class Question {
             $this->$key = $val;
         }
         
-        global $user;
-        $this->params = [
-            'quiz_id' => $this->quiz_id,
-            'user_id' => $user->id,
-            'question_id' => $this->id
-        ];
-
                                         
         $this->prepareQuestion();
         $this->prepareInput();
@@ -36,10 +29,19 @@ class Question {
         $this->prepareHint();
         if(isset($this->video))
             $this->prepareVideo();
-        
-        $this->loadOtherAnswers();
-        $this->loadUserAnswer();
-        
+
+        global $user;
+        if(isset($user->id)) { 
+            
+            $this->params = [
+                'quiz_id' => $this->quiz_id,
+                'user_id' => $user->id,
+                'question_id' => $this->id
+            ];
+
+            $this->loadOtherAnswers();
+            $this->loadUserAnswer();
+        }
         
     }
     
