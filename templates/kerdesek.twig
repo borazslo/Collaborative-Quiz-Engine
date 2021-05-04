@@ -7,7 +7,7 @@
     <nav class="navbar dfixed-top navbar-dark bg-dark">
         <a class="navbar-brand" href="index.php">{{ quiz.title }}</a>
         <span class="navbar-text">
-        {{ user.name }} ({{ user.group }}{{ ranglista[user.tanosztaly].rang ? ( " - " ~ ranglista[user.tanosztaly].rang ~ ". helyen" ) }})
+        {{ user.name }} ({{ user.group }}{{ rankingTable[user.group].rank ? ( " - " ~ ranglista[user.tanosztaly].rang ~ ". helyen" ) }})
         <input type="hidden" name="tanaz" value="{{ user.tanaz }}">
         <input type="hidden" name="tanazonosito" value="{{ user.tanazonosito }}">        
         <a href="index3.php?task=logout">{{ "Logout"|t }}</a>
@@ -56,7 +56,7 @@
 </div>
         
         <div class="col-lg-2">
-                    {% include 'ranglista.twig' %}
+                    {% include 'rankingTable.twig' %}
                     
         </div>
             </div>

@@ -340,29 +340,47 @@ function getScores() {
     global $connection, $development, $bulkDate, $config;
     
     /* Ranglista összeállítása */
+        
     $sql = "
-            select tanosztaly, 
-                count(distinct tanaz) as jatekos,
-                count(if(helyes = 1, 1, null)) * ".$config['scoring']['goodAnswer']." +  ( count(if(helyes = 0, 1, null))* ".$config['scoring']['badAnswer']." ) as pont 
-                        from valaszok          
-        ";            
-    if(!$development)    $sql .= "WHERE timestamp <> '$bulkDate'";
-	$sql .= " group by tanosztaly  ";
-    $sql .=  " order by pont DESC";    
-    //echo $sql;
+        SELECT 
+            users.group_id, 
+            groups.name , 
+            count(distinct user_id) as members,
+       
+            count(if(result = -1, 1, null)) * ".$config['scoring']['badAnswer']."
+                +  ( count(if(result = 1, 1, null))* ".$config['scoring']['goodAnswer']." ) 
+                    +  ( count(if(result = 2, 1, null))* ".$config['scoring']['goodAnswer']." ) 
+                        as points 
+        
+        FROM `answers`
+            LEFT JOIN users ON users.id = answers.user_id
+            LEFT JOIN groups ON groups.id = users.group_id 
+        
+        WHERE quiz_id = 'majalis' 
+
+        ";      
+    
+    
+    if(!$development)    $sql .= "AND timestamp <> '$bulkDate'";
+
+    $sql .=  " GROUP BY group_id"
+            . " ORDER BY points DESC";    
+    //echo "<br>".$sql."<br>";
     $stmt = $connection->prepare($sql);
     $stmt->execute();
     $ranglista = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $groupSizes = getGroupSizes();    
     
-    /* Eltávolítjuk azokat a ranglistából, akik most épp nem férnek hozzá az anyaghoz */
+    
+    //$groupSizes = getGroupSizes();    
+    
+    /* Eltávolítjuk azokat a ranglistából, akik most épp nem férnek hozzá az anyaghoz *
     foreach($ranglista as $key => $group) {        
         if(!array_key_exists($group['tanosztaly'], $groupSizes)) {
             unset($ranglista[$key]);
         }
     }
        
-    /* Osztálylétszámmal korrigált változat */
+    /* Osztálylétszámmal korrigált változat *
     if(isset($config['scoring']['groupSizeCorrection']) AND $config['scoring']['groupSizeCorrection'] != false ) {
         $groupSizeCorrection = $config['scoring']['groupSizeCorrection'];
         if(is_numeric($groupSizeCorrection)) {
@@ -383,17 +401,18 @@ function getScores() {
             $ranglista[$key]['pont'] = (int) ( ( $groupSizeCorrection / $groupSizes[$osztaly['tanosztaly']] ) * $ranglista[$key]['pont'] );
         }
     }
+    /* */
       
     /* Egy kis igazítás azzal, hogy hányan csináltak bármit az osztályból */
-    foreach($ranglista as $key => $osztaly) {
-        $ranglista[$key]['pont'] += ( $ranglista[$key]['jatekos'] * $config['scoring']['forEachParticipants'] );
+    foreach($ranglista as $key => $group) {
+        $ranglista[$key]['points'] += ( $ranglista[$key]['members'] * $config['scoring']['forEachParticipants'] );
     }
     
     /* Ki szedjük a DEV csoportot */
     global $development;
     if(!$development) {
         foreach($ranglista as $key => $value) {
-            if($value['tanosztaly'] == 'DEV') {
+            if($value['name'] == 'DEV') {
                 unset($ranglista[$key]);
             }
         }
@@ -401,13 +420,13 @@ function getScores() {
     
     /* Sorbarendezés */
     usort($ranglista, function ($item1, $item2) {
-        return $item2['pont'] <=> $item1['pont'];
+        return $item2['points'] <=> $item1['points'];
     });
     
     $return = [];
     foreach($ranglista as $key => $value) {
-        $value['rang'] = $key + 1;
-        $return[$value['tanosztaly']] = $value;
+        $value['position'] = $key + 1;
+        $return[$value['name']] = $value;
     }   
     return $return; 
    

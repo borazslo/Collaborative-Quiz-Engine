@@ -34,3 +34,5 @@ Logout;Kijelentkezés
 Show password;Mutasd a jelszót
 NewUserError;Hiba történt az új felhasználó rögzítése közben. Elnézést.
 InvalidGroupName;A csapat nevében nem megfelelő karakterek is vannak.
+Group;Csapat
+Points;Pontok
