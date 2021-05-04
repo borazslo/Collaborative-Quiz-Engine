@@ -29,7 +29,7 @@ if ($action == "login"){
 		exit();
 }else if ($action == "rm"){
 	header('Content-Type: application/json');
-	echo $loginHelper->getRMgroupsJSON(getParam( $_REQUEST, "q"));
+	echo $loginHelper->getRMgroupsJSON(getParam( $_REQUEST, "term"));
 	exit;
 }else if ($action == "reg"){
 	$loginHelper->registrationForm();

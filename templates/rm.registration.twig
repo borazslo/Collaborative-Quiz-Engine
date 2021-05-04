@@ -52,7 +52,7 @@
 				
 				<select class="form-control basicAutoSelect" name="rmgroupid" 
 								placeholder="{{ 'RMgroup'|t }}" 
-								data-url="?task=rm" autocomplete="off" required 
+								autocomplete="off" required 
 								{% if rmgroupId %}
 								data-default-value="{{ rmgroupId }}" data-default-text="{{ rmgroupName }}"
 								{% endif %}
@@ -88,7 +88,23 @@
 		{% if registration %}   
 			var s = document.createElement('script');
 			s.setAttribute('src','https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js');
-			s.onload=function(){$('.basicAutoSelect').autoComplete({minLength: 1});};
+			s.onload=function(){$('.basicAutoSelect').autoComplete({    
+                                minLength: 1, 
+                                resolver: 'custom',
+                                events: {
+                                    search: function (qry, callback) {
+                                        $.ajax(
+                                            '?task=rm', {
+                                                data: {
+                                                    'term': qry
+                                                }
+                                            }
+                                        ).done(function (res) {
+                                            callback(res)
+                                        });
+                                    }
+                                }                    
+                        });};
 			document.head.appendChild(s);
 		{% endif %}
 		
