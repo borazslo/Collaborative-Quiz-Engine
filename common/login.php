@@ -19,7 +19,7 @@ unset($page->data['quiz']['description_html']);
 if ($action == "login"){
 	$loginHelper->login($_REQUEST);
 	if (!$loginHelper->authenticated_user()){
-		$loginHelper->loginForm('', $next_page, t('WrongPassword'), $_REQUEST);
+		$loginHelper->loginForm(t('WrongPassword'), $_REQUEST, $next_page);
 	}else{
 		// success
 		$user = new User($_SESSION['user']);
@@ -60,11 +60,13 @@ function CheckLogin($level = 'normal'){
 			printr(t('AccessDenied') . " (". $_SESSION['login'] . ")");
 			exit();
 		}
+                
 		$next_page = getParam( $_REQUEST, "next_page");
-		if (!empty($next_page)) header('Location: ' . $next_page);
+		//if (!empty($next_page)) header('Location: ' . $next_page);
 	}else{
 
-		$loginHelper->loginForm('', $next_page);
+                $d = array();
+		$loginHelper->loginForm('', $d, $next_page);
 		exit();
 	}
 }

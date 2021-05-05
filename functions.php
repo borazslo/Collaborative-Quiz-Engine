@@ -336,7 +336,7 @@ function bulkAnswers() {
     return true;
 }
 
-function getScores() {
+function getRankingTable($quiz_id) {
     global $connection, $development, $bulkDate, $config;
     
     /* Ranglista összeállítása */
@@ -356,7 +356,7 @@ function getScores() {
             LEFT JOIN users ON users.id = answers.user_id
             LEFT JOIN groups ON groups.id = users.group_id 
         
-        WHERE quiz_id = 'majalis' 
+        WHERE quiz_id = :quiz_id 
 
         ";      
     
@@ -367,7 +367,7 @@ function getScores() {
             . " ORDER BY points DESC";    
     //echo "<br>".$sql."<br>";
     $stmt = $connection->prepare($sql);
-    $stmt->execute();
+    $stmt->execute(array(':quiz_id'=> $quiz_id));
     $ranglista = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     
@@ -444,7 +444,7 @@ spl_autoload_register(function ($class_name) {
 });
 
 
-function getParam( &$arr, $name, $def=null, $type=null) {
+function getParam( &$arr, $name, $def=null, $type=null) {    
     if (isset( $arr[$name] )) {
         if ($type == 'int') return intval($arr[$name]);
         if ($type == 'f') return floatval($arr[$name]);

@@ -21,6 +21,7 @@ LoginWelcome;Kérem jelentkezz be
 SendPassword;Jelszó elküldése
 RegConfirmationEmail;Kedves {name},<br/> az alábbi linken megerősítheted a regisztrációt: {url}.
 RegConfirmationSent;A regisztráció megerősítéséhez szükséges linket elküldtük az emailcímedre.
+RegConfirmed;Köszönjük a regisztráció megerősítését. Most már be tudsz lépni.
 LostPasswordDetails;A megadott emailcímre elküldjük a jelszómódosításhoz szükséges információkat
 LostPassword_Subject;Elfelejtett jelszó
 LostPassword_Email;Kedves {name},<br/> az alábbi linken megváltoztathatod a jelszavadat: {url}.

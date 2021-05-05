@@ -58,7 +58,7 @@ class LoginHelper
   function confirmReg(&$d){ 
   	global $connection, $config;
 
-    $stmt = $connection->prepare("SELECT admin, id, name FROM users WHERE token=:token AND tokenexpire > NOW()");
+    $stmt = $connection->prepare("SELECT admin, id, name, email FROM users WHERE token=:token AND tokenexpire > NOW()");
 	$stmt->bindValue(':token', $d['token'], PDO::PARAM_STR);  
 	$stmt->execute();
 
@@ -68,16 +68,18 @@ class LoginHelper
 	  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
 	  $_SESSION['user_id'] = $r['id'];
 	  $_SESSION['name'] = $r['name'];
+          $d['email'] = $r['email'];
 	
-    //remove token
-		$stmt = $connection->prepare("UPDATE users SET active=1,token=NULL,tokenexpire=NULL WHERE token=:token");
-		$stmt->bindValue(':token', $d['token'], PDO::PARAM_STR);  
-		$stmt->execute();
+        //remove token
+        $stmt = $connection->prepare("UPDATE users SET active=1,token=NULL,tokenexpire=NULL WHERE token=:token");
+        $stmt->bindValue(':token', $d['token'], PDO::PARAM_STR);  
+        $stmt->execute();
 
-//      printr("Most már beléphet az új jelszavával.");
+        $this->loginForm(t('RegConfirmed'), $d);
+
       return true;
-    }else{
-      printr(t('InvalidToken'));
+    }else{      
+      $this->loginForm(t('InvalidToken'), $d);
     }
     $this->logout();
     $_SESSION['login'] = "denied";
@@ -108,12 +110,24 @@ class LoginHelper
         $group = $stmt->fetch();
         if(!$group) {
             
-            //Ha létező regnumi népről van szó, akkor csnáljunk belőle megfeleő level szintű regnumi népet
-            // TODO
-            
-            
-            $stmt = $connection->prepare("INSERT INTO groups (name) VALUES (:name)");       
+            /*
+             * Ha létező regnumi népről van szó, akkor csnáljunk belőle megfeleő level szintű regnumi népet
+             */
+            $stmt = $connection->prepare("SELECT * FROM regnum_communities WHERE name = :name LIMIT 1");       
             $stmt->execute(array(":name"=>$d['groupName']));
+            $group = $stmt->fetch();
+            if($group) {
+                if ($group['averAge'] < 15)
+                    $level = 1;
+                else
+                    $level = 2;               
+            } else {
+                $level = 2;
+            }                                               
+            /* */
+            
+            $stmt = $connection->prepare("INSERT INTO groups (name, level) VALUES (:name, :level)");       
+            $stmt->execute(array(":name"=>$d['groupName'],":level"=>$level));
             $groupId = $connection->lastInsertId();
             
         } else {
@@ -127,8 +141,7 @@ class LoginHelper
 	$stmt->bindValue(':admin', 0, PDO::PARAM_INT);  // $d['level']
 	$stmt->bindValue(':name', $d['name'], PDO::PARAM_STR);  
 	$token = $this->generateRandomToken();
-	$stmt->bindValue(':token', $token, PDO::PARAM_STR);  
-        print_r($d);
+	$stmt->bindValue(':token', $token, PDO::PARAM_STR);          
 	$stmt->bindValue(':group_id', $groupId, PDO::PARAM_INT);  
 	
 	if(!$stmt->execute()) {
@@ -240,8 +253,7 @@ class LoginHelper
 	$stmt->execute();
 	
     if ($stmt->rowCount() > 0){
-      $r = $stmt->fetch(PDO::FETCH_ASSOC);
-      var_dump($r);
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);      
       if ($r['password'] == crypt($d['password'], $config['authentication']['salt'])){
 		  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
 		  $_SESSION['user_id'] = $r['id'];
@@ -372,7 +384,7 @@ class LoginHelper
   }
 
   
-  function loginForm($info='', $next_page='', $error=false, &$d=array()){
+  function loginForm($info='',&$d=array(), $next_page='', $error=false ){
     global $page, $twig;
     
     $page->data['error'] = $error;
