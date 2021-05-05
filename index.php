@@ -38,9 +38,6 @@ require_once('common/login.php');
 $user = new User($_SESSION['user']);
 
 
-var_dump($user);
-
-
 $quizId = getParam($_REQUEST, 'q', 'majalis'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
 $quiz = new Quiz($quizId.'.json');
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
@@ -70,9 +67,9 @@ if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
 }
 
 
-$rankingTable = getScores();
-if(!array_key_exists($user->group,$rankingTable)) {
-    $rankingTable[$user['tanosztaly']] = [
+$rankingTable = getRankingTable($quiz->id);
+    if(!array_key_exists($user->group,$rankingTable)) {
+    $rankingTable[$user->group] = [
         'position' => count($rankingTable) + 1,
         'points' => 1,
         'name' => $user->group,
