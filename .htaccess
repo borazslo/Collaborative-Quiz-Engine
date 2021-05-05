@@ -1,3 +1,7 @@
+php_flag display_startup_errors on
+php_flag display_errors on
+php_flag html_errors on
+
 <IfModule mod_rewrite.c>
 
     RewriteEngine On
@@ -11,3 +15,11 @@
     RewriteRule . %{ENV:BASE}/index.php [L]
   
 </IfModule>
+
+
+<Files *.json>
+    Order Allow,Deny
+    Allow from 192.168.0.1
+    Deny from All
+</Files>
+

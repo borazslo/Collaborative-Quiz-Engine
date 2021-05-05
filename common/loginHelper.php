@@ -231,20 +231,6 @@ class LoginHelper
   // }
 
 
-	/**
-	"Én 3 vagy négy, inkább három korosztályt csinálnék: 
-	- kicsik, akinek egyszerűbb kell: 14 évig
-	- standard akik azért már képesek: 15-40
-	- felnőttek, akik a vérkeringésbe annyira nincsenek benne, de lehet rájuk számítni: 40+"
-	*/
-  function countLevelByAge($i){
-	  if ($i<15) 
-		  return 1;
-	  if ($i<41) 
-		  return 2;
-	  return 3;
-  }
-
   function login(&$d){
 	  global $connection, $config;
 
@@ -266,7 +252,7 @@ class LoginHelper
 		  $result['admin'] = $r['admin'] == 1;
 		  $result['group'] = $r['groupname'];
 		  $result['group2'] = false; // $r['group'];
-		  $result['level'] = $r['level']; // $this->countLevelByAge($r['averAge']);
+		  $result['level'] = $r['level'];
 		  $_SESSION['user'] = $result;
 		  
 		  return true;
