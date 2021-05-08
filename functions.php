@@ -15,7 +15,7 @@ $bulkDate = '2010-01-01 12:12:12' ;
 
 $trans = loadTranslation('hu_HU');
 
-function twigFilter_t($string, $arg = false) {
+function t($string, $arg = false) {
     global $trans;
     
     if(isset($trans[$string]) AND array_key_exists(1, $trans[$string])) {
@@ -31,7 +31,11 @@ function twigFilter_t($string, $arg = false) {
         }                
     }
     
-    return $newstring;       
+    return $newstring;  
+}
+
+function twigFilter_t($string, $arg = false) {
+  return t($string, $arg);       
 }
 
 function twigFilter_timeago($datetime) {
