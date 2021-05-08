@@ -15,7 +15,7 @@ $bulkDate = '2010-01-01 12:12:12' ;
 
 $trans = loadTranslation('hu_HU');
 
-function t($string, $arg = false) {
+function twigFilter_t($string, $arg = false) {
     global $trans;
     
     if(isset($trans[$string]) AND array_key_exists(1, $trans[$string])) {
@@ -33,6 +33,30 @@ function t($string, $arg = false) {
     
     return $newstring;       
 }
+
+function twigFilter_timeago($datetime) {
+   
+  $time = time() - strtotime($datetime); 
+
+  $units = array (
+    31536000 => 'year',
+    2592000 => 'month',
+    604800 => 'week',
+    86400 => 'day',
+    3600 => 'hour',
+    60 => 'minute',
+    1 => 'second'
+  );
+
+  foreach ($units as $unit => $val) {
+    if ($time < $unit) continue;
+    $numberOfUnits = floor($time / $unit);
+    return ($val == 'second')? 'a few seconds ago' : 
+           (($numberOfUnits>1) ? $numberOfUnits : 'a')
+           .' '.$val.(($numberOfUnits>1) ? 's' : '').' ago';
+  }
+
+  };
 
 function loadTranslation($lang) {
     $filePath = 'locale/'.$lang.'.csv';

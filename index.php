@@ -7,11 +7,13 @@ require_once 'functions.php';
 $loader = new \Twig\Loader\FilesystemLoader(['templates']);
 $twig = new \Twig\Environment($loader);
 
-$twig->addExtension(new Twig_Extensions_Extension_Date());
+//$twig->getExtension(\Twig\Extension\CoreExtension::class)->setDateFormat('d/m/Y', '%d days');
 
-$filter = new \Twig\TwigFilter('t', 't');
+$filter = new \Twig\TwigFilter('timeago', 'twigFilter_timeago');
 $twig->addFilter($filter);
-
+  
+$filter = new \Twig\TwigFilter('t', 'twigFilter_t');
+$twig->addFilter($filter);
 
 $page = new stdClass();
 $page->data = [];
@@ -44,17 +46,16 @@ $page->data['quiz'] = json_decode(json_encode($quiz), true);
 
 CheckLogin();
 
-if(!$user) {
-    $page->data['tanaz'] = $_REQUEST['tanaz'];
-    $page->data['tanazonosito'] = $_REQUEST['tanazonosito'];
+if(empty((array) $user)) {
     $page->data['error'] = true;
     $page->templateFile = 'koszonto';
     echo $twig->render($page->templateFile.".twig", $page->data);
     exit;   
 }
-$page->data['user'] = $user;
 
-if($user->isAdmin) {
+$page->data['user'] = (array) $user;
+
+if(isset($user->isAdmin)) {
     $page->data['config']['debug'] = $config['debug'] = true;
 }
 
@@ -66,18 +67,17 @@ if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
     $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
 }
 
-
-$rankingTable = getRankingTable($quiz->id);
-    if(!array_key_exists($user->group,$rankingTable)) {
-    $rankingTable[$user->group] = [
-        'position' => count($rankingTable) + 1,
-        'points' => 1,
-        'name' => $user->group,
-        'members' => 1
-    ];
+if(!empty((array) $user)) {
+    $rankingTable = getRankingTable($quiz->id);
+        if(!array_key_exists($user->group,$rankingTable)) {
+        $rankingTable[$user->group] = [
+            'position' => count($rankingTable) + 1,
+            'points' => 1,
+            'name' => $user->group,
+            'members' => 1
+        ];
+    }
+    $page->data['rankingTable'] = $rankingTable;
 }
-$page->data['rankingTable'] = $rankingTable;
-
-
 
 echo $twig->render($page->templateFile.".twig", $page->data);

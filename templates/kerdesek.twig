@@ -27,7 +27,7 @@
                 {% endfor %}
             {% endif %}
             {% if config.debug %}
-                <div class="alert alert-warning">A kérdések google sheet táblázatból legutóbb frissítve lettek: {{ csv_updated_at|time_diff }}.</div>
+                <div class="alert alert-warning">A kérdések google sheet táblázatból legutóbb frissítve lettek: {{ csv_updated_at|timeago }}.</div>
             {% endif %}
 
 	<!--<div class="alert alert-warning">Későn csatlakozott be az osztályod? Nem sikerült az első kérdésekre válaszolni? VAN REMÉNY! 11:05-kor tizenöt percre láthatóvá válik minden kérdés megint! Térjetek vissza!</div>-->
