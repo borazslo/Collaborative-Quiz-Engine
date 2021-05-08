@@ -481,3 +481,30 @@ function getParam( &$arr, $name, $def=null, $type=null) {
         return $def;
     }
 }
+
+ /**
+    * Generates human-readable string.
+    * https://gist.github.com/sepehr/3371339
+    * 
+    * @param string $length Desired length of random string.
+    * 
+    * retuen string Random string.
+    */ 
+   function readable_random_string($length = 6)
+   {  
+       $string = '';
+       $vowels = array("a","e","i","o","u");  
+       $consonants = array(
+           'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 
+           'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'
+       );  
+
+       $max = $length / 2;
+       for ($i = 1; $i <= $max; $i++)
+       {
+           $string .= $consonants[rand(0,19)];
+           $string .= $vowels[rand(0,4)];
+       }
+
+       return $string;
+   }

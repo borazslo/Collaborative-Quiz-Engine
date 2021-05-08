@@ -165,6 +165,18 @@ class Question {
         return -1;
     }
     
+    function createUserAnswer($result) {
+      
+        if($result == '2') {
+            if(!is_array($this->answer)) $this->answer = [$this->answer];            
+            return $this->answer[array_rand($this->answer)];
+            
+        } elseif( $result == '-1') {
+            return readable_random_string(rand(4,6));
+        }
+        
+    }
+    
     function loadOtherAnswers() {
         global $connection;
     
