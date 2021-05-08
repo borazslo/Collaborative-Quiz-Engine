@@ -3,7 +3,6 @@
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
-
 $loader = new \Twig\Loader\FilesystemLoader(['templates']);
 $twig = new \Twig\Environment($loader);
 
@@ -43,6 +42,10 @@ $user = new User($_SESSION['user']);
 $quizId = getParam($_REQUEST, 'q', 'majalis'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
 $quiz = new Quiz($quizId.'.json');
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
+
+//$bulk = new Bulk($quiz);
+//$bulk->addAll();
+//$bulk->deleteAll();
 
 CheckLogin();
 
