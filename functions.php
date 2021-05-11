@@ -223,10 +223,31 @@ function getUser($username, $passwd) {
 }
 
 function getGroupSizes() {
-   global $config;
+   global $config, $connection, $development;
    
    $groups = [];
    
+   $sql = "SELECT groups.*, count(*) as members 
+	FROM quizegine.users 
+            LEFT JOIN groups 
+                        ON groups.id = users.group_id ";
+   
+   if(!$development) $sql .= " WHERE users.name NOT LIKE '".Bulk::prefix()."%' ";
+   $sql .=" GROUP BY groups.id
+            ORDER BY members
+    ";
+   
+   $stmt = $connection->prepare($sql);
+   $stmt->execute();
+   $results = $stmt->fetchAll();
+   
+    foreach($results as $result) {
+           $groups[$result['name']] = $result['members'];
+    }
+    
+   return $groups;
+   
+   // TODO: alább
    # A $config-ot itt nem nagyon ellenőrizzük, mert a getUser már úgyis megtette
    
    if(isset($config['authentication']['array'])) { 
@@ -327,7 +348,8 @@ function getRankingTable($quiz_id) {
     $ranglista = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     
-    //$groupSizes = getGroupSizes();    
+    
+    $groupSizes = getGroupSizes();    
     
     /* Eltávolítjuk azokat a ranglistából, akik most épp nem férnek hozzá az anyaghoz *
     foreach($ranglista as $key => $group) {        
@@ -336,7 +358,7 @@ function getRankingTable($quiz_id) {
         }
     }
        
-    /* Osztálylétszámmal korrigált változat *
+    /* Osztálylétszámmal korrigált változat */
     if(isset($config['scoring']['groupSizeCorrection']) AND $config['scoring']['groupSizeCorrection'] != false ) {
         $groupSizeCorrection = $config['scoring']['groupSizeCorrection'];
         if(is_numeric($groupSizeCorrection)) {
@@ -352,10 +374,11 @@ function getRankingTable($quiz_id) {
             throw new Exception("Configuration error: invalid 'scoring/groupSizeCorrection'!");
         }
         
-        foreach($ranglista as $key => $osztaly) {       
-            if(!array_key_exists($osztaly['tanosztaly'], $groupSizes)) $groupSizes[$osztaly['tanosztaly']] = $groupSizeCorrection;
-            $ranglista[$key]['pont'] = (int) ( ( $groupSizeCorrection / $groupSizes[$osztaly['tanosztaly']] ) * $ranglista[$key]['pont'] );
+        foreach($ranglista as $key => $group) {       
+            if(!array_key_exists($group['name'], $groupSizes)) $groupSizes[$group['name']] = $groupSizeCorrection;
+            $ranglista[$key]['points'] = (int) ( ( $groupSizeCorrection / $groupSizes[$group['name']] ) * $ranglista[$key]['points'] );
         }
+        
     }
     /* */
       
