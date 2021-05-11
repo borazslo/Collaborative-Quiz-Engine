@@ -44,7 +44,7 @@ class questionPuzzle extends Question {
         */
         $percentage = 8; //rand(1,15);
                 
-        $filename = TMP_FOLDER.$this->quiz_id."/puzzle_".md5($file."-".$percentage).'.jpg';
+        $filename = sys_get_temp_dir ( ) . "/" . $this->quiz_id."/puzzle_".md5($file."-".$percentage).'.jpg';
 
         if(!file_exists($filename)) {
            //Nem az igazi, mert egészen újat generál mindig, nem pedig növekszik szépen.

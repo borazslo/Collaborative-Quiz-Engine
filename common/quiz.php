@@ -54,7 +54,15 @@ class Quiz {
                     $question->folder = $this->folder.$question->folder;
                     if(!is_dir($question->folder)) throw new Exception('There is no folder called '.$question->folder);
                 }
-                if(in_array($question->type,['multi','puzzle']) AND !is_dir(TMP_FOLDER.$this->id)) throw new Exception('There is a need for folder called '.TMP_FOLDER.$this->id);
+                if(in_array($question->type,['multi','puzzle'])) {
+                    $tmpFolderPath = sys_get_temp_dir ( ) . "/" . $this->id ;                    
+                    if(!is_dir($tmpFolderPath)) {
+                        mkdir($tmpFolderPath);
+                        if(!is_dir($tmpFolderPath)) {
+                            throw new Exception('There is a need for folder called _'.$tmpFolderPath.'_');
+                        }
+                    }
+                }
                 
                 //Load question
                 $className = "question".ucfirst($question->type);

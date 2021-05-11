@@ -117,9 +117,9 @@ class Question {
             } else {
                 $stmt = $connection->prepare("INSERT INTO answers (quiz_id, question_id, user_id, answer, result)"
                         . "VALUES (:quiz_id, :question_id, :user_id, :answer, :result)");
-
+                
             }            
-            $stmt->execute(array_merge($this->params, ['answer' => $new_answer, 'result' => $result]));    
+            $stmt->execute(array_merge($this->params, ['answer' => $new_answer, 'result' => $result]));
         }
         
         $this->user_answer = $new_answer;
@@ -168,6 +168,7 @@ class Question {
     function createUserAnswer($result) {
       
         if($result == '2') {
+            
             if(!is_array($this->answer)) $this->answer = [$this->answer];            
             return $this->answer[array_rand($this->answer)];
             
@@ -192,8 +193,25 @@ class Question {
                     question_id ";
                         
         $stmt = $connection->prepare($sql);
-        $stmt->execute($this->params);
-        $this->others = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+        $stmt->execute($this->params);       
+        $this->others = $stmt->fetch(PDO::FETCH_ASSOC);        
     }
+    
+    function getAllAnswers() {
+        global $connection;
+    
+        $sql = "SELECT  *
+                FROM answers
+                WHERE 
+                    quiz_id = :quiz_id AND
+                    question_id = :question_id AND
+                    ( user_id != :user_id OR user_id = :user_id )
+            ";
+                 printr($this->params);       
+        $stmt = $connection->prepare($sql);
+        $stmt->execute($this->params);       
+        $return = $stmt->fetchAll(PDO::FETCH_ASSOC);        
+        printr($return);
+    }
+    
 }
