@@ -77,14 +77,14 @@ class Bulk {
             
             $answer = [
                 ':quiz_id' => $this->quiz->id,
-                ':question_id' => $key % $NoQuestions,
+                ':question_id' => ( $key % $NoQuestions ) + 1 ,
                 ':user_id' => $users[( $key - ( $key % $NoQuestions ) ) / $NoQuestions]['id'] ,
                 ':result' => ["-1","1","2","2"][rand(0,3)]
             ];
                     
             if($answer[':result'] == '1') $res = ["-1","2"][rand(0,1)];
             else $res = $answer[':result'];                    
-            $answer[':answer'] = $this->quiz->questions[ $answer[':question_id'] ]->createUserAnswer( $res );
+            $answer[':answer'] = $this->quiz->questions[ ( $answer[':question_id'] - 1 ) ]->createUserAnswer( $res );
             
             if(!$stmt->execute($answer)) printr($stmt->errorInfo());
                         

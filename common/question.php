@@ -210,7 +210,6 @@ class Question {
         $stmt = $connection->prepare($sql);
         if(!$stmt->execute($params)) printr($connection->erroInfo());       
         $this->others = $stmt->fetch(PDO::FETCH_ASSOC);  
-        printr($this->others);
     }
     
     function getDifferentAnswers($groupName = false) {
