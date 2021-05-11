@@ -10,9 +10,6 @@ include_once 'config.php';
 $imageFolder = 'images';
 $connection = new PDO($config['dbconnection']['dsn'], $config['dbconnection']['username'], $config['dbconnection']['passwd']);
 
-
-$bulkDate = '2010-01-01 12:12:12' ;
-
 $trans = loadTranslation('hu_HU');
 
 function t($string, $arg = false) {
@@ -314,7 +311,7 @@ function getGroupSizes() {
 
 
 function getRankingTable($quiz_id) {
-    global $connection, $development, $bulkDate, $config;
+    global $connection, $development, $config;
     
     /* Ranglista összeállítása */
         
@@ -338,7 +335,7 @@ function getRankingTable($quiz_id) {
         ";      
     
     
-    if(!$development)    $sql .= "AND timestamp <> '$bulkDate'";
+    if(!$development)    $sql .= "AND timestamp <> '".Bulk::date()."'";
 
     $sql .=  " GROUP BY group_id"
             . " ORDER BY points DESC";    

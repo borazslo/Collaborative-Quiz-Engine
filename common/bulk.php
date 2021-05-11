@@ -7,14 +7,17 @@
  */
 class Bulk {
     private $date;
-    private $prefix = '[bulk]';
     private $connection;
+
+    static function prefix()  { return '[bulk]'; }
+    static function date()    { return '2010-01-01 12:12:12'; }
     
     public function __construct(Quiz $quiz) {
-        global $bulkDate, $connection;
-        $this->date = $bulkDate;
+        global $connection;
+        $this->date = $this->date();
         $this->quiz = $quiz; //TODO: itt a konkrét User van, nem pedig a bulk-ban létrejövők
         $this->connection = $connection;
+        $this->prefix = $this->prefix();
     }
     
     public function addAll() {
@@ -100,7 +103,5 @@ class Bulk {
         $stmt = $this->connection->prepare("DELETE FROM groups WHERE name LIKE '".$this->prefix."%';");
         $stmt->execute();
     }
-    
-   
-    
+        
 }
