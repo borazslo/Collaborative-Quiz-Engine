@@ -39,7 +39,7 @@ class Question {
                 'question_id' => $this->id
             ];
 
-            $this->loadOtherAnswers();
+            $this->loadOtherAnswers($user->group);
             $this->loadUserAnswer();
         }
         
@@ -178,23 +178,39 @@ class Question {
         
     }
     
-    function loadOtherAnswers() {
+    function loadOtherAnswers($groupName = false) {
         global $connection;
     
         $sql = "SELECT  
                     SUM(if(result = '2', 1, 0)) as 'right', 
                     SUM(if(result = '-1', 1, 0)) as 'wrong'
-                FROM answers
-                WHERE 
+                FROM answers ";
+        
+        if($groupName) {
+            $sql .= "LEFT JOIN users
+                    ON users.id = answers.user_id
+                LEFT JOIN groups
+                    ON groups.id = users.group_id
+                WHERE  
+		groups.name = :group_name AND ";
+            $params = array_merge($this->params,[':group_name' => $groupName]); 
+        }                
+        else {
+            $sql .= " WHERE ";
+            $params = $this->params;
+        }
+        
+        $sql .= "   
                     quiz_id = :quiz_id AND
                     question_id = :question_id AND
                     user_id != :user_id
                 GROUP BY 
                     question_id ";
-                        
+                               
         $stmt = $connection->prepare($sql);
-        $stmt->execute($this->params);       
-        $this->others = $stmt->fetch(PDO::FETCH_ASSOC);        
+        if(!$stmt->execute($params)) printr($connection->erroInfo());       
+        $this->others = $stmt->fetch(PDO::FETCH_ASSOC);  
+        printr($this->others);
     }
     
     function getDifferentAnswers($groupName = false) {
