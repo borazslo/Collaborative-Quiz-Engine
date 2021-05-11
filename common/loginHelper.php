@@ -153,12 +153,12 @@ class LoginHelper
 
 
 	//$next_page = GetParam($_REQUEST, "next_page");
-	$body = t('RegConfirmationEmail');
+	$body = t('RegConfirmation_Email');
 	$url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?task=confirm&token=' . $token; // $next_page
 	$url = "<a href='$url'>$url</a>";
 	$body = str_replace("{url}", $url, $body);
 	$body = str_replace("{name}", $d["name"], $body);
-	$this->send_email("noreply@" . $_SERVER['HTTP_HOST'], $d["email"], t('LostPassword_Subject'), $body);
+	$this->send_email("noreply@" . $_SERVER['HTTP_HOST'], $d["email"], t('RegConfirmation_Subject'), $body);
 	//echo $body . $d["email"];
              
         $this->loginForm(t('RegConfirmationSent'), $d);
