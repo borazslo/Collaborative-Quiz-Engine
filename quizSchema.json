@@ -51,7 +51,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "manual", "multi", "photo", "puzzle", "select", "wait"],
+                        "enum": ["text", "allOrNone", "manual", "multi", "photo", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {

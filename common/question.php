@@ -197,21 +197,45 @@ class Question {
         $this->others = $stmt->fetch(PDO::FETCH_ASSOC);        
     }
     
-    function getAllAnswers() {
+    function getDifferentAnswers($groupName = false) {
         global $connection;
-    
-        $sql = "SELECT  *
-                FROM answers
-                WHERE 
-                    quiz_id = :quiz_id AND
+          
+        $sql = "SELECT  answer, COUNT(answer) as quantity
+                FROM answers ";
+        
+        
+        if($groupName) {
+            $sql .= "LEFT JOIN users
+                    ON users.id = answers.user_id
+                LEFT JOIN groups
+                    ON groups.id = users.group_id
+                WHERE  
+		groups.name = :group_name AND ";
+            $params = array_merge($this->params,[':group_name' => $groupName]); 
+        }
+                
+        else {
+            $sql .= " WHERE ";
+            $params = $this->params;
+        }
+        
+        $sql .= "   quiz_id = :quiz_id AND
                     question_id = :question_id AND
-                    ( user_id != :user_id OR user_id = :user_id )
+                    ( user_id != :user_id OR user_id = :user_id ) AND
+                    result IN ('-1','1','2') 
+                GROUP BY answer 
+                ORDER BY quantity DESC 
             ";
-                 printr($this->params);       
+                       
         $stmt = $connection->prepare($sql);
-        $stmt->execute($this->params);       
-        $return = $stmt->fetchAll(PDO::FETCH_ASSOC);        
-        printr($return);
+        if(!$stmt->execute($params)) printr($connection->errorInfo());       
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);        
+
+        $return = [];
+        foreach($results as $result) {
+            $return[$result['answer']] = $result['quantity'];
+        }
+        return $return;
     }
     
 }
