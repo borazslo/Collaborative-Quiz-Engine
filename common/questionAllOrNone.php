@@ -4,6 +4,13 @@ class questionAllOrNone extends Question {
     
     public $inputType = 'text';
 
+    function __construct($settings) {        
+        
+        if(isset($settings->options)) $this->inputType = 'select';        
+        
+        parent::__construct($settings);
+                
+    }    
     /**
      * 
      * @param type $user_answer
@@ -12,6 +19,8 @@ class questionAllOrNone extends Question {
     function getUserResult($user_answer) {
         global $user;
         
+        if($user_answer == '' ) return 0;
+                
         $answers = $this->getDifferentAnswers($user->group);
         if($answers == array()) return 1;
                 
