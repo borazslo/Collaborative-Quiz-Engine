@@ -2,6 +2,10 @@
 
 include_once 'config.php';
 
+if(isset($config['addons'])) 
+    foreach($config['addons'] as $addon)
+        include_once('addons/'.$addon.".php");
+
 date_default_timezone_set("Europe/Budapest");
 /*
  * To change this license header, choose License Headers in Project Properties.

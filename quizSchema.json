@@ -55,7 +55,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "pieces", "photo", "puzzle", "select", "wait"],
+                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "pair", "pieces", "photo", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {
@@ -125,6 +125,14 @@
                         "description" : "Legördülő lista a választható válaszokkal. Kötelező, ha type=select. Lehetséges, ha type = allOrNone. Máskor felesleges. | Ha csak egy string akkor egy függvény név ami egy listával kell visszatérjen.",
                         "items" : {
                             "type" : ["string", "integer"]
+                        }                        
+                    },
+                    
+                    "pairs" : {
+                        "type" : ["array","string"],
+                        "description" : "Key - value páros lista. A random key-hez kell kiválasztani a megfelelő value-t a listából. Kötelező, ha type=pair. Máskor felesleges. | Ha csak egy string akkor egy függvény név ami egy listával kell visszatérjen.",
+                        "items" : {
+                            "type" : ["array"]
                         }                        
                     },
                     
