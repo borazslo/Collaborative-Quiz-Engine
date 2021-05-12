@@ -61,7 +61,7 @@ if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
     $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
 }
 
-if(!empty((array) $user)) {
+if(!empty((array) $user) AND $config['rankingTablePublic'] == true) {
     $rankingTable = getRankingTable($quiz->id);
         if(!array_key_exists($user->group,$rankingTable)) {
         $rankingTable[$user->group] = [
