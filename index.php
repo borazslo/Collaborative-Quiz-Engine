@@ -1,5 +1,5 @@
 <?php
-echo 'RM Majális - "Újratervezés" - 2021. május 15. '; exit ;
+//echo 'RM Majális - "Újratervezés" - 2021. május 15. '; exit ;
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
@@ -57,7 +57,7 @@ if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
     $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
 }
 
-if(!empty((array) $user) AND $config['rankingTablePublic'] == true) {
+if(!empty((array) $user) AND ( isset($config['rankingTablePublic']) AND $config['rankingTablePublic'] == true )) {
     $rankingTable = getRankingTable($quiz->id);
         if(!array_key_exists($user->group,$rankingTable)) {
         $rankingTable[$user->group] = [
