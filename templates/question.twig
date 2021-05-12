@@ -4,7 +4,7 @@
     <div class="card-header">
       <h5 class="">
           {% if user_result >= 1 %}
-                <svg class="bi bi-check-square-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="green" xmlns="http://www.w3.org/2000/svg">
+                <svg class="bi bi-check-square-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="{{ user_result == 2 ? 'green' : 'yellow' }}" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm10.03 4.97a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                 </svg>    
           {% elseif user_result == -1 %}
@@ -72,24 +72,25 @@
                             <input  name="questions_{{ id }}"  type="file" id="inputId{{ id }}" />                                  
                         {% endif %}
                         {% if user_result == 1 %}
-                                <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">Újat küld be</button></div>          
+                                <!--<div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">Újat küld be</button></div>-->          
                         {% endif %}
                 
             {% elseif inputType == 'text' %}    
              
-                <input type="text" class="{{ user_result >= 1 ? 'text-success' }}{{ user_result == -1 ? 'text-danger' }} form-control" name="questions[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ user_answer}}" {{ ( user_result >= 1 and ( kerdes.answer != '[manual]' or kerdes.eredmeny >=2 ) ) ? 'readonly'  }}>
+                <input type="text" class="{{ user_result >= 1 ? 'text-success' }}{{ user_result == -1 ? 'text-danger' }} form-control" name="questions[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ user_answer}}" {{ ( user_result == 2  ) ? 'readonly'  }}>
             
             
             {% endif %}
             
                      
             
-            {% if user_result < 2 and inputType != 'file' %}
+            {% if user_result < 2  %}
                 <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">{{ user_result == 0 ? 'Beküld' : 'Javít'}}</button></div>          
             {% endif %}
           </div>
-
-            {% if others %}
+            {% if user_result == 1 %}
+                <small id="input{{ id }}HelpBlock" class="form-text text-muted">Még le kell ellenőriznünk a válaszodat, de addig is megajánljuk a pontot.</small>
+            {% elseif others %}
                 {% if user_result < 1 and others.right > 0  %}
                     <small id="input{{ id }}HelpBlock" class="form-text text-muted">Már {{ others.right }} ember megoldotta ezt a feladványt. Kérj tőlük segítséget!</small>
                 {% elseif user_result %}
