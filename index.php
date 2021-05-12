@@ -24,7 +24,7 @@ if($development == true) $page->data['development'] = true;
 $page->data['config']['debug'] = $config['debug'];
 
 
-$quizId = getParam($_REQUEST, 'q', 'szentignac'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
+$quizId = getParam($_REQUEST, 'q', isset($config['defaultQuizId']) ? $config['defaultQuizId'] : '../empty'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
 
 require_once 'common/user.php';
 

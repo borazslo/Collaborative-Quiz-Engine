@@ -1,0 +1,8 @@
+{
+    "title"             : "Közösségi Kvízek",
+    "description_html"  : "<p>Ezen az oldalon keresztül többféle kvízt lehet majd elérni amit egyszerre, közösségi formában, egymást segítve lehet kitölteni.</p><p>Regisztrálni és csoportot megnevezni már így is lehet, de játszani csak megfelelő beállítások mellett.</p><p><small>Forráskód: <a href=\"https://github.com/borazslo/Collaborative-Quiz-Engine\">github.com/borazslo/Collaborative-Quiz-Engine</a></small></p>"  ,
+    "short_description_html" : "Itt lenne sokféle kérdés, ha éppen lenne mit kérdeznünk.",
+    "author"            : "borazslo",
+    "author_url"        : "http://eleklaszlo.hu",
+    "questions" : []
+}

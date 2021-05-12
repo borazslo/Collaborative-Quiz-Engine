@@ -37,8 +37,8 @@
         {% if quiz.author %}
             <ul class="list-inline">
                 <li class="list-inline-item">
-                    {% if quiz.author_link %}
-                        <a href="{{ quiz.author_link }}" target="_blank">{{ quiz.author }}</a>
+                    {% if quiz.author_url %}
+                        <a href="{{ quiz.author_url }}" target="_blank">{{ quiz.author }}</a>
                     {% else %}
                         {{ quiz.author }}
                     {% endif %}

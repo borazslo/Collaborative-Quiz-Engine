@@ -10,7 +10,9 @@ $config = [
   ],
   'debug' => false,
   'loginHelper' => false , // use login system of loginHelper (true) or not (false) 
-  'rankingTablePublic' => false // wether any user can see the rankingTable on the sidebar
+  'rankingTablePublic' => false, // wether any user can see the rankingTable on the sidebar
+  'defaultQuizId' => 'majalis' // the JSON file realtive to /quizzes. Default is the empty.json
+
 ];
 
 $config['lang'] = 'hu_HU';
