@@ -84,7 +84,7 @@
             
                      
             
-            {% if user_result < 2  %}
+            {% if user_result < 2 and inputType != 'file' %}
                 <div class="input-group-append"><button class="btn btn-outline-primary" name="gomb" value="{{ id }}" type="submit">{{ user_result == 0 ? 'Beküld' : 'Javít'}}</button></div>          
             {% endif %}
           </div>

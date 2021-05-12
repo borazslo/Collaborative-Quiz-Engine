@@ -344,6 +344,7 @@ function getRankingTable($quiz_id) {
             LEFT JOIN groups ON groups.id = users.group_id 
         
         WHERE quiz_id = :quiz_id 
+            AND users.active = 1 
 
         ";      
     
