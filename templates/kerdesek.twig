@@ -20,14 +20,11 @@
   <!--
             <div class="alert alert-primary">A feladatok reggel kilenctől három percenként érkeznek majd és mindegyik fél órán keresztül lesz látható. Fogjatok össze, beszéljétek meg, és oldjátok meg minél többen!<br/>
                 Találkozunk utána délben <a href="https://www.youtube.com/user/jezsuvideo/live">Jezsu YouTube csatornán</a>!</div>-->
-            {% if development or config.debug %}
+            {% if config.debug %}
                 <div class="alert alert-warning">Fejlesztői üzemmódban vagyunk. Sok valótlan tartalommal, meg csak úgy.</div>                
                 {% for devMessage in devMessages %}
                     <div class="alert alert-warning">{{ devMessage | raw}}</div>
                 {% endfor %}
-            {% endif %}
-            {% if config.debug %}
-                <div class="alert alert-warning">A kérdések google sheet táblázatból legutóbb frissítve lettek: {{ csv_updated_at|timeago }}.</div>
             {% endif %}
 
 	<!--<div class="alert alert-warning">Későn csatlakozott be az osztályod? Nem sikerült az első kérdésekre válaszolni? VAN REMÉNY! 11:05-kor tizenöt percre láthatóvá válik minden kérdés megint! Térjetek vissza!</div>-->
@@ -43,21 +40,35 @@
 	{% endif %}
 	</div>
 -->
-    {% if quiz.questions|length == 0 %}<div class="alert alert-info">{{ "There are no questions right now. Is it too early or too late?"|t }}</div>{% endif %}
+    
 
     {% for question in quiz.questions %}
-        {% include 'question.twig' with question  %}          
+        {% if question.active == true or config.debug == true %}
+            {% include 'question.twig' with question  %}          
+        {% endif %}
     {% endfor %}
         
-  
+    {% if quiz.thereIsNoQuestion %}
+        {% if quiz.nextQuestionTime %}         
+            <div class="alert alert-info">{{ "QuizWillStart"|t }} <span title="{{ quiz.nextQuestionTime|date('Y-m-d H:i:s') }}">{{ quiz.nextQuestionTime|timeago }}</span>.</div>           
+        {% else %}
+            <div class="alert alert-info">{{ "QuizEnded"|t }}</div>    
+        {% endif %}
+    {% else %}
+        {% if quiz.nextQuestionTime %}         
+            <div class="alert alert-info">{{ "NextQuestion"|t }} <span title="{{ quiz.nextQuestionTime|date('Y-m-d H:i:s') }}">{{ quiz.nextQuestionTime|timeago }}</span>.</div>           
+        {%  else %}
+            <div class="alert alert-info">{{ "NoMoreQuestion"|t }}</div>    
+        {% endif %}
+    {% endif %}
+    
             
             
             
 </div>
         
         <div class="col-lg-2">
-                    {% include 'rankingTable.twig' %}
-                    
+                    {% include 'rankingTable.twig' %}                    
         </div>
             </div>
             

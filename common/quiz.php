@@ -7,14 +7,18 @@ class Quiz {
     
     public $folder = 'quizzes/';
     
-    function __construct($jsonFile) {
+    function __construct($jsonFile,$descriptionOnly = false) {
         
         $this->id = preg_replace('/\.([a-zA-Z0-9]*?)$/i','',$jsonFile);
         
+        $this->descriptionOnly = $descriptionOnly;
+        
         $this->loadAndValidateFile($jsonFile);
         
-        $this->loadQuestionsStartEnd();
-        $this->deleteInactiveQuestions();
+        if($this->descriptionOnly != true) {
+            $this->loadQuestionsStartEnd();
+            $this->deleteInactiveQuestions();
+        }
         
     }    
     
@@ -44,7 +48,7 @@ class Quiz {
         }
                 
         // Process questions one by one         
-        if(isset($data->questions)) {
+        if(isset($data->questions) AND $this->descriptionOnly != true) {
             foreach($data->questions as $key => $question) {
                 $question->id = $key + 1;
                 $question->quiz_id = $this->id;
@@ -66,7 +70,7 @@ class Quiz {
                 
                 //Load question
                 $className = "question".ucfirst($question->type);
-                $this->questions[] = new $className($question);
+                $this->questions[] = new $className($question);                
             }                        
         }
                 
@@ -76,8 +80,8 @@ class Quiz {
         $start = strtotime(isset($this->timing->start) ? $this->timing->start : "today midnight" ); 
         $frequency = isset($this->timing->frequency) ? ( strtotime($this->timing->frequency) - time() ) : 0 ; 
         $duration = isset($this->timing->duration) ? ( strtotime($this->timing->duration) - time() ) : 31556952 ;
-                
-        foreach($this->questions as &$question) {
+                     
+        foreach($this->questions as &$question) {            
             if(!isset($last_start))
                 $question->startTime = $start;          
             elseif(!isset($question->relativeStart))
@@ -101,9 +105,14 @@ class Quiz {
         global $user; 
 
         $now = time();
-        foreach($this->questions as $key => $question) {            
-            if( ( $question->startTime < $now OR $question->endTime > $now ) AND !isset($user->isAdmin)) {
-                unset($this->questions[$key]);            
+        $this->thereIsNoQuestion = true;
+        foreach($this->questions as $key => $question) { 
+            if ( $question->startTime > $now OR $question->endTime < $now ) {
+                $this->questions[$key]->active = false;
+                if(!isset($this->nextQuestionTime) AND $now - $question->startTime < 0) { $this->nextQuestionTime = $question->startTime; }
+            } else {
+                $this->questions[$key]->active = true;
+                $this->thereIsNoQuestion = false;
             }
         }
     }    

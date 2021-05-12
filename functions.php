@@ -1,6 +1,8 @@
 <?php
 
 include_once 'config.php';
+
+date_default_timezone_set("Europe/Budapest");
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -37,25 +39,36 @@ function twigFilter_t($string, $arg = false) {
 
 function twigFilter_timeago($datetime) {
    
-  $time = time() - strtotime($datetime); 
+  if(is_numeric($datetime)) $time = time() - $datetime;
+  else $time = time() - strtotime($datetime); 
 
+ 
   $units = array (
-    31536000 => 'year',
-    2592000 => 'month',
-    604800 => 'week',
-    86400 => 'day',
-    3600 => 'hour',
-    60 => 'minute',
-    1 => 'second'
+    31536000 => ['év', 'éve'],
+    2592000 => ['hónap', 'hónapja'],
+    604800 => ['hét', 'hete'],
+    86400 => ['nap', 'napja'],
+    3600 => ['óra', 'órája'],
+    60 => ['perc', 'perce'],
+    1 => ['másodperc', 'másodperce']
   );
 
   foreach ($units as $unit => $val) {
-    if ($time < $unit) continue;
-    $numberOfUnits = floor($time / $unit);
-    return ($val == 'second')? 'a few seconds ago' : 
-           (($numberOfUnits>1) ? $numberOfUnits : 'a')
-           .' '.$val.(($numberOfUnits>1) ? 's' : '').' ago';
+    if($time > 0) {  
+        if ($time < $unit) continue;
+        $numberOfUnits = floor($time / $unit);
+        return $numberOfUnits." ".$val[1];
+        
+    } else {
+        if ($time < (-1 * $unit  ) ) {
+        $numberOfUnits = floor($time / ( -1 * $unit) );
+        return $numberOfUnits." ".$val[0]. " múlva";
+        }
+        
+    }
   }
+  
+  return 'xx';
 
   };
 

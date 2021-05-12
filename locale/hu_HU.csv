@@ -3,7 +3,10 @@ password;jelszó
 name;név
 Cannot login. Please check your credentials;Nem sikerült azonosítani! Ellenőrizd az adataidat!
 File not found: %s;A fájl nem található: %s
-There are no questions right now. Is it too early or too late?;Nincsenek elérhető kérdések. Talán túl korán van. Vagy már túl késő.
+NoMoreQuestion;Nem érkezik már több kérdés.
+NextQuestion;Következő kérdés
+QuizWillStart;A kvíz még nem kezdődött el. Kezdés 
+QuizEnded;Véget ért a kívz, így már nincsenek kérdéseink.
 Questions that require manual attention;Személyes ellenőrzés igénylő kérdések
 Uploaded;Feltöltve
 Accept;Elfogad
