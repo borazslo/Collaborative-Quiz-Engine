@@ -55,7 +55,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "photo", "puzzle", "select", "wait"],
+                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "pieces", "photo", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {
@@ -131,6 +131,14 @@
                     "text" : {
                         "type" : ["string", "array"],
                         "description" : "Szöveg amiből véletlenszerűen hiányzik egy-egy szó, ami a helyes válasz. Kötelező, ha type=completion. Máskor felesleges",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    
+                    "pieces" : {
+                        "type" : ["array"],
+                        "description" : "Szöveg töredékek amiből közösen áll össze csak a szöveg. Kötelező, ha type=pieces. Máskor felesleges",
                         "items" : {
                             "type" : "string"
                         }
