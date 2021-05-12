@@ -19,10 +19,14 @@ if ($action != false AND $action != "login"){
 $continue = false;
 if ($action == "login"){
 	$loginHelper->login($_REQUEST);
-	if (!$loginHelper->authenticated_user()){
+	if (!$loginHelper->authenticated_user()){            
                 $quiz = new Quiz($quizId.'.json',true);
                 $page->data['quiz'] = json_decode(json_encode($quiz), true);
-		$loginHelper->loginForm(t('WrongPassword'), $_REQUEST, $next_page);
+                if($_SESSION['login'] == 'denied') 
+                    $loginHelper->loginForm(t('WrongPassword'), $_REQUEST, $next_page);
+                elseif($_SESSION['login'] == 'inactive') 
+                    $loginHelper->lostPasswordForm(t("InActvie"));
+		
 	}else{
 		$user = new User($_SESSION['user']);
 	}

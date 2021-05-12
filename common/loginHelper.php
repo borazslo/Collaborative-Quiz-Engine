@@ -167,7 +167,7 @@ class LoginHelper
   }
 
   function authenticated_user(){
-    if (isset($_SESSION['login']) && ($_SESSION['login'] != "denied"))
+    if (isset($_SESSION['login']) && ($_SESSION['login'] != "denied" AND $_SESSION['login'] != "inactive" ))
       return true;
     return false;
   }
@@ -234,13 +234,19 @@ class LoginHelper
   function login(&$d){
 	  global $connection, $config;
 
-    $stmt = $connection->prepare("SELECT u.password, u.admin, u.id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
+    $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
 	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
 	$stmt->execute();
 	
     if ($stmt->rowCount() > 0){
       $r = $stmt->fetch(PDO::FETCH_ASSOC);      
       if ($r['password'] == crypt($d['password'], $config['authentication']['salt'])){
+          
+                  if($r['active'] == 0 ) {
+                    $_SESSION['login'] = 'inactive';
+                    return false;
+                  }
+                   
 		  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
 		  $_SESSION['user_id'] = $r['id'];
 		  $_SESSION['name'] = $r['username'];
@@ -317,7 +323,7 @@ class LoginHelper
       $r['user_id'] = $r['id'];
       $this->update($r);
       //remove token
-      $stmt = $connection->prepare("UPDATE users SET token=NULL,tokenexpire=NULL WHERE token=:token");
+      $stmt = $connection->prepare("UPDATE users SET token=NULL,tokenexpire=NULL,active=1 WHERE token=:token");
   	  $stmt->bindValue(':token', $token, PDO::PARAM_STR);  
 	  $stmt->execute();
       $this->loginForm(t('NewPasswordSaved'));
