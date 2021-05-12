@@ -23,7 +23,7 @@
         
         {% if others.right > 0 and user_result == 2 %}<small id="input{{ id }}HelpBlock" class="text-muted">Már {{ others.right }} jó válasz jött másoktól. Segíts a maradéknak!</small>{% endif %}
         
-        {% if user.isAdmin %}
+        {% if config.debug == true %}
             <small style="float:right">Start: <span title="{{ startTime|date('Y-m-d H:i:s') }}">{{ startTime|timeago }}</span>. End: <span title="{{ endTime|date('Y-m-d H:i:s') }}">{{ endTime|timeago }}</span></small>
         {% endif %}
         
