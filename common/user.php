@@ -22,7 +22,7 @@ class User {
         $this->level = $d['level'];//2;
         $this->group = $d['group'];//'Medve';
         $this->group2 = $d['group2'];//"Emlős";
-        if(isset($d['group3'])) $this->group3 = $d['group3'];//"Emlős";
+        $this->group3 = isset($d['group3']) ? $d['group3'] : false;//"Emlős";
         $this->isAdmin = $d['admin'];//true;
         
     }
