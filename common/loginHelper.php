@@ -1,27 +1,5 @@
 <?php
 
-/**
-
-CREATE TABLE `users` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `active` int NOT NULL DEFAULT '0',
-  `admin` int NOT NULL DEFAULT '0',
-  `token` varchar(128),
-  `tokenexpire` DATETIME,
-  `rmGroupId` int NOT NULL,
-
-PRIMARY KEY (`id`),
--- UNIQUE KEY `name` (`name`),
-UNIQUE KEY `Email` (`email`),
-INDEX rm_ind (rmGroupId),
-    FOREIGN KEY (rmGroupId)
-        REFERENCES regnum_communities(id)
-);
-
-*/
 
 class SqlParameters{
     var $name;
@@ -45,15 +23,15 @@ class LoginHelper
 	// https://raw.githack.com/xcash/bootstrap-autocomplete/master/dist/latest/index.html
   function getRMgroupsJSON($s){
     global $connection;
-	  
-	$q = $connection->prepare("SELECT `id`, `name`, `group` FROM regnum_communities" . ($s == "" ? "" : " WHERE `name` COLLATE UTF8_GENERAL_CI like :prefix OR `name` COLLATE UTF8_GENERAL_CI like :prefix2 "));
+    
+    $q = $connection->prepare("SELECT `id`, `name`, `group` FROM regnum_communities" . ($s == "" ? "" : " WHERE `name` like :prefix OR `name` like :prefix2 ORDER BY `name`"));
 	if ($s != ''){
 		$q->bindValue(':prefix', $s.'%', PDO::PARAM_STR);  
 		$q->bindValue(':prefix2', '% '.$s.'%', PDO::PARAM_STR);  
 	}
 
 	$q->execute();
-    $result = $q->fetchAll(PDO::FETCH_ASSOC);
+    $result = $q->fetchAll(PDO::FETCH_ASSOC);    
 
     $arr = [];
 	foreach($result as $row){
@@ -80,7 +58,7 @@ class LoginHelper
   function confirmReg(&$d){ 
   	global $connection, $config;
 
-    $stmt = $connection->prepare("SELECT admin, id, name FROM users WHERE token=:token AND tokenexpire > NOW()");
+    $stmt = $connection->prepare("SELECT admin, id, name, email FROM users WHERE token=:token AND tokenexpire > NOW()");
 	$stmt->bindValue(':token', $d['token'], PDO::PARAM_STR);  
 	$stmt->execute();
 
@@ -90,16 +68,18 @@ class LoginHelper
 	  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
 	  $_SESSION['user_id'] = $r['id'];
 	  $_SESSION['name'] = $r['name'];
+          $d['email'] = $r['email'];
 	
-    //remove token
-		$stmt = $connection->prepare("UPDATE users SET active=1,token=NULL,tokenexpire=NULL WHERE token=:token");
-		$stmt->bindValue(':token', $d['token'], PDO::PARAM_STR);  
-		$stmt->execute();
+        //remove token
+        $stmt = $connection->prepare("UPDATE users SET active=1,token=NULL,tokenexpire=NULL WHERE token=:token");
+        $stmt->bindValue(':token', $d['token'], PDO::PARAM_STR);  
+        $stmt->execute();
 
-//      printr("Most már beléphet az új jelszavával.");
+        $this->loginForm(t('RegConfirmed'), $d);
+
       return true;
-    }else{
-      printr(t('InvalidToken'));
+    }else{      
+      $this->loginForm(t('InvalidToken'), $d);
     }
     $this->logout();
     $_SESSION['login'] = "denied";
@@ -115,32 +95,79 @@ class LoginHelper
 		return 0;
 	}
 
-    $stmt = $connection->prepare("INSERT into users (email, password, admin, name, token, tokenexpire, rmgroupid) VALUES (:email, :password, :admin, :name, :token, ADDDATE(NOW(), INTERVAL 3 DAY), :rmgroupid)");
+        
+        //Validate groupName
+        $d['groupName'] = trim($d['groupName']);
+        if(!preg_match('/^[\(\) _\-0-9\p{L}]{1,100}$/ui',$d['groupName'])) {
+            $this->registrationForm(t('InvalidGroupName'), $d);
+            exit;
+            return 0;
+        } 
+               
+        //Get groupId by groupName. Create if does not exists
+        $stmt = $connection->prepare("SELECT * FROM groups WHERE name = :name LIMIT 1");       
+        $stmt->execute(array(":name"=>$d['groupName']));
+        $group = $stmt->fetch();
+        if(!$group) {
+            
+            /*
+             * Ha létező regnumi népről van szó, akkor csnáljunk belőle megfeleő level szintű regnumi népet
+             */
+            $stmt = $connection->prepare("SELECT * FROM regnum_communities WHERE name = :name LIMIT 1");       
+            $stmt->execute(array(":name"=>$d['groupName']));
+            $group = $stmt->fetch();
+            if($group) {
+                if ($group['averAge'] < 15)
+                    $level = 1;
+                else
+                    $level = 2;               
+            } else {
+                $level = 2;
+            }                                               
+            /* */
+            
+            $stmt = $connection->prepare("INSERT INTO groups (name, level) VALUES (:name, :level)");       
+            $stmt->execute(array(":name"=>$d['groupName'],":level"=>$level));
+            $groupId = $connection->lastInsertId();
+            
+        } else {
+            $groupId = $group['id'];
+        }
+        
+        
+        $stmt = $connection->prepare("INSERT into users (email, password, admin, name, token, tokenexpire, group_id) VALUES (:email, :password, :admin, :name, :token, ADDDATE(NOW(), INTERVAL 3 DAY), :group_id)");
 	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
 	$stmt->bindValue(':password', crypt($d['password'], $config['authentication']['salt']), PDO::PARAM_STR);  
 	$stmt->bindValue(':admin', 0, PDO::PARAM_INT);  // $d['level']
 	$stmt->bindValue(':name', $d['name'], PDO::PARAM_STR);  
 	$token = $this->generateRandomToken();
-	$stmt->bindValue(':token', $token, PDO::PARAM_STR);  
-	$stmt->bindValue(':rmgroupid', $d['rmgroupid'], PDO::PARAM_INT);  
+	$stmt->bindValue(':token', $token, PDO::PARAM_STR);          
+	$stmt->bindValue(':group_id', $groupId, PDO::PARAM_INT);  
 	
-	$stmt->execute();
+	if(!$stmt->execute()) {
+            print_r($stmt->errorInfo());
+            $this->registrationForm(t('NewUserError'), $d);
+            exit;
+            return 0;
+        }
+
 
 	//$next_page = GetParam($_REQUEST, "next_page");
-	$body = t('RegConfirmationEmail');
+	$body = t('RegConfirmation_Email');
 	$url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?task=confirm&token=' . $token; // $next_page
 	$url = "<a href='$url'>$url</a>";
 	$body = str_replace("{url}", $url, $body);
 	$body = str_replace("{name}", $d["name"], $body);
-	$this->send_email("noreply@" . $_SERVER['HTTP_HOST'], $d["email"], t('LostPassword_Subject'), $body);
+	$this->send_email("noreply@" . $_SERVER['HTTP_HOST'], $d["email"], t('RegConfirmation_Subject'), $body);
 	//echo $body . $d["email"];
-	printr(t('RegConfirmationSent'));
+             
+        $this->loginForm(t('RegConfirmationSent'), $d);
 
     return 1;
   }
 
   function authenticated_user(){
-    if (isset($_SESSION['login']) && ($_SESSION['login'] != "denied"))
+    if (isset($_SESSION['login']) && ($_SESSION['login'] != "denied" AND $_SESSION['login'] != "inactive" ))
       return true;
     return false;
   }
@@ -204,31 +231,22 @@ class LoginHelper
   // }
 
 
-	/**
-	"Én 3 vagy négy, inkább három korosztályt csinálnék: 
-	- kicsik, akinek egyszerűbb kell: 14 évig
-	- standard akik azért már képesek: 15-40
-	- felnőttek, akik a vérkeringésbe annyira nincsenek benne, de lehet rájuk számítni: 40+"
-	*/
-  function countLevelByAge($i){
-	  if ($i<15) 
-		  return 1;
-	  if ($i<41) 
-		  return 2;
-	  return 3;
-  }
-
   function login(&$d){
 	  global $connection, $config;
 
-    $stmt = $connection->prepare("SELECT u.password, u.admin, u.id, u.name as username, rm.name as groupname, rm.group, rm.localRM, rm.averAge FROM users u left join regnum_communities rm ON u.rmGroupId=rm.id WHERE email=:email");
+    $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
 	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
 	$stmt->execute();
 	
     if ($stmt->rowCount() > 0){
-      $r = $stmt->fetch(PDO::FETCH_ASSOC);
-//      var_dump($r);
+      $r = $stmt->fetch(PDO::FETCH_ASSOC);      
       if ($r['password'] == crypt($d['password'], $config['authentication']['salt'])){
+          
+                  if($r['active'] == 0 ) {
+                    $_SESSION['login'] = 'inactive';
+                    return false;
+                  }
+                   
 		  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
 		  $_SESSION['user_id'] = $r['id'];
 		  $_SESSION['name'] = $r['username'];
@@ -239,8 +257,8 @@ class LoginHelper
 		  $result['name'] = $r['username'];
 		  $result['admin'] = $r['admin'] == 1;
 		  $result['group'] = $r['groupname'];
-		  $result['group2'] = $r['group'];
-		  $result['level'] = $this->countLevelByAge($r['averAge']);
+		  $result['group2'] = false; // $r['group'];
+		  $result['level'] = $r['level'];
 		  $_SESSION['user'] = $result;
 		  
 		  return true;
@@ -305,7 +323,7 @@ class LoginHelper
       $r['user_id'] = $r['id'];
       $this->update($r);
       //remove token
-      $stmt = $connection->prepare("UPDATE users SET token=NULL,tokenexpire=NULL WHERE token=:token");
+      $stmt = $connection->prepare("UPDATE users SET token=NULL,tokenexpire=NULL,active=1 WHERE token=:token");
   	  $stmt->bindValue(':token', $token, PDO::PARAM_STR);  
 	  $stmt->execute();
       $this->loginForm(t('NewPasswordSaved'));
@@ -353,12 +371,12 @@ class LoginHelper
   function send_email($from, $to, $subject, $body){
     $headers = "From: <" . $from . ">\r\n"; //optional headerfields
     $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-    //mail($to, $subject, $body, $headers);
-	echo $body;
+    mail($to, $subject, $body, $headers);
+//	echo $body;
   }
 
   
-  function loginForm($info='', $next_page='', $error=false, &$d=array()){
+  function loginForm($info='',&$d=array(), $next_page='', $error=false ){
     global $page, $twig;
     
     $page->data['error'] = $error;
@@ -395,8 +413,8 @@ class LoginHelper
 	$page->data['task'] = 'registration';
 	if (count($d) > 0){
 		$page->data['name'] = $d['name'];
-		$page->data['rmgroupId'] = isset($d['rmgroupid']) ? $d['rmgroupid'] : '';
-		$page->data['rmgroupName'] = isset($d['rmgroupid_text']) ? $d['rmgroupid_text'] : '';
+		$page->data['groupName'] = isset($d['groupName']) ? $d['groupName'] : '';
+                $page->data['email'] = isset($d['email']) ? $d['email'] : '';
 	}
 	echo $twig->render("rm.registration.twig", $page->data);
 	exit;

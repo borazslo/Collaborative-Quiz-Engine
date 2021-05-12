@@ -3,8 +3,8 @@
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Osztály</th>
-      <th scope="col">Pont</th>
+      <th scope="col">{{ "Group"|t }}</th>
+      <th scope="col">{{ "Points"|t }}</th>
     </tr>
   </thead>
   <tbody>
@@ -22,22 +22,22 @@
            {%  set kezdo = 0 %}
       {% endif %}
        
-    {% for rang in ranglista|slice( kezdo ,darab) %}      
-         <tr {% if rang.tanosztaly == user.tanosztaly %} class="table-success" {% endif %}}>
+    {% for rank in rankingTable|slice( kezdo ,darab) %}      
+         <tr {% if rank.name == user.group %} class="table-success" {% endif %}}>
           <th scope="row">
-              {% if rang.rang == 1 %}
+              {% if rank.position == 1 %}
                   <img src="templates/csillag.png" class="img-fluid" style="height:1.5em;">
-              {% elseif rang.rang == 2000000 %}
+              {% elseif rank.position == 2 %}
                   <img src="templates/pizza.png" class="img-fluid" style="height:1.5em;">
-              {% elseif rang.rang == 3000000 %}
+              {% elseif rank.position == 3 %}
                   <img src="templates/snack.png" class="img-fluid" style="height:1.5em;">                  
               {% else %}
-                  {{ rang.rang  }}
+                  {{ rank.position  }}
               {%  endif %}
                 
           </th>
-          <td>{{ rang.tanosztaly }}</td>
-          <td>{{ rang.pont }}</td>      
+          <td>{{ rank.name }}</td>
+          <td>{{ rank.points }}</td>      
         </tr>
     {% endfor %}    
   </tbody>

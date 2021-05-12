@@ -11,13 +11,23 @@ $loginHelper = new LoginHelper();
 $next_page = $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
 $next_page = getParam( $_REQUEST, "next_page", $next_page);
 
+if ($action != false AND $action != "login"){
+    $quiz = new Quiz($quizId.'.json',true);
+    $page->data['quiz'] = json_decode(json_encode($quiz), true);
+}
 
+$continue = false;
 if ($action == "login"){
 	$loginHelper->login($_REQUEST);
-	if (!$loginHelper->authenticated_user()){
-		$loginHelper->loginForm('', $next_page, t('WrongPassword'), $_REQUEST);
+	if (!$loginHelper->authenticated_user()){            
+                $quiz = new Quiz($quizId.'.json',true);
+                $page->data['quiz'] = json_decode(json_encode($quiz), true);
+                if($_SESSION['login'] == 'denied') 
+                    $loginHelper->loginForm(t('WrongPassword'), $_REQUEST, $next_page);
+                elseif($_SESSION['login'] == 'inactive') 
+                    $loginHelper->lostPasswordForm(t("InActvie"));
+		
 	}else{
-		// success
 		$user = new User($_SESSION['user']);
 	}
 
@@ -29,7 +39,7 @@ if ($action == "login"){
 		exit();
 }else if ($action == "rm"){
 	header('Content-Type: application/json');
-	echo $loginHelper->getRMgroupsJSON(getParam( $_REQUEST, "q"));
+	echo $loginHelper->getRMgroupsJSON(getParam( $_REQUEST, "term"));
 	exit;
 }else if ($action == "reg"){
 	$loginHelper->registrationForm();
@@ -44,6 +54,16 @@ if ($action == "login"){
 }else if ($action == "logout"){
 	$loginHelper->logout();
 	header("Location: index3.php");
+        
+} else if ($action == false ) {
+    $user = new User($_SESSION['user']);
+}
+
+if(! (array) $user ) { 
+    $quiz = new Quiz($quizId.'.json',true);
+    $page->data['quiz'] = json_decode(json_encode($quiz), true);
+    $loginHelper->loginForm(false, $_REQUEST, $next_page);
+    exit;
 }
 
 
@@ -56,11 +76,13 @@ function CheckLogin($level = 'normal'){
 			printr(t('AccessDenied') . " (". $_SESSION['login'] . ")");
 			exit();
 		}
+                
 		$next_page = getParam( $_REQUEST, "next_page");
-		if (!empty($next_page)) header('Location: ' . $next_page);
+		//if (!empty($next_page)) header('Location: ' . $next_page);
 	}else{
 
-		$loginHelper->loginForm('', $next_page);
+                $d = array();
+		$loginHelper->loginForm('', $d, $next_page);
 		exit();
 	}
 }

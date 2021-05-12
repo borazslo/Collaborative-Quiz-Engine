@@ -49,6 +49,12 @@ class questionPhoto extends Question {
         }
     }
     
+    function createUserAnswer($result) {
+            
+      return $this->folder."/empty.jpg";
+                
+    }
+    
     
     function uploadImage($_file) {
         

@@ -22,13 +22,6 @@ class Question {
             $this->$key = $val;
         }
         
-        global $user;
-        $this->params = [
-            'quiz_id' => $this->quiz_id,
-            'user_id' => $user->id,
-            'question_id' => $this->id
-        ];
-
                                         
         $this->prepareQuestion();
         $this->prepareInput();
@@ -36,10 +29,19 @@ class Question {
         $this->prepareHint();
         if(isset($this->video))
             $this->prepareVideo();
-        
-        $this->loadOtherAnswers();
-        $this->loadUserAnswer();
-        
+
+        global $user;
+        if(isset($user->id)) { 
+            
+            $this->params = [
+                'quiz_id' => $this->quiz_id,
+                'user_id' => $user->id,
+                'question_id' => $this->id
+            ];
+
+            $this->loadOtherAnswers($user->group);
+            $this->loadUserAnswer();
+        }
         
     }
     
@@ -115,9 +117,9 @@ class Question {
             } else {
                 $stmt = $connection->prepare("INSERT INTO answers (quiz_id, question_id, user_id, answer, result)"
                         . "VALUES (:quiz_id, :question_id, :user_id, :answer, :result)");
-
+                
             }            
-            $stmt->execute(array_merge($this->params, ['answer' => $new_answer, 'result' => $result]));    
+            $stmt->execute(array_merge($this->params, ['answer' => $new_answer, 'result' => $result]));
         }
         
         $this->user_answer = $new_answer;
@@ -163,23 +165,92 @@ class Question {
         return -1;
     }
     
-    function loadOtherAnswers() {
+    function createUserAnswer($result) {
+      
+        if($result == '2') {
+            
+            if(!is_array($this->answer)) $this->answer = [$this->answer];            
+            return $this->answer[array_rand($this->answer)];
+            
+        } elseif( $result == '-1') {
+            return readable_random_string(rand(4,6));
+        }
+        
+    }
+    
+    function loadOtherAnswers($groupName = false) {
         global $connection;
     
         $sql = "SELECT  
                     SUM(if(result = '2', 1, 0)) as 'right', 
                     SUM(if(result = '-1', 1, 0)) as 'wrong'
-                FROM answers
-                WHERE 
+                FROM answers ";
+        
+        if($groupName) {
+            $sql .= "LEFT JOIN users
+                    ON users.id = answers.user_id
+                LEFT JOIN groups
+                    ON groups.id = users.group_id
+                WHERE  
+		groups.name = :group_name AND ";
+            $params = array_merge($this->params,[':group_name' => $groupName]); 
+        }                
+        else {
+            $sql .= " WHERE ";
+            $params = $this->params;
+        }
+        
+        $sql .= "   
                     quiz_id = :quiz_id AND
                     question_id = :question_id AND
                     user_id != :user_id
                 GROUP BY 
                     question_id ";
-                        
+                               
         $stmt = $connection->prepare($sql);
-        $stmt->execute($this->params);
-        $this->others = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+        if(!$stmt->execute($params)) printr($connection->erroInfo());       
+        $this->others = $stmt->fetch(PDO::FETCH_ASSOC);  
     }
+    
+    function getDifferentAnswers($groupName = false) {
+        global $connection;
+          
+        $sql = "SELECT  answer, COUNT(answer) as quantity
+                FROM answers ";
+        
+        
+        if($groupName) {
+            $sql .= "LEFT JOIN users
+                    ON users.id = answers.user_id
+                LEFT JOIN groups
+                    ON groups.id = users.group_id
+                WHERE  
+		groups.name = :group_name AND ";
+            $params = array_merge($this->params,[':group_name' => $groupName]); 
+        }
+                
+        else {
+            $sql .= " WHERE ";
+            $params = $this->params;
+        }
+        
+        $sql .= "   quiz_id = :quiz_id AND
+                    question_id = :question_id AND
+                    ( user_id != :user_id OR user_id = :user_id ) AND
+                    result IN ('-1','1','2') 
+                GROUP BY answer 
+                ORDER BY quantity DESC 
+            ";
+                       
+        $stmt = $connection->prepare($sql);
+        if(!$stmt->execute($params)) printr($connection->errorInfo());       
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);        
+
+        $return = [];
+        foreach($results as $result) {
+            $return[$result['answer']] = $result['quantity'];
+        }
+        return $return;
+    }
+    
 }

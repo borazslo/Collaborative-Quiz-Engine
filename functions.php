@@ -1,6 +1,8 @@
 <?php
 
 include_once 'config.php';
+
+date_default_timezone_set("Europe/Budapest");
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -9,9 +11,6 @@ include_once 'config.php';
 
 $imageFolder = 'images';
 $connection = new PDO($config['dbconnection']['dsn'], $config['dbconnection']['username'], $config['dbconnection']['passwd']);
-
-
-$bulkDate = '2010-01-01 12:12:12' ;
 
 $trans = loadTranslation('hu_HU');
 
@@ -31,8 +30,47 @@ function t($string, $arg = false) {
         }                
     }
     
-    return $newstring;       
+    return $newstring;  
 }
+
+function twigFilter_t($string, $arg = false) {
+  return t($string, $arg);       
+}
+
+function twigFilter_timeago($datetime) {
+   
+  if(is_numeric($datetime)) $time = time() - $datetime;
+  else $time = time() - strtotime($datetime); 
+
+ 
+  $units = array (
+    31536000 => ['év', 'éve'],
+    2592000 => ['hónap', 'hónapja'],
+    604800 => ['hét', 'hete'],
+    86400 => ['nap', 'napja'],
+    3600 => ['óra', 'órája'],
+    60 => ['perc', 'perce'],
+    1 => ['másodperc', 'másodperce']
+  );
+
+  foreach ($units as $unit => $val) {
+    if($time > 0) {  
+        if ($time < $unit) continue;
+        $numberOfUnits = floor($time / $unit);
+        return $numberOfUnits." ".$val[1];
+        
+    } else {
+        if ($time < (-1 * $unit  ) ) {
+        $numberOfUnits = floor($time / ( -1 * $unit) );
+        return $numberOfUnits." ".$val[0]. " múlva";
+        }
+        
+    }
+  }
+  
+  return 'xx';
+
+  };
 
 function loadTranslation($lang) {
     $filePath = 'locale/'.$lang.'.csv';
@@ -195,10 +233,31 @@ function getUser($username, $passwd) {
 }
 
 function getGroupSizes() {
-   global $config;
+   global $config, $connection, $development;
    
    $groups = [];
    
+   $sql = "SELECT groups.*, count(*) as members 
+	FROM quizegine.users 
+            LEFT JOIN groups 
+                        ON groups.id = users.group_id ";
+   
+   if(!$development) $sql .= " WHERE users.name NOT LIKE '".Bulk::prefix()."%' ";
+   $sql .=" GROUP BY groups.id
+            ORDER BY members
+    ";
+   
+   $stmt = $connection->prepare($sql);
+   $stmt->execute();
+   $results = $stmt->fetchAll();
+   
+    foreach($results as $result) {
+           $groups[$result['name']] = $result['members'];
+    }
+    
+   return $groups;
+   
+   // TODO: alább
    # A $config-ot itt nem nagyon ellenőrizzük, mert a getUser már úgyis megtette
    
    if(isset($config['authentication']['array'])) { 
@@ -264,98 +323,45 @@ function getGroupSizes() {
 
 
 
-function bulkAnswers() {
-    global $connection;
-    
-    global $server, $dbname2, $dbuser, $dbpassword;
-    $connectionJezsu = new PDO("mysql:host=$server;dbname=$dbname2;charset=utf8", $dbuser, $dbpassword);
-    
-    $kerdesek = loadKerdesek('kerdesek.csv');
-    
-    
-    global $bulkDate, $imageFolder;
-    
-    $stmt = $connectionJezsu->prepare("SELECT * FROM tanulok ORDER BY RAND() LIMIT :random ");
-    $stmt->bindValue(':random', (int) rand(30,140), PDO::PARAM_INT);  
-
-    $stmt->execute() or die(print_r($stmt->errorInfo()));
-    $tanulok = $stmt->fetchAll(PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
-    
-    $stmt = $connection->prepare("DELETE FROM valaszok WHERE timestamp = :timestamp");
-    $stmt->execute(['timestamp'=>$bulkDate]);
-    
- 
-    foreach($tanulok as $tanulo) {
-        $keys = array_rand($kerdesek, rand(5,count($kerdesek)));
-        foreach ($keys as $key) {
-            switch (rand(1,4)) {
-                case 1:
-                    $valasz = "";
-                    $helyes = 0;
-                    break;
-
-                case 2:
-                    $valasz = substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ -_'),1,rand(5,20));
-                    // Ne adjon hibás válaszokat fájl esetén.
-                    if($kerdesek[$key]['answer'] == "[file]") $valasz = "";
-                    $helyes = 0;
-                    break;
-
-                default:
-                    //Egyébként ez nem jó ott, ahol | -al elválasztott változatok vannak.
-                    $helyesValaszok = explode(';',$kerdesek[$key]['answer']);
-                    $valasz = $helyesValaszok[rand(0,count($helyesValaszok)-1)];
-                    $helyes = 1;
-                    //Kép esetén nehezebb helyes választ generálni
-                    if($valasz == '[file]') {
-                        $valasz =uploadImage(['tmp_name'=>$imageFolder.'/empty.jpg','name'=>'ures']);
-                        $newValasz = str_ireplace($imageFolder, $imageFolder."/bulk",$valasz);
-                        rename($valasz, $newValasz);
-                        $valasz = $newValasz;
-                        $helyes = rand(0,2);
-                    }
-                    
-                    break;
-            }
-            
-         
-            $stmt = $connection->prepare("INSERT INTO valaszok (tanaz, tanosztaly, kerdesid, valasz, helyes, timestamp)"
-                . "VALUES (:tanaz, :tanosztaly, :kerdesid, :valasz, :helyes, :timestamp)");
-            $stmt->execute([
-                'tanaz' => $tanulo['tanaz'], 
-                'tanosztaly'=>$tanulo['tanosztaly'], 
-                'kerdesid' => $key, 
-                'valasz' => $valasz, 
-                'helyes' => $helyes,
-                'timestamp' => $bulkDate
-                ]);            
-        }        
-        
-    }
-    
-    return true;
-}
-
-function getScores() {
-    global $connection, $development, $bulkDate, $config;
+function getRankingTable($quiz_id) {
+    global $connection, $development, $config;
     
     /* Ranglista összeállítása */
+        
     $sql = "
-            select tanosztaly, 
-                count(distinct tanaz) as jatekos,
-                count(if(helyes = 1, 1, null)) * ".$config['scoring']['goodAnswer']." +  ( count(if(helyes = 0, 1, null))* ".$config['scoring']['badAnswer']." ) as pont 
-                        from valaszok          
-        ";            
-    if(!$development)    $sql .= "WHERE timestamp <> '$bulkDate'";
-	$sql .= " group by tanosztaly  ";
-    $sql .=  " order by pont DESC";    
-    //echo $sql;
+        SELECT 
+            users.group_id, 
+            groups.name , 
+            count(distinct user_id) as members,
+       
+            count(if(result = -1, 1, null)) * ".$config['scoring']['badAnswer']."
+                +  ( count(if(result = 1, 1, null))* ".$config['scoring']['goodAnswer']." ) 
+                    +  ( count(if(result = 2, 1, null))* ".$config['scoring']['goodAnswer']." ) 
+                        as points 
+        
+        FROM `answers`
+            LEFT JOIN users ON users.id = answers.user_id
+            LEFT JOIN groups ON groups.id = users.group_id 
+        
+        WHERE quiz_id = :quiz_id 
+
+        ";      
+    
+    
+    if(!$development)    $sql .= "AND timestamp <> '".Bulk::date()."'";
+
+    $sql .=  " GROUP BY group_id"
+            . " ORDER BY points DESC";    
+    //echo "<br>".$sql."<br>";
     $stmt = $connection->prepare($sql);
-    $stmt->execute();
+    $stmt->execute(array(':quiz_id'=> $quiz_id));
     $ranglista = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    
+    
     $groupSizes = getGroupSizes();    
     
-    /* Eltávolítjuk azokat a ranglistából, akik most épp nem férnek hozzá az anyaghoz */
+    /* Eltávolítjuk azokat a ranglistából, akik most épp nem férnek hozzá az anyaghoz *
     foreach($ranglista as $key => $group) {        
         if(!array_key_exists($group['tanosztaly'], $groupSizes)) {
             unset($ranglista[$key]);
@@ -378,22 +384,24 @@ function getScores() {
             throw new Exception("Configuration error: invalid 'scoring/groupSizeCorrection'!");
         }
         
-        foreach($ranglista as $key => $osztaly) {       
-            if(!array_key_exists($osztaly['tanosztaly'], $groupSizes)) $groupSizes[$osztaly['tanosztaly']] = $groupSizeCorrection;
-            $ranglista[$key]['pont'] = (int) ( ( $groupSizeCorrection / $groupSizes[$osztaly['tanosztaly']] ) * $ranglista[$key]['pont'] );
+        foreach($ranglista as $key => $group) {       
+            if(!array_key_exists($group['name'], $groupSizes)) $groupSizes[$group['name']] = $groupSizeCorrection;
+            $ranglista[$key]['points'] = (int) ( ( $groupSizeCorrection / $groupSizes[$group['name']] ) * $ranglista[$key]['points'] );
         }
+        
     }
+    /* */
       
     /* Egy kis igazítás azzal, hogy hányan csináltak bármit az osztályból */
-    foreach($ranglista as $key => $osztaly) {
-        $ranglista[$key]['pont'] += ( $ranglista[$key]['jatekos'] * $config['scoring']['forEachParticipants'] );
+    foreach($ranglista as $key => $group) {
+        $ranglista[$key]['points'] += ( $ranglista[$key]['members'] * $config['scoring']['forEachParticipants'] );
     }
     
     /* Ki szedjük a DEV csoportot */
     global $development;
     if(!$development) {
         foreach($ranglista as $key => $value) {
-            if($value['tanosztaly'] == 'DEV') {
+            if($value['name'] == 'DEV') {
                 unset($ranglista[$key]);
             }
         }
@@ -401,13 +409,13 @@ function getScores() {
     
     /* Sorbarendezés */
     usort($ranglista, function ($item1, $item2) {
-        return $item2['pont'] <=> $item1['pont'];
+        return $item2['points'] <=> $item1['points'];
     });
     
     $return = [];
     foreach($ranglista as $key => $value) {
-        $value['rang'] = $key + 1;
-        $return[$value['tanosztaly']] = $value;
+        $value['position'] = $key + 1;
+        $return[$value['name']] = $value;
     }   
     return $return; 
    
@@ -420,11 +428,12 @@ function printr($anything) {
 spl_autoload_register(function ($class_name) {
     $filename = $class_name . '.php';
     if(file_exists($filename)) include $filename;
-    elseif(file_exists('common/'.$filename)) include 'common/'.$filename;    
+    elseif(file_exists('common/'.$filename)) include 'common/'.$filename;
+    elseif(file_exists(strtolower('common/'.$filename))) include strtolower('common/'.$filename);    
 });
 
 
-function getParam( &$arr, $name, $def=null, $type=null) {
+function getParam( &$arr, $name, $def=null, $type=null) {    
     if (isset( $arr[$name] )) {
         if ($type == 'int') return intval($arr[$name]);
         if ($type == 'f') return floatval($arr[$name]);
@@ -433,3 +442,30 @@ function getParam( &$arr, $name, $def=null, $type=null) {
         return $def;
     }
 }
+
+ /**
+    * Generates human-readable string.
+    * https://gist.github.com/sepehr/3371339
+    * 
+    * @param string $length Desired length of random string.
+    * 
+    * retuen string Random string.
+    */ 
+   function readable_random_string($length = 6)
+   {  
+       $string = '';
+       $vowels = array("a","e","i","o","u");  
+       $consonants = array(
+           'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 
+           'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'
+       );  
+
+       $max = $length / 2;
+       for ($i = 1; $i <= $max; $i++)
+       {
+           $string .= $consonants[rand(0,19)];
+           $string .= $vowels[rand(0,4)];
+       }
+
+       return $string;
+   }

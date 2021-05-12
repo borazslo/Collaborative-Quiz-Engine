@@ -3,14 +3,19 @@ password;jelszó
 name;név
 Cannot login. Please check your credentials;Nem sikerült azonosítani! Ellenőrizd az adataidat!
 File not found: %s;A fájl nem található: %s
-There are no questions right now. Is it too early or too late?;Nincsenek elérhető kérdések. Talán túl korán van. Vagy már túl késő.
+NoMoreQuestion;Nem érkezik már több kérdés.
+NextQuestion;Következő kérdés
+QuizWillStart;A kvíz még nem kezdődött el. Kezdés 
+QuizEnded;Véget ért a kívz, így már nincsenek kérdéseink.
 Questions that require manual attention;Személyes ellenőrzés igénylő kérdések
+InActvie;A felhasználó még nincs aktiválva ezért nem lehet belépni vele. Először az emailben átküldött linkre kattintva kell aktiválni. Ha nincs meg az email cím, akkor az email cím beküldésével új aktiváló emailt tudunk küldeni.
 Uploaded;Feltöltve
 Accept;Elfogad
 Deny;Elutasít
 There is nothing to check. But if you refresh the page, you could find new answers.;Nincs ellenőrízendő kép. De, ha frissíted az oldalt, akkor talán lesz.
 email;email
-RMgroup;regnumi néped neve
+RMgroup;regnumi néped neve*
+RMgroupNotFound;nincs ilyen regnumi nép
 Registration;Regisztráció
 EmailTaken;Ez az emailcím már foglalt.
 LostPassword;Elfelejtettem a jelszavam...
@@ -18,15 +23,23 @@ NewPasswordSaved;Most már beléphetsz az új jelszavaddal.
 Login;Bejelentkezés
 LoginWelcome;Kérem jelentkezz be
 SendPassword;Jelszó elküldése
-RegConfirmationEmail;Kedves {name},<br/> az alábbi linken megerősítheted a regisztrációt: {url}.
+RegConfirmation_Subject;Regisztráció
+RegConfirmation_Email;Kedves {name}!<br/><br />Üdvözlünk a fedélzeten! Az alábbi linken megerősítheted a regisztrációt:<br/> {url}.
 RegConfirmationSent;A regisztráció megerősítéséhez szükséges linket elküldtük az emailcímedre.
+RegConfirmed;Köszönjük a regisztráció megerősítését. Most már be tudsz lépni.
 LostPasswordDetails;A megadott emailcímre elküldjük a jelszómódosításhoz szükséges információkat
 LostPassword_Subject;Elfelejtett jelszó
-LostPassword_Email;Kedves {name},<br/> az alábbi linken megváltoztathatod a jelszavadat: {url}.
+LostPassword_Email;Kedves {name}!<br/><br />Az alábbi linken megváltoztathatod a jelszavadat:<br/> {url}.
 Password_Sent;Az jelszómódosításhoz szükséges linket elküldtük az emailcímedre.
 UnknownEmail;ismeretlen email cím
 WrongPassword;Érvénytelen email vagy jelszó
 InvalidToken;Érvénytelen token
 AddNewPassword;Megadhatsz egy új jelszót.
 AccessDenied;Az oldal megtekintéséhez nincs elegendő jogosultságod.
-logout;Kijelentkezés
+Logout;Kijelentkezés
+Show password;Mutasd a jelszót
+NewUserError;Hiba történt az új felhasználó rögzítése közben. Elnézést.
+InvalidGroupName;A csapat nevében nem megfelelő karakterek is vannak.
+Group;Csapat
+Points;Pontok
+onPlace;helyen

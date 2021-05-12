@@ -2,8 +2,8 @@
 
 {% block container %}
   <div class="jumbotron text-center ">
-        <h1 class="jumbotron-heading">{{ game.title }}</h1>
-        {{ game.description|raw }}
+        <h1 class="jumbotron-heading">{{ quiz.title }}</h1>
+        {{ quiz.description_html|raw }}
   </div>
     <div class="row justify-content-center">
         <div class="col-lg-4 col">
@@ -18,7 +18,7 @@
 				<div class="alert alert-info" role="alert">
 						{{ info|t }}
 				</div>
-			{% endif %}
+			{% endif %}                        
 			{% if error %}
                {% if error is same as(true) %}
                 <div class="alert alert-danger" role="alert">
@@ -30,7 +30,7 @@
                 </div>
 	             {% endif %}
 		    {% endif %}
-        <form class="form-signin" action="" method="post">
+        <form class="form-signin" action="{{ base_url }}" method="post">
 		
 			{% if registration %}   	
 				<label for="name" class="sr-only">name</label>
@@ -48,17 +48,19 @@
 			{% endif %}
             
             {% if registration %}   
-				<label for="check">Show password</label> <input type='checkbox' id='check' />
+				<label for="check">{{ 'Show password'|t }}</label> <input type='checkbox' id='check' />
 				
-				<select class="form-control basicAutoSelect" name="rmgroupid" 
+				<input type="text" class="form-control basicAutoSelect" name="groupName" 
 								placeholder="{{ 'RMgroup'|t }}" 
-								data-url="?task=rm" autocomplete="off" required 
-								{% if rmgroupId %}
-								data-default-value="{{ rmgroupId }}" data-default-text="{{ rmgroupName }}"
+								autocomplete="off" required 
+								{% if groupName %}
+                                                                    value="{{ groupName }}" 
 								{% endif %}
 								
-								></select>
+								>
+                                                                * Ha nem tartozol néphez, akkor válassz egyet 'Felnőttek a [...] Helyi Regnumból' csoportok közül, hogy támogathasd a helyieket.
 				<code class="basicAutoSelectSelected"></code>
+                                {{ groupName }}
 				
 				
             {% endif %}  
@@ -80,7 +82,7 @@
             
         </form>
         
-		
+	
         <script type='text/javascript'>
         window.addEventListener('load', function() { 
         
@@ -88,7 +90,24 @@
 		{% if registration %}   
 			var s = document.createElement('script');
 			s.setAttribute('src','https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@master/dist/latest/bootstrap-autocomplete.min.js');
-			s.onload=function(){$('.basicAutoSelect').autoComplete({minLength: 1});};
+			s.onload=function(){$('.basicAutoSelect').autoComplete({    
+                                minLength: 1, 
+                                noResultsText: '{{ 'RMgroupNotFound'|t }}',
+                                resolver: 'custom',
+                                events: {
+                                    search: function (qry, callback) {
+                                        $.ajax(
+                                            '?task=rm', {
+                                                data: {
+                                                    'term': qry
+                                                }
+                                            }
+                                        ).done(function (res) {
+                                            callback(res)
+                                        });
+                                    }
+                                }                    
+                        });};
 			document.head.appendChild(s);
 		{% endif %}
 		

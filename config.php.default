@@ -9,7 +9,8 @@ $config = [
         'passwd' => 'PASSWD',
   ],
   'debug' => false,
-  'loginHelper' => false  // use login system of loginHelper (true) or not (false) 
+  'loginHelper' => false , // use login system of loginHelper (true) or not (false) 
+  'rankingTablePublic' => false // wether any user can see the rankingTable on the sidebar
 ];
 
 $config['lang'] = 'hu_HU';
@@ -62,7 +63,8 @@ $config['scoring'] = [
         'badAnswer' => 1, # (int), default: 1
         'goodAnswer' => 5, # (int), default: 5
         'groupSizeCorrection' => 1, #false: nincs, avg: átlag csoportmérethez igazítunk, max: legnagyobbhoz igazítunk, min: legkisebbhez igazítunk, (int): konkrét csoportmérethez, default: avg
-        'forEachParticipants' => 12 # (int), default: 5
+        'forEachParticipants' => 12, # (int), default: 5
+        'allOrNoneTolerance' => 20 # (percentage), default: 10
     ];
 
 

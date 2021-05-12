@@ -21,6 +21,13 @@ class questionManual extends Question {
         }
     } 
     
+    function createUserAnswer($result) {      
+        
+        return readable_random_string(rand(4,6));                
+        
+    }
+        
+    
     function autoValidate($user_answer) {
         global $connection;
         $stmt = $connection->prepare("SELECT * FROM answers WHERE question_id = :question_id AND quiz_id = :quiz_id AND LOWER(answer) LIKE :user_answer  ORDER BY timestamp DESC LIMIT 1"); //AND LOWER(answer) LIKE '%:user_answer%'

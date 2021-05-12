@@ -7,7 +7,11 @@
         },
         "description_html" : {
             "type": "string",
-            "description" : "A kvíz leírása, ami html elemeket is tartalmazhat."
+            "description" : "A kvíz leírása a belépő címoldara, ami html elemeket is tartalmazhat."
+        },
+        "short_description_html" : {
+            "type": "string",
+            "description" : "A kvízhez tartozó rövid üzenet vagy leírása, ami a játék közben mindig látható. Html elemeket is tartalmazhat."
         },
         "copyright" : {
             "type": "string",
@@ -51,7 +55,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "manual", "multi", "photo", "puzzle", "select", "wait"],
+                        "enum": ["text", "allOrNone", "manual", "multi", "photo", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {
