@@ -1,5 +1,5 @@
 <?php
-
+echo 'RM Majális - "Újratervezés" - 2021. május 15. '; exit ;
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
@@ -33,10 +33,6 @@ require_once('common/login.php');
 $quiz = new Quiz($quizId.'.json');
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
 
-//$bulk = new Bulk($quiz);
-//$bulk->addAll();
-//$bulk->addAnswers(10);
-//$bulk->deleteAll();
 
 CheckLogin();
 
