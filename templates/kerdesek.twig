@@ -7,7 +7,7 @@
     <nav class="navbar dfixed-top navbar-dark bg-dark">
         <a class="navbar-brand" href="index.php">{{ quiz.title }}</a>
         <span class="navbar-text">
-        {{ user.name }} ({{ user.group }}{{ rankingTable[user.group].rank ? ( " - " ~ ranglista[user.tanosztaly].rang ~ ". helyen" ) }})
+        {{ user.name }} ({{ user.group }}{{ rankingTable[user.group].position ? ( " - " ~ rankingTable[user.group].position ~ ". " ~ "onPlace"|t ) }})
         <input type="hidden" name="tanaz" value="{{ user.tanaz }}">
         <input type="hidden" name="tanazonosito" value="{{ user.tanazonosito }}">        
         <a href="index3.php?task=logout">{{ "Logout"|t }}</a>
@@ -17,30 +17,17 @@
         <hr>
     <div class="row justify-content-center">
         <div class="col-mb-2 col">
-  <!--
-            <div class="alert alert-primary">A feladatok reggel kilenctől három percenként érkeznek majd és mindegyik fél órán keresztül lesz látható. Fogjatok össze, beszéljétek meg, és oldjátok meg minél többen!<br/>
-                Találkozunk utána délben <a href="https://www.youtube.com/user/jezsuvideo/live">Jezsu YouTube csatornán</a>!</div>-->
+            {% if quiz.short_description_html %}
+                <div class="alert alert-primary">
+                    {{ quiz.short_description_html|raw }}
+                </div>
+            {%  endif %}
             {% if config.debug %}
                 <div class="alert alert-warning">Fejlesztői üzemmódban vagyunk. Sok valótlan tartalommal, meg csak úgy.</div>                
                 {% for devMessage in devMessages %}
                     <div class="alert alert-warning">{{ devMessage | raw}}</div>
                 {% endfor %}
             {% endif %}
-
-	<!--<div class="alert alert-warning">Későn csatlakozott be az osztályod? Nem sikerült az első kérdésekre válaszolni? VAN REMÉNY! 11:05-kor tizenöt percre láthatóvá válik minden kérdés megint! Térjetek vissza!</div>-->
-
-<!--
-	 <div class="alert alert-info">
-	{% if user.tanosztaly == '9A' %}Ne keseredjetek el! Ha hoztok még embert és nem csak hárman dolgoztok, akkor a végén talán újra megmutatjuk az első kérdéseket is, és akkor sokat lehet javítani a rangsoron!
-	{% elseif user.tanosztaly == '10C' %}Ezaz! Mutassátok meg!
-    {% elseif user.tanosztaly == '5B' %}Újra legnagyobb létszámmal! Gyerünk!
-    {% elseif user.tanosztaly in ['5A','6A'] %}Majdnem (!) annyian vagytok mint az 5B. Meglesz!
-	{% else %}
-	Hívj még embert! Hajrá!
-	{% endif %}
-	</div>
--->
-    
 
     {% for question in quiz.questions %}
         {% if question.active == true or config.debug == true %}
@@ -50,7 +37,7 @@
         
     {% if quiz.thereIsNoQuestion %}
         {% if quiz.nextQuestionTime %}         
-            <div class="alert alert-info">{{ "QuizWillStart"|t }} <span title="{{ quiz.nextQuestionTime|date('Y-m-d H:i:s') }}">{{ quiz.nextQuestionTime|timeago }}</span>.</div>           
+            <div class="alert alert-info">{{ "QuizWillStart"|t }} <span title="{{ quiz.nextQuestionTime|date('Y-m-d H:i:s') }}">{{ quiz.nextQuestionTime|timeago }} ({{ quiz.nextQuestionTime|date('Y-m-d H:i') }})</span>.</div>           
         {% else %}
             <div class="alert alert-info">{{ "QuizEnded"|t }}</div>    
         {% endif %}

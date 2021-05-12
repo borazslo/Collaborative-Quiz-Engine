@@ -42,3 +42,4 @@ NewUserError;Hiba történt az új felhasználó rögzítése közben. Elnézés
 InvalidGroupName;A csapat nevében nem megfelelő karakterek is vannak.
 Group;Csapat
 Points;Pontok
+onPlace;helyen
