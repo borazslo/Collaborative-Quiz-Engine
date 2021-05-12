@@ -11,17 +11,19 @@ $loginHelper = new LoginHelper();
 $next_page = $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
 $next_page = getParam( $_REQUEST, "next_page", $next_page);
 
-$quizId = getParam($_REQUEST, 'q', 'majalis'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
-$quiz = new Quiz($quizId.'.json');
-$page->data['quiz'] = json_decode(json_encode($quiz), true);
-unset($page->data['quiz']['description_html']);
+if ($action != false AND $action != "login"){
+    $quiz = new Quiz($quizId.'.json',true);
+    $page->data['quiz'] = json_decode(json_encode($quiz), true);
+}
 
+$continue = false;
 if ($action == "login"){
 	$loginHelper->login($_REQUEST);
 	if (!$loginHelper->authenticated_user()){
+                $quiz = new Quiz($quizId.'.json',true);
+                $page->data['quiz'] = json_decode(json_encode($quiz), true);
 		$loginHelper->loginForm(t('WrongPassword'), $_REQUEST, $next_page);
 	}else{
-		// success
 		$user = new User($_SESSION['user']);
 	}
 
@@ -48,6 +50,16 @@ if ($action == "login"){
 }else if ($action == "logout"){
 	$loginHelper->logout();
 	header("Location: index3.php");
+        
+} else if ($action == false ) {
+    $user = new User($_SESSION['user']);
+}
+
+if(! (array) $user ) { 
+    $quiz = new Quiz($quizId.'.json',true);
+    $page->data['quiz'] = json_decode(json_encode($quiz), true);
+    $loginHelper->loginForm(false, $_REQUEST, $next_page);
+    exit;
 }
 
 

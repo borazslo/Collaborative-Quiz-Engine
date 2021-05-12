@@ -23,28 +23,19 @@ if(isset($_SERVER['BASE'])){
 if($development == true) $page->data['development'] = true;
 $page->data['config']['debug'] = $config['debug'];
 
-/*
-if(!isset($_REQUEST['tanaz']) OR !isset($_REQUEST['tanazonosito'])) {
-    $page->templateFile = 'koszonto';
-    echo $twig->render($page->templateFile.".twig", $page->data);
-    exit;
-} 
 
-$user = getUser($_REQUEST['tanaz'],$_REQUEST['tanazonosito']);
-*/
+$quizId = getParam($_REQUEST, 'q', 'szentignac'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
 
 require_once 'common/user.php';
+
 require_once('common/login.php');
 
-$user = new User($_SESSION['user']);
-
-
-$quizId = getParam($_REQUEST, 'q', 'majalis'); // explode('/',str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['REQUEST_URI']))[0];
 $quiz = new Quiz($quizId.'.json');
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
 
 //$bulk = new Bulk($quiz);
 //$bulk->addAll();
+//$bulk->addAnswers(10);
 //$bulk->deleteAll();
 
 CheckLogin();
@@ -58,8 +49,8 @@ if(empty((array) $user)) {
 
 $page->data['user'] = (array) $user;
 
-if(isset($user->isAdmin)) {
-    $page->data['config']['debug'] = $config['debug'] = true;
+if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
+     $page->data['config']['debug'] = $config['debug'] = true;
 }
 
 $page->templateFile = 'kerdesek';
@@ -82,5 +73,4 @@ if(!empty((array) $user)) {
     }
     $page->data['rankingTable'] = $rankingTable;
 }
-
 echo $twig->render($page->templateFile.".twig", $page->data);
