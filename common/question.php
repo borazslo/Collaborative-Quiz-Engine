@@ -253,4 +253,10 @@ class Question {
         return $return;
     }
     
+    function pseudoRandom($from, $to, $unique) {
+        
+        return  $from + ( bindec(md5( $unique )) % ($to - $from) );
+                       
+    }
+    
 }

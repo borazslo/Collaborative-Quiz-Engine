@@ -55,7 +55,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "allOrNone", "manual", "multi", "photo", "puzzle", "select", "wait"],
+                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "photo", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {
@@ -128,7 +128,14 @@
                         }                        
                     },
                     
-
+                    "text" : {
+                        "type" : ["string", "array"],
+                        "description" : "Szöveg amiből véletlenszerűen hiányzik egy-egy szó, ami a helyes válasz. Kötelező, ha type=completion. Máskor felesleges",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    
                     "relativeStart" : {
                         "type" : "string",
                         "description" : "A kérdés megjelenésének ideje az előző kérdéshez képest. Olyan formában amit a strtotime() fel tud ismerni. Felülírja a 'timing.start'-ot!"
