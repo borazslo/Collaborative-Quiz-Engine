@@ -7,8 +7,7 @@ class questionCompletion extends Question {
 
             if(!is_array($this->text)) $this->text = [$this->text];
             
-            $c = $this->pseudoRandom(0,count($this->text) -1, $user->group );
-                        
+            $c = $this->pseudoRandom(0, count($this->text) - 1 , $this->setUnique() );                        
             $words = explode(' ',$this->text[$c]);
             
             $k = $this->pseudoRandom(0,count($words)-1, $user->id );

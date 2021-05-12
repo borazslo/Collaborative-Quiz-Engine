@@ -261,4 +261,18 @@ class Question {
                        
     }
     
+    function setUnique() {
+        global $user;
+        if(!isset($this->unique)) $this->unique = 'user';
+        if(is_array($this->unique)) {
+            if(isset($this->unique[($user->level - 1)])) $this->unique = $this->unique[$user->level - 1];
+            else $this->unique = $this->unique[count($this->unique) -1 ];
+        }             
+        if($this->unique == 'user') $this->unique = 'id';
+        
+        $this->unique = $this->id."_".$user->{$this->unique};
+        
+        return $this->unique;
+    }
+    
 }

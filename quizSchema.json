@@ -173,7 +173,7 @@
                     
                     "unique" : {
                         "type" : ["string", "array"],
-                        "description" : "Mindenki különbözőt kapjon, vagy csoportonként azonosat? Kötelező, ha type=puzzle. Máskor felesleges.",
+                        "description" : "Mindenki különbözőt kapjon, vagy csoportonként azonosat? Használható, ha type=puzzle|completion|pair|pieces.  Máskor felesleges.",
                         "anyOf" : [
                             {
                                 "type" : "string",

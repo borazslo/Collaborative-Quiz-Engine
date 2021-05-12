@@ -20,16 +20,10 @@ class questionPuzzle extends Question {
         }
         sort($this->options);                    
 
-        //Choose file
-        global $user;
-        if(!isset($this->unique)) $this->unique = 'user';
-        if(is_array($this->unique)) {
-            if(isset($this->unique[($user->level - 1)])) $this->unique = $this->unique[$user->level - 1];
-            else $this->unique = $this->unique[count($this->unique) -1 ];
-        }             
-        if($this->unique == 'user') $this->unique = 'id';
+        //Choose file               
+        $c = $this->pseudoRandom(0, count($files) - 1 , $this->setUnique() );
+        $file = $files[$c];
 
-        $file = $files[bindec(md5( $user->{$this->unique} )) % count($files)];
         //$file = $files[ rand(0,count($files)-1)];
 
         /*

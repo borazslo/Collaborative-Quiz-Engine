@@ -9,7 +9,7 @@ class questionPair extends Question {
 
             if(isset($this->pairs) AND !is_array($this->pairs)) $this->pairs = ($this->pairs)();
                                     
-            $c = $this->pseudoRandom(0,count($this->pairs) -1, $user->id . $this->id );
+            $c = $this->pseudoRandom(0, count($this->pairs) - 1 , $this->setUnique() );
 
             $this->question .= "<br/><blockquote class='blockquote'>".array_keys($this->pairs)[$c]."</blockquote>";
             $this->answer = $this->pairs[array_keys($this->pairs)[$c]];
