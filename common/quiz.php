@@ -81,6 +81,7 @@ class Quiz {
         $frequency = isset($this->timing->frequency) ? ( strtotime($this->timing->frequency) - time() ) : 0 ; 
         $duration = isset($this->timing->duration) ? ( strtotime($this->timing->duration) - time() ) : 31556952 ;
                      
+        if(isset($this->questions))
         foreach($this->questions as &$question) {            
             if(!isset($last_start))
                 $question->startTime = $start;          
@@ -106,6 +107,7 @@ class Quiz {
 
         $now = time();
         $this->thereIsNoQuestion = true;
+        if(isset($this->questions))
         foreach($this->questions as $key => $question) { 
             if ( $question->startTime > $now OR $question->endTime < $now ) {
                 $this->questions[$key]->active = false;
