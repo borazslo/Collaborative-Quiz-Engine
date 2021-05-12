@@ -1,4 +1,4 @@
-{% set allow = '<br><i><a><img><quote><blockquote>' %}
+{% set allow = '<br><i><a><img><quote><blockquote><small>' %}
  
 <div class="card mt-1" id="card{{ id }}">
     <div class="card-header">
@@ -53,7 +53,7 @@
             <label for="inputId{{ id }}" class="sr-only">{{ id }}. kérdés, {{ prefix }}</label>
                                  
             {% if inputType == 'select' %}
-                {% if user_result < 1 %}
+                {% if user_result < 2 %}
                     <select class="form-control {{ user_result == -1 ? 'text-danger' }}" name="questions[{{ id }}]" id="inputId{{ id }}">
                         <option value="">Válassz a lehetőségek közül...</option>
                         {% for option in options  %}
@@ -61,7 +61,7 @@
                         {% endfor %}
                     </select>                                
                 {% else %} 
-                    <input type="text" class="{{ user_result == 1 ? 'text-success' }}{{ user_result == -1 ? 'text-danger' }} form-control" name="kerdes[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ user_answer }}" {{ user_result == 1 ? 'readonly'  }}>
+                    <input type="text" class="{{ user_result == 2 ? 'text-success' }}{{ user_result == -1 ? 'text-danger' }} form-control" name="kerdes[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ user_answer }}" {{ user_result == 2 ? 'readonly'  }}>
                 {% endif %}
 
              {% elseif inputType == 'file' %}   
