@@ -26,3 +26,17 @@ class User {
 
     }
 }
+
+function companionsOfCurrentUsers() {
+    global $user, $connection;
+    printr($user);
+    $stmt = $connection->prepare("SELECT users.* FROM users LEFT JOIN groups ON users.group_id = groups.id WHERE groups.name = :group_name ");
+    $stmt->execute(array(":group_name" => $user->group));
+    $groups = $stmt->fetchAll();
+    $return = [];
+    foreach($groups as $group)
+        $return[] = $group['name'];
+    
+    return $return;
+    
+}

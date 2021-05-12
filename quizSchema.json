@@ -121,8 +121,8 @@
                     },
                     
                     "options" : {
-                        "type" : "array",
-                        "description" : "Legördülő lista a választható válaszokkal. Kötelező, ha type=select. Lehetséges, ha type = allOrNone. Máskor felesleges.",
+                        "type" : ["array","string"],
+                        "description" : "Legördülő lista a választható válaszokkal. Kötelező, ha type=select. Lehetséges, ha type = allOrNone. Máskor felesleges. | Ha csak egy string akkor egy függvény név ami egy listával kell visszatérjen.",
                         "items" : {
                             "type" : ["string", "integer"]
                         }                        

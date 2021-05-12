@@ -22,7 +22,9 @@ class Question {
             $this->$key = $val;
         }
         
-                                        
+        if(isset($settings->options) AND !is_array($settings->options) AND function_exists($settings->options))
+            $this->options = ($settings->options)();
+        
         $this->prepareQuestion();
         $this->prepareInput();
         
