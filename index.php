@@ -1,5 +1,5 @@
 <?php
-echo 'RM Majális - "Újratervezés" - 2021. május 15. '; exit ;
+//echo 'RM Majális - "Újratervezés" - 2021. május 15. '; exit ;
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
