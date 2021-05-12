@@ -259,6 +259,9 @@ class LoginHelper
 		  $result['group'] = $r['groupname'];
 		  $result['group2'] = false; // $r['group'];
 		  $result['level'] = $r['level'];
+                                    
+                  if(isset($config['addons'])) foreach($config['addons'] as $addon ) $result = $addon::login($result);
+                                      
 		  $_SESSION['user'] = $result;
 		  
 		  return true;
