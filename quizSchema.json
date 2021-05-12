@@ -152,6 +152,11 @@
                         }
                     },
                     
+                    "commas" : {
+                        "type" : "integer",
+                        "description" : "Hány darab, vesszővel elválasztott szövegből álljon a válasz. Szabad használni, ha type=manual. Máskor felesleges"
+                    },
+                    
                     "relativeStart" : {
                         "type" : "string",
                         "description" : "A kérdés megjelenésének ideje az előző kérdéshez képest. Olyan formában amit a strtotime() fel tud ismerni. Felülírja a 'timing.start'-ot!"

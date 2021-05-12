@@ -33,13 +33,34 @@ class questionManual extends Question {
         $stmt = $connection->prepare("SELECT * FROM answers WHERE question_id = :question_id AND quiz_id = :quiz_id AND LOWER(answer) LIKE :user_answer  ORDER BY timestamp DESC LIMIT 1"); //AND LOWER(answer) LIKE '%:user_answer%'
         $stmt->execute(['quiz_id'=>$this->quiz_id, 'question_id' => $this->id,'user_answer' => '%'.$user_answer.'%']); 
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if(isset($result[0])) {
+        if(isset($result[0]) and in_array($result[0]['result'], ['-1','2'])) {
             if( strcasecmp(trim($user_answer),trim($result[0]['answer'])) == 0 ) {
                 return $result[0]['result'];    
             }
         }
         if($user_answer == "") return 0;
         
+        if(isset($this->commas)) {
+            $user_answer = trim($user_answer,",");
+            $words = explode(',',$user_answer);            
+            if(count($words) != $this->commas ) return -1;
+            
+            $stmt = $connection->prepare("SELECT DISTINCT answer FROM answers WHERE question_id = :question_id AND quiz_id = :quiz_id AND result = '2'");            
+            $stmt->execute(['quiz_id'=>$this->quiz_id, 'question_id' => $this->id]); 
+            $results = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            $allwords = [];
+            foreach($results as $result) {
+                $ress = explode(',',$result);
+                foreach($ress as $res) {
+                    $allwords[] = trim($res);
+                }                
+            }
+            foreach($words as $word) {
+                if(!in_array(trim($word),$allwords)) return 1;
+            }           
+            return 2;
+            
+        } else 
         return 1;        
     }
     
