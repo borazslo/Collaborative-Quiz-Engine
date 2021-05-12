@@ -24,7 +24,7 @@ class LoginHelper
   function getRMgroupsJSON($s){
     global $connection;
     
-    $q = $connection->prepare("SELECT `id`, `name`, `group` FROM regnum_communities" . ($s == "" ? "" : " WHERE `name` like :prefix OR `name` like :prefix2 "));
+    $q = $connection->prepare("SELECT `id`, `name`, `group` FROM regnum_communities" . ($s == "" ? "" : " WHERE `name` like :prefix OR `name` like :prefix2 ORDER BY `name`"));
 	if ($s != ''){
 		$q->bindValue(':prefix', $s.'%', PDO::PARAM_STR);  
 		$q->bindValue(':prefix2', '% '.$s.'%', PDO::PARAM_STR);  
