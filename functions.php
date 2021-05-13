@@ -381,7 +381,6 @@ function getRankingTable($quiz_id) {
         } elseif ($groupSizeCorrection == 'min') {
             $groupSizeCorrection = min($groupSizes);
         } elseif ($groupSizeCorrection == 'max') {
-            print_r($osztalyletszamok);
             $groupSizeCorrection = max($groupSizes);
         } elseif ($groupSizeCorrection == 'avg') {
             $groupSizeCorrection = (int) ( array_sum($groupSizes)/count($groupSizes) );

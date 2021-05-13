@@ -43,3 +43,4 @@ InvalidGroupName;A csapat nevében nem megfelelő karakterek is vannak.
 Group;Csapat
 Points;Pontok
 onPlace;helyen
+Members;Játékosok
