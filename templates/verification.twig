@@ -13,8 +13,8 @@
       {% for question in quiz.questions %}
           <div id="question{{ question.id }}">
             <h2>{{ question.id }}. kérdés: <small>{{ question.question|striptags  }}</small></h2>
-            {% if question.answersToCheck is  empty  %}<div class="alert alert-info nothingToCheck">{{ "There is nothing to check. But if you refresh the page, you could find new answers."|t }}</div>{% endif %}
             {{ question.forAdmin }}
+            {% if question.answersToCheck is  empty  %}<div class="alert alert-info nothingToCheck">{{ "There is nothing to check. But if you refresh the page, you could find new answers."|t }}</div>{% endif %}
             {% for answer in question.answersToCheck %}
                 {% include 'answerToCheck.twig'  %}
             {% endfor %}

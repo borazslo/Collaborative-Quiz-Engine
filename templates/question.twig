@@ -38,7 +38,7 @@
                   
           <p>{{ question|striptags(allow)|raw }}</p>
           
-          {% if image %}<center><img src="{{ image }}"></center>{% endif %}
+          {% if image %}<center><img src="{{ image }}" class="img-fluid" style="max-width: 400px; width:100%;" ></center>{% endif %}
           {% if video %}<center>{{ video_embed|raw }}</center>{% endif %}
           
           <p class="font-weight-light">{{ hint|striptags(allow)|raw }}</p>
