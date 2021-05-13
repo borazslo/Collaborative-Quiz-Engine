@@ -210,7 +210,7 @@ class Question {
                     question_id ";
                                
         $stmt = $connection->prepare($sql);
-        if(!$stmt->execute($params)) printr($connection->erroInfo());       
+        if(!$stmt->execute($params)) printr($connection->errorInfo());
         $this->others = $stmt->fetch(PDO::FETCH_ASSOC);  
     }
     
