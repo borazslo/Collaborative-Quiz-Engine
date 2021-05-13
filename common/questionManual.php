@@ -23,6 +23,25 @@ class questionManual extends Question {
     
     function createUserAnswer($result) {      
         
+        if(isset($this->commas)) {
+            $return = '';
+            if($result == -1) {
+                if(rand(1,2) == 1) {
+                    $return .= readable_random_string(rand(6,8));
+                } else {
+                    $result = 2;
+                }                
+            }
+            
+            if($result == 2) {
+                for($i=0;$i<$this->commas;$i++) {
+                    $return .= readable_random_string(rand(4,6));
+                    if($i + 1 < $this->commas) $return .= ", ";
+                }
+            }
+           return $return; 
+        }
+                
         return readable_random_string(rand(4,6));                
         
     }

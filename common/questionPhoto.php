@@ -50,9 +50,12 @@ class questionPhoto extends Question {
     }
     
     function createUserAnswer($result) {
-            
-      return $this->folder."/empty.jpg";
-                
+        
+        $url = "https://homepages.cae.wisc.edu/~ece533/images/";
+        $images = ['airplane.png','arctichare.png','baboon.png','barbara.bmp','barbara.png','boat.png','boy.bmp','cat.png','fruits.png'];
+        
+        return $url.$images[rand(0,count($images) -1 )];
+          
     }
     
     
