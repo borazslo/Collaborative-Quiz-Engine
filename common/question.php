@@ -256,8 +256,11 @@ class Question {
     }
     
     function pseudoRandom($from, $to, $unique) {
-        
-        return  $from + ( bindec(md5( $unique )) % ($to - $from) );
+        $current_error_reporting = error_reporting();
+        error_reporting(0);
+        $return = $from + ( bindec(md5( $unique )) % ($to - $from) );
+        error_reporting($current_error_reporting);
+        return $return;
                        
     }
     

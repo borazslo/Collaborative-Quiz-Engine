@@ -44,7 +44,7 @@ $(function() {
        data:"admin=verify&action="+action+"&id="+valaszid,
        success:function(response){
           console.log(response);
-          $(response).hide(1000);          
+          $(response).hide(400);          
           
       }, 
     });
@@ -62,7 +62,7 @@ $(function() {
        data:"admin=verify&action=update&ids=" + list ,
        success:function(response){
           console.log(response);
-          $(response).hide(1000);                    
+          $(response).hide(800);                    
       }, 
       
       

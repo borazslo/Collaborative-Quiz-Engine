@@ -246,7 +246,7 @@ function getGroupSizes() {
             LEFT JOIN groups 
                         ON groups.id = users.group_id ";
    
-   if(!$development) $sql .= " WHERE users.name NOT LIKE '".Bulk::prefix()."%' ";
+   if(!$development) $sql .= " WHERE users.name NOT LIKE '".Bulk::prefix()."%' AND groups.name NOT LIKE '".Bulk::prefix()."%' ";
    $sql .=" GROUP BY groups.id
             ORDER BY members
     ";
@@ -338,9 +338,9 @@ function getRankingTable($quiz_id) {
             groups.name , 
             count(distinct user_id) as members,
        
-            count(if(result = -1, 1, null)) * ".$config['scoring']['badAnswer']."
-                +  ( count(if(result = 1, 1, null))* ".$config['scoring']['goodAnswer']." ) 
-                    +  ( count(if(result = 2, 1, null))* ".$config['scoring']['goodAnswer']." ) 
+            count(if(result = '-1', 1, null)) * ".$config['scoring']['badAnswer']."
+                +  ( count(if(result = '1', 1, null))* ".$config['scoring']['goodAnswer']." ) 
+                    +  ( count(if(result = '2', 1, null))* ".$config['scoring']['goodAnswer']." ) 
                         as points 
         
         FROM `answers`
@@ -353,7 +353,10 @@ function getRankingTable($quiz_id) {
         ";      
     
     
-    if(!$development)    $sql .= "AND timestamp <> '".Bulk::date()."'";
+    if(!$development)    $sql .= "AND "
+            . "timestamp <> '".Bulk::date()."' AND "
+            . "groups.name NOT LIKE '".Bulk::prefix()."%' AND "
+            . "users.name NOT LIKE '".Bulk::prefix()."%' ";
 
     $sql .=  " GROUP BY group_id"
             . " ORDER BY points DESC";    
