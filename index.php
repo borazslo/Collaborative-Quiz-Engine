@@ -40,6 +40,11 @@ $page->data['user'] = (array) $user;
 
 if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
      $page->data['config']['debug'] = $config['debug'] = true;
+     $page->data['menu'] = [
+        'játék' => $page->data['base_url'],
+        'statisztika' => $page->data['base_url'].'?admin=stats',
+        'ellenőrzés' => $page->data['base_url'].'?admin=verification'
+        ];
 }
 
 // There is no user. 
@@ -54,10 +59,7 @@ if(empty((array) $user)) {
        
     include_once('common/admin.php');
     
-    $page->data['menu'] = [
-        'játék' => $page->data['base_url'],
-        'statisztika' => $page->data['base_url'].'?admin=stats'
-        ];
+    
     
     switch ($admin) {
         
@@ -65,6 +67,15 @@ if(empty((array) $user)) {
             Admin::stats();             
             break;
 
+        case 'verification':
+            Admin::verification();             
+            break;
+
+        case 'verify':
+            Admin::verify();             
+            exit;
+            break;        
+        
         default:
             die('A kért oldal nem található.');
             break;

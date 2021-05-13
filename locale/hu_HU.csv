@@ -7,7 +7,7 @@ NoMoreQuestion;Nem érkezik már több kérdés.
 NextQuestion;Következő kérdés
 QuizWillStart;A kvíz még nem kezdődött el. Kezdés 
 QuizEnded;Véget ért a kviz, így már nincsenek kérdéseink.
-Questions that require manual attention;Személyes ellenőrzés igénylő kérdések
+Questions that require manual attention;Személyes ellenőrzést igénylő kérdések
 InActvie;A felhasználó még nincs aktiválva ezért nem lehet belépni vele. Először az emailben átküldött linkre kattintva kell aktiválni. Ha nincs meg az email cím, akkor az email cím beküldésével új aktiváló emailt tudunk küldeni.
 Uploaded;Feltöltve
 Accept;Elfogad
@@ -44,3 +44,4 @@ Group;Csapat
 Points;Pontok
 onPlace;helyen
 Members;Játékosok
+Rankingtable;Ranglista

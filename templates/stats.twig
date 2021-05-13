@@ -1,7 +1,7 @@
 {%  extends 'html.twig' %}
 
 {% block container %}  
-      <h1>Ranglista
+      <h1>{{ "Rankingtable"|t }}
           <small><small><small>
             {% for title,url in menu %}
                 [<a href="{{ url }}">{{ title }}</a>] 
@@ -12,7 +12,7 @@
     
       
       <h5 class="mb-0">
-		Összesen: {{ jatekosok }} játékos
+		Összesen: {{ players }} aktív játékos (aki legalább egy valamire legalább megpróbált válaszolni)
         
       </h5>
        
