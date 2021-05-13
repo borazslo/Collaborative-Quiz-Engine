@@ -117,12 +117,12 @@ class LoginHelper
             $stmt->execute(array(":name"=>$d['groupName']));
             $group = $stmt->fetch();
             if($group) {
-                if ($group['averAge'] < 15)
+                if ($group['averAge'] < 15 OR $group['averAge'] > 40)
                     $level = 1;
                 else
                     $level = 2;               
             } else {
-                $level = 2;
+                $level = 1;
             }                                               
             /* */
             
