@@ -32,7 +32,7 @@ class Regnum {
        $return = [];
        foreach($groups as $group) {
            if($group['localRM'] == "") $group['localRM'] = "Szórvány";
-            $return[$group['name']] = $group['localRM'];
+            $return[] = [$group['name'],$group['localRM']];
        }
        
        return $return;
@@ -54,7 +54,7 @@ class Regnum {
        $return = [];
        foreach($groups as $group) {
            if($group['group'] == "") $group['group'] = "rétegen kívül";
-            $return[$group['name']] = $group['group'];
+            $return[] = [$group['name'],$group['group']];
        }
        
        return $return;
