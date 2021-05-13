@@ -11,30 +11,14 @@
           </small></small></small>
       </h1>
       {% for question in quiz.questions %}
-          <h2>{{ question.id }}. kérdés: <small>{{ question.question|striptags  }}</small></h2>
-          {% if question.answersToCheck is  empty  %}<div class="alert alert-info">{{ "There is nothing to check. But if you refresh the page, you could find new answers."|t }}</div>{% endif %}
-          {{ question.forAdmin }}
-          {% for answer in question.answersToCheck %}
-          <div class="card" id="cardid{{ answer.id }}" data-id="{{ answer.id }}" >
-            <div class="row no-gutters">
-              <div class="col-md-8 col">
-                  {% if question.type== 'photo' %}
-                    <img src="{{ answer.answer}}" class="card-img" >
-                  {% else %}
-                      <p style="padding:20px">{{ answer.answer}}</p>
-                  {% endif %}
-              </div>
-              <div class="col-md-4 col">
-                <div class="card-body">
-                  <h5 class="card-title">{{ answer.user }} ({{ answer.group }})</h5>
-                  <p class="card-text"><small class="text-muted">{{ "Uploaded"|t }}: <span title="{{ answer.timestamp|date('Y-m-d H:i:s') }}">{{ answer.timestamp|timeago }}</span></small></p>
-                  <button type="button" class="action btn btn-success" data-action="ok" data-id="{{ answer.id }}">{{ "Accept"|t }}</button>
-                  <button type="button" class="action btn btn-danger" data-action="no" data-id="{{ answer.id }}">{{ "Deny"|t }}</button>
-                </div>
-              </div>
-            </div>
+          <div id="question{{ question.id }}">
+            <h2>{{ question.id }}. kérdés: <small>{{ question.question|striptags  }}</small></h2>
+            {% if question.answersToCheck is  empty  %}<div class="alert alert-info nothingToCheck">{{ "There is nothing to check. But if you refresh the page, you could find new answers."|t }}</div>{% endif %}
+            {{ question.forAdmin }}
+            {% for answer in question.answersToCheck %}
+                {% include 'answerToCheck.twig'  %}
+            {% endfor %}
           </div>
-          {% endfor %}
           <hr>
       {% endfor %}
   
@@ -60,7 +44,7 @@ $(function() {
        data:"admin=verify&action="+action+"&id="+valaszid,
        success:function(response){
           console.log(response);
-          $(response).hide();          
+          $(response).hide(1000);          
           
       }, 
     });
@@ -78,9 +62,10 @@ $(function() {
        data:"admin=verify&action=update&ids=" + list ,
        success:function(response){
           console.log(response);
-          $(response).hide();          
-          
+          $(response).hide(1000);                    
       }, 
+      
+      
     });
     
     
