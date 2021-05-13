@@ -42,7 +42,7 @@ class Admin {
                     result = '1' ";
             
             global $development;
-            //if(!$development) $sql .= ""
+            if(!$development) $sql .= " AND groups.name NOT LIKE '".Bulk::prefix()."%' AND users.name NOT LIKE '".Bulk::prefix()."%' AND answers.timestamp <> '".Bulk::date()."%'  ";
             
             $sql .= " ORDER BY RAND() "; 
                 
