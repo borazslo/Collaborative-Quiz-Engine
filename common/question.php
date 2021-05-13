@@ -256,12 +256,8 @@ class Question {
     }
     
     function pseudoRandom($from, $to, $unique) {
-        $current_error_reporting = error_reporting();
-        error_reporting(0);
-        $return = $from + ( bindec(md5( $unique )) % ($to - $from) );
-        error_reporting($current_error_reporting);
-        return $return;
-                       
+        srand($unique * $this->id); // mindig ugyanazt fogja adni erre a unique-ra
+        return rand($from, $to);                  
     }
     
     function setUnique() {
@@ -272,8 +268,9 @@ class Question {
             else $this->unique = $this->unique[count($this->unique) -1 ];
         }             
         if($this->unique == 'user') $this->unique = 'id';
+        elseif($this->unique == 'group') $this->unique = 'group_id';
         
-        $this->unique = $this->id."_".$user->{$this->unique};
+        $this->unique = $user->{$this->unique};
         
         return $this->unique;
     }

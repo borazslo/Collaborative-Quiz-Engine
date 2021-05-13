@@ -234,7 +234,7 @@ class LoginHelper
   function login(&$d){
 	  global $connection, $config;
 
-    $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
+    $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.group_id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
 	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
 	$stmt->execute();
 	
@@ -257,6 +257,7 @@ class LoginHelper
 		  $result['name'] = $r['username'];
 		  $result['admin'] = $r['admin'] == 1;
 		  $result['group'] = $r['groupname'];
+                  $result['group_id'] = $r['group_id'];
 		  $result['group2'] = false; // $r['group'];
 		  $result['level'] = $r['level'];
                                     

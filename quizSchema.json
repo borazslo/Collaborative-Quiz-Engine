@@ -182,13 +182,13 @@
                         "anyOf" : [
                             {
                                 "type" : "string",
-                                "enum" : ["user", "group", "group2"]
+                                "enum" : ["user", "group"]
                             },
                             {
                                 "type" : "array",                                
                                 "items" : {
                                     "type" : "string",
-                                    "enum" : ["user", "group", "group2"]
+                                    "enum" : ["user", "group"]
                                 }                                
                             }
                         ]
