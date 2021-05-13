@@ -144,6 +144,11 @@
                         }
                     },
                     
+                    "hardcore" : {
+                        "type" : "boolean",
+                        "description" : "Csak a type=completion esetén van értelme. Akkor szinte mindent kisípol."
+                    },
+                    
                     "pieces" : {
                         "type" : ["array"],
                         "description" : "Szöveg töredékek amiből közösen áll össze csak a szöveg. Kötelező, ha type=pieces. Máskor felesleges",
