@@ -28,7 +28,7 @@ class Admin {
                 continue;
             } 
                         
-            $stmt = $connection->prepare("SELECT 
+            $sql = "SELECT 
                     CONCAT(:quiz_id, '-', :question_id, '-', users.id) as id, 
                     users.name as `user`, 
                     groups.name as `group`, 
@@ -39,11 +39,17 @@ class Admin {
                 WHERE 
                     quiz_id = :quiz_id AND
                     question_id = :question_id AND
-                    result = '1' 
-                ORDER BY RAND(); 
-                ");
-                                                                               
-            if(!$stmt->execute(['quiz_id'=>$quiz->id, ':question_id' => $key])) printr($connection->errorInfo());
+                    result = '1' ";
+            
+            global $development;
+            //if(!$development) $sql .= ""
+            
+            $sql .= " ORDER BY RAND() "; 
+                
+                   
+
+            $stmt = $connection->prepare($sql);
+            if(!$stmt->execute(['quiz_id'=>$quiz->id, ':question_id' => $question->id ])) printr($connection->errorInfo());
             $quiz->questions[$key]->answersToCheck = $stmt->fetchAll(PDO::FETCH_ASSOC);
             //printr($quiz->questions[$key]->answersToCheck );exit;
         }
