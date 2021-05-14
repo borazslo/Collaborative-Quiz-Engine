@@ -58,7 +58,6 @@ class Quiz {
                     $question->folder = preg_replace_callback('/\[(user|group|group2|group3)\]/', function($matches) {
                         if($matches[1] == 'user ') $matches[1] = 'id';
                         global $user;
-                        $user->group3 = '';
                         return $user->{$matches[1]};
                         
                     } , $question->folder);
