@@ -59,6 +59,36 @@ class Admin {
         
     }
     
+    static function photos() {
+        global $connection, $page, $quiz, $development;
+        
+        $page->templateFile = 'photos';
+        
+        foreach($quiz->questions as $key => $question) {
+            if($question->type == 'photo') {
+                $sql = "SELECT answer, result , users.name, groups.name as `group` 
+                            FROM answers 
+                            LEFT JOIN users ON users.id = answers.user_id 
+                            LEFT JOIN groups ON users.group_id = groups.id 
+                            WHERE
+                                quiz_id = :quiz_id AND 
+                                question_id = :question_id AND
+                                result = '2'
+                                ";
+                if(!$development) $sql .= " AND groups.name NOT LIKE '".Bulk::prefix()."%' AND users.name NOT LIKE '".Bulk::prefix()."%' AND answers.timestamp <> '".Bulk::date()."%'  "; 
+                
+                $stmt = $connection->prepare($sql);
+                $stmt->execute([':question_id'=>$question->id, ':quiz_id' => $quiz->id]);
+                $quiz->questions[$key]->answers = $stmt->fetchAll();
+                
+            } else {
+                unset($quiz->questions[$key]);
+            }
+        }
+       
+        $page->data['quiz'] = json_decode(json_encode($quiz), true);
+    }
+    
     static function verify() {
         global $connection;
                 
