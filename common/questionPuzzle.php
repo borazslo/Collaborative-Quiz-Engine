@@ -14,49 +14,65 @@ class questionPuzzle extends Question {
 
         // Collect possible answers
         $this->options = [];                           
-        foreach($files as $file) {
+        foreach($files as $k => $file) {
             preg_match('/^(.*?)\.('.$extensions.')$/i',$file,$match);
-            $this->options[] = $match[1];                
+            if(!preg_match('/^puzzle_/i',$file)) {
+                $this->options[] = $match[1];                
+            } else {
+                unset($files[$k]);
+            }
         }
-        sort($this->options);                    
-
-        //Choose file
-        global $user;
-        if(!isset($this->unique)) $this->unique = 'user';
-        if(is_array($this->unique)) {
-            if(isset($this->unique[($user->level - 1)])) $this->unique = $this->unique[$user->level - 1];
-            else $this->unique = $this->unique[count($this->unique) -1 ];
-        }             
-        if($this->unique == 'user') $this->unique = 'id';
-
-        $file = $files[bindec(md5( $user->{$this->unique} )) % count($files)];
-        //$file = $files[ rand(0,count($files)-1)];
-
-        /*
-        if(!isset($scores[$user['tanosztaly']]) AND ( $user['tanosztaly'] == 'DEV' OR $user['tanosztaly'] == '')) {
-            $percentage = rand(1,50);
+        
+        if($this->options == []) {
+            $this->question .= "<small class='d-block alert alert-warning'>Itt kéne egy képnek lenni, de sajnos nincs. Ezt elrontottuk. Elnézést.<br/>A helyes válasz ezért az hogy „senki”.</small>";
+            $this->answer = ["„senki”", "senki"];
+            $this->inputType = "text";
+            return;
         }
-        else 
-        if(!array_key_exists($user['tanosztaly'], $scores)) {
-            $percentage = 1;
-        } else 
-            $percentage = $scores[$user['tanosztaly']]['jatekos'];
-        */
-        $percentage = 8; //rand(1,15);
-                
-        $filename = sys_get_temp_dir ( ) . "/" . $this->quiz_id."/puzzle_".md5($file."-".$percentage).'.jpg';
 
-        if(!file_exists($filename)) {
+        //Choose file               
+        $c = $this->pseudoRandom(0, count($files) - 1 , $this->setUnique() );
+        $file = $files[$c];
+
+        $percentage = 28; //rand(1,15);
+
+        // TODO: RM Regnum specifikus dolgok
+        $sql = "SELECT count(*) c  
+                    FROM users 
+                    LEFT JOIN groups ON groups.id = users.group_id 
+                    LEFT JOIN regnum_communities r ON r.name = groups.name 
+                    WHERE 
+                        users.name NOT LIKE '[bulk]%' AND
+                        r.localRM = :localRM 
+                    GROUP BY `localRM` 
+                    ORDER BY users.id desc;
+                    LIMIT 1 ";        
+        
+        global $connection, $user;
+        $stnt = $connection->prepare($sql);
+        $stnt->execute([':localRM' => $user->group3]);
+        $result = $stnt->fetch();
+        
+        if(!$result or $result == []) {
+            srand(strtotime(date('Y-m-d H')));
+            $percentage = rand(8,30);    
+        } else
+            $percentage = $result[0];
+        
+                                                
+        $filename = "puzzle_".md5($file."-".$percentage).'.jpg';
+        
+        if(!file_exists($this->folder. "/". $filename) ) {
            //Nem az igazi, mert egészen újat generál mindig, nem pedig növekszik szépen.
            //TODO: nem törli a régit
-           $this->createImagePuzzle($this->folder.'/'.$file,$filename,$percentage);
-           
-        }
+           $this->createImagePuzzle($this->folder.'/'.$file, $this->folder. "/". $filename,$percentage);           
+        } 
 
-        $this->question .= '<img src="'.$filename.'" class="img-thumbnail mx-auto d-block">';                    
+        $this->question .= '<img src="'.$this->folder.'/'.$filename.'" class="img-thumbnail mx-auto d-block">';                    
         
         preg_match('/^(.*?)\.('.$extensions.')$/i',$file,$match);
-        $this->answer = $match[1];        
+        $this->answer = [ $match[1] ]; 
+        $this->answerFile = $file;
 
     }
 
@@ -99,6 +115,16 @@ class questionPuzzle extends Question {
         return true;
     }
 
+    function getUserResult($user_answer) {
+        $result = parent::getUserResult($user_answer);
+        
+        if(  $result == 2) {
+            $this->question = preg_replace('/puzzle_(.*?)\.jpg/',$this->answerFile,$this->question);
+        }
+       
+        return $result;
+    }
+    
     function randomNumbers($darab, $max) {
         $numbers = []; for($i=1;$i<=$max;$i++) $numbers[] = $i;
         shuffle($numbers);

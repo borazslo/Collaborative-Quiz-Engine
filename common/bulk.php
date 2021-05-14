@@ -93,8 +93,12 @@ class Bulk {
         }        
     }  
     
-    public function deleteAll() {
-        $stmt = $this->connection->prepare("DELETE FROM answers WHERE timestamp = '".$this->date."';");
+    public function deleteAll() {        
+        $sql = "DELETE answers FROM answers "
+                . "LEFT JOIN users ON users.id = answers.user_id "
+                . "WHERE timestamp = '".$this->date."' OR"
+                . " users.name LIKE '".$this->prefix."%' ;";        
+        $stmt = $this->connection->prepare($sql);
         $stmt->execute();
         
         $stmt = $this->connection->prepare("DELETE FROM users WHERE name LIKE '".$this->prefix."%';");

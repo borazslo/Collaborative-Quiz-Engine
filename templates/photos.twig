@@ -1,0 +1,50 @@
+{%  extends 'html.twig' %}
+
+{% block container %}
+        
+      <h1>
+          Beküldött képek nézegetője
+          <small><small><small>
+            {% for title,url in menu %}
+                [<a href="{{ url }}">{{ title }}</a>] 
+            {% endfor %}
+          </small></small></small>
+      </h1>
+          
+          <p>Kattints a kérdés címére és legördülnek a képek. Ám oldalt kell frissíteni az újabb képekért!</p>
+    <div id="accordion">
+        {% for question in quiz.questions %}
+
+        <div class="card-header " id="question{{ heading.id }}" data-toggle="collapse" href="#collapse{{ question.id }}" role="button" aria-expanded="false" aria-controls="collapse{{ question.id }}">
+        
+            <h2>{{ question.id }}. kérdés: <small>{{ question.question|striptags  }}</small></h2>
+            {{ question.forAdmin }}
+        </div>
+        
+        <div class="collapse show" aria-labelledby="heading{{ question.id }}" data-parent="#accordion" id="collapse{{ question.id }}"> 
+            
+            {% if question.answers is  empty  %}<div class="alert alert-info nothingToCheck">Nincs mutogatni való kép. Frissíts.</div>{% endif %}
+
+            <div class="row">
+            {% for answer in question.answers %}
+                <a href="{{ answer.answer }}" target="_blank">
+                    <div class="card float-left" style="width: 17rem; height: 17rem; position:relative">
+                        <img class="" src="{{ answer.answer}}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div class="card-text" style = "width:100%; padding: 3px; position: absolute; bottom: 0; background-color: rgba(255,255,255,0.5)">
+                            {{ answer.name }}<br>({{ answer.group }})
+                        </div>  
+                    </div>
+                </a>
+            {% endfor %}
+            </div>
+
+        </div>
+            
+        <hr>
+
+      {% endfor %}
+      
+    </div>
+        
+  {% endblock %}
+  

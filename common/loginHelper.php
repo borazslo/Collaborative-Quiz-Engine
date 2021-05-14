@@ -117,12 +117,12 @@ class LoginHelper
             $stmt->execute(array(":name"=>$d['groupName']));
             $group = $stmt->fetch();
             if($group) {
-                if ($group['averAge'] < 15)
+                if ($group['averAge'] < 15 OR $group['averAge'] > 40)
                     $level = 1;
                 else
                     $level = 2;               
             } else {
-                $level = 2;
+                $level = 1;
             }                                               
             /* */
             
@@ -234,7 +234,7 @@ class LoginHelper
   function login(&$d){
 	  global $connection, $config;
 
-    $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
+    $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.group_id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
 	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
 	$stmt->execute();
 	
@@ -257,8 +257,12 @@ class LoginHelper
 		  $result['name'] = $r['username'];
 		  $result['admin'] = $r['admin'] == 1;
 		  $result['group'] = $r['groupname'];
+                  $result['group_id'] = $r['group_id'];
 		  $result['group2'] = false; // $r['group'];
 		  $result['level'] = $r['level'];
+                                    
+                  if(isset($config['addons'])) foreach($config['addons'] as $addon ) $result = $addon::login($result);
+                                      
 		  $_SESSION['user'] = $result;
 		  
 		  return true;

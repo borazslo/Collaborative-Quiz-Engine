@@ -55,7 +55,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "allOrNone", "manual", "multi", "photo", "puzzle", "select", "wait"],
+                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {
@@ -121,14 +121,47 @@
                     },
                     
                     "options" : {
-                        "type" : "array",
-                        "description" : "Legördülő lista a választható válaszokkal. Kötelező, ha type=select. Máskor felesleges.",
+                        "type" : ["array","string"],
+                        "description" : "Legördülő lista a választható válaszokkal. Kötelező, ha type=select. Lehetséges, ha type = allOrNone. Máskor felesleges. | Ha csak egy string akkor egy függvény név ami egy listával kell visszatérjen.",
                         "items" : {
                             "type" : ["string", "integer"]
                         }                        
                     },
                     
-
+                    "pairs" : {
+                        "type" : ["array","string"],
+                        "description" : "Key - value páros lista. A random key-hez kell kiválasztani a megfelelő value-t a listából. Kötelező, ha type=pair. Máskor felesleges. | Ha csak egy string akkor egy függvény név ami egy listával kell visszatérjen.",
+                        "items" : {
+                            "type" : ["array"]
+                        }                        
+                    },
+                    
+                    "text" : {
+                        "type" : ["string", "array"],
+                        "description" : "Szöveg amiből véletlenszerűen hiányzik egy-egy szó, ami a helyes válasz. Kötelező, ha type=completion. Máskor felesleges",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    
+                    "hardcore" : {
+                        "type" : "boolean",
+                        "description" : "Csak a type=completion esetén van értelme. Akkor szinte mindent kisípol."
+                    },
+                    
+                    "pieces" : {
+                        "type" : ["array"],
+                        "description" : "Szöveg töredékek amiből közösen áll össze csak a szöveg. Kötelező, ha type=pieces. Máskor felesleges",
+                        "items" : {
+                            "type" : "string"
+                        }
+                    },
+                    
+                    "commas" : {
+                        "type" : "integer",
+                        "description" : "Hány darab, vesszővel elválasztott szövegből álljon a válasz. Szabad használni, ha type=manual. Máskor felesleges"
+                    },
+                    
                     "relativeStart" : {
                         "type" : "string",
                         "description" : "A kérdés megjelenésének ideje az előző kérdéshez képest. Olyan formában amit a strtotime() fel tud ismerni. Felülírja a 'timing.start'-ot!"
@@ -137,25 +170,29 @@
                         "type" : "string",
                         "description" : "Az idő amíg látszik ez a kérdés. Olyan formában amit a strtotime() fel tud ismerni. Például: '1 week'. Felülírja a 'timing.duration'-t!"
                     },
+                    "wait" : {
+                        "type" : "string",
+                        "description" : "Az idő amíg nem érkezik újabb kérdés. Olyan formában amit a strtotime() fel tud ismerni. Például: '1 week'. Felülírja a 'timing.frequency'-t!"
+                    },
                     
                     "folder" : {
                         "type" : "string",
-                        "description" : "A könyvtár ahonnan szedi vagy ahova feltölti a képeket. Relatív útvonal a kvíz json fájljához képest."
+                        "description" : "A könyvtár ahonnan szedi vagy ahova feltölti a képeket. Relatív útvonal a kvíz json fájljához képest. type=photo|photopair|puzzle"
                     },
                     
                     "unique" : {
                         "type" : ["string", "array"],
-                        "description" : "Mindenki különbözőt kapjon, vagy csoportonként azonosat? Kötelező, ha type=puzzle. Máskor felesleges.",
+                        "description" : "Mindenki különbözőt kapjon, vagy csoportonként azonosat? Használható, ha type=puzzle|completion|pair|pieces.  Máskor felesleges.",
                         "anyOf" : [
                             {
                                 "type" : "string",
-                                "enum" : ["user", "group", "group2"]
+                                "enum" : ["user", "group"]
                             },
                             {
                                 "type" : "array",                                
                                 "items" : {
                                     "type" : "string",
-                                    "enum" : ["user", "group", "group2"]
+                                    "enum" : ["user", "group"]
                                 }                                
                             }
                         ]

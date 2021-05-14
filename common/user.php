@@ -21,8 +21,24 @@ class User {
         $this->id = $d['id'];//1487;
         $this->level = $d['level'];//2;
         $this->group = $d['group'];//'Medve';
+        $this->group_id = $d['group_id'];
         $this->group2 = $d['group2'];//"Emlős";
+        $this->group3 = isset($d['group3']) ? $d['group3'] : false;//"Emlős";
         $this->isAdmin = $d['admin'];//true;
-
+        
     }
+}
+
+function companionsOfCurrentUsers() {
+    global $user, $connection;
+    
+    $stmt = $connection->prepare("SELECT users.* FROM users LEFT JOIN groups ON users.group_id = groups.id WHERE groups.name = :group_name AND users.active = 1 ");
+    $stmt->execute(array(":group_name" => $user->group));
+    $groups = $stmt->fetchAll();
+    $return = [];
+    foreach($groups as $group)
+        $return[] = $group['name'];
+    
+    return $return;
+    
 }

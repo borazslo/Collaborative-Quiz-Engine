@@ -54,7 +54,14 @@ class Quiz {
                 $question->quiz_id = $this->id;
                                 
                 //Cheking folders
-                if(isset($question->folder)) {                                        
+                if(isset($question->folder)) {
+                    $question->folder = preg_replace_callback('/\[(user|group|group2|group3)\]/', function($matches) {
+                        if($matches[1] == 'user ') $matches[1] = 'id';
+                        global $user;
+                        return $user->{$matches[1]};
+                        
+                    } , $question->folder);
+                                                            
                     $question->folder = $this->folder.$question->folder;
                     if(!is_dir($question->folder)) throw new Exception('There is no folder called '.$question->folder);
                 }
@@ -95,7 +102,10 @@ class Quiz {
             else
                 $question->endTime = strtotime($question->duration,$question->startTime);
             
-            $last_start = $question->startTime;
+            $last_start = $question->startTime;            
+            if(isset($question->wait)) {
+                $last_start = strtotime($question->wait, $last_start - $frequency);
+            } 
         }                
     }
     

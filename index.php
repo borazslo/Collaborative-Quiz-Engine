@@ -18,7 +18,7 @@ $page = new stdClass();
 $page->data = [];
 
 if(isset($_SERVER['BASE'])){
-  $page->data['base_url'] = $_SERVER['BASE'];
+  $page->data['base_url'] = preg_replace("/(\/){2,10}$/","/",$_SERVER['BASE']);  
 }
 if($development == true) $page->data['development'] = true;
 $page->data['config']['debug'] = $config['debug'];
@@ -35,38 +35,78 @@ $page->data['quiz'] = json_decode(json_encode($quiz), true);
 
 
 CheckLogin();
+$page->data['user'] = (array) $user;
 
+
+if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
+     $page->data['config']['debug'] = $config['debug'] = true;
+     $page->data['menu'] = [
+        'játék' => $page->data['base_url'],
+        'statisztika' => $page->data['base_url'].'?admin=stats',
+        'ellenőrzés' => $page->data['base_url'].'?admin=verification',
+        'képek' => $page->data['base_url'].'?admin=photos'
+        ];
+}
+
+// There is no user. 
 if(empty((array) $user)) {
     $page->data['error'] = true;
     $page->templateFile = 'koszonto';
     echo $twig->render($page->templateFile.".twig", $page->data);
     exit;   
-}
+    
+// Admin pages
+} elseif ( (isset($user->isAdmin) and $user->isAdmin == 1 ) AND $admin = getParam($_REQUEST,'admin',false)  ) {
+       
+    include_once('common/admin.php');
+    
+    
+    
+    switch ($admin) {
+        
+        case 'stats':
+            Admin::stats();             
+            break;
+        
+        case 'photos':
+            Admin::photos();             
+            break;
 
-$page->data['user'] = (array) $user;
+        case 'verification':
+            Admin::verification();             
+            break;
 
-if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
-     $page->data['config']['debug'] = $config['debug'] = true;
-}
-
-$page->templateFile = 'kerdesek';
-
-/* Fókusz oda, ahova nyomkodott */
-//TODO: csakko mükszik, ha gombra kattint. Egyébként miért nem?
-if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
-    $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
-}
-
-if(!empty((array) $user) AND $config['rankingTablePublic'] == true) {
-    $rankingTable = getRankingTable($quiz->id);
-        if(!array_key_exists($user->group,$rankingTable)) {
-        $rankingTable[$user->group] = [
-            'position' => count($rankingTable) + 1,
-            'points' => 1,
-            'name' => $user->group,
-            'members' => 1
-        ];
+        case 'verify':
+            Admin::verify();             
+            exit;
+            break;        
+        
+        default:
+            die('A kért oldal nem található.');
+            break;
     }
-    $page->data['rankingTable'] = $rankingTable;
+        
+// Questionaire
+} else {    
+    $page->templateFile = 'kerdesek';
+
+    /* Fókusz oda, ahova nyomkodott */
+    //TODO: csakko mükszik, ha gombra kattint. Egyébként miért nem?
+    if(isset($_REQUEST['gomb']) AND is_numeric($_REQUEST['gomb'])) {
+        $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
+    }
+
+    if(!empty((array) $user) AND ( isset($config['rankingTablePublic']) AND $config['rankingTablePublic'] == true )) {
+        $rankingTable = getRankingTable($quiz->id);
+            if(!array_key_exists($user->group,$rankingTable)) {
+            $rankingTable[$user->group] = [
+                'position' => count($rankingTable) + 1,
+                'points' => 1,
+                'name' => $user->group,
+                'members' => 1
+            ];
+        }
+        $page->data['rankingTable'] = $rankingTable;
+    }
 }
 echo $twig->render($page->templateFile.".twig", $page->data);

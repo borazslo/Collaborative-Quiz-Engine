@@ -1,0 +1,20 @@
+
+<div class="card" id="cardid{{ answer.id }}" data-id="{{ answer.id }}" >
+  <div class="row no-gutters">
+    <div class="col-md-8 col">
+        {% if question.type== 'photo' %}
+          <img src="{{ answer.answer}}" class="card-img" >
+        {% else %}
+            <p style="padding:20px">{{ answer.answer}}</p>
+        {% endif %}
+    </div>
+    <div class="col-md-4 col">
+      <div class="card-body">
+        <h5 class="card-title">{{ answer.user }} ({{ answer.group }})</h5>
+        <p class="card-text"><small class="text-muted">{{ "Uploaded"|t }}: <span title="{{ answer.timestamp|date('Y-m-d H:i:s') }}">{{ answer.timestamp|timeago }}</span></small></p>
+        <button type="button" class="action btn btn-success" data-action="ok" data-id="{{ answer.id }}">{{ "Accept"|t }}</button>
+        <button type="button" class="action btn btn-danger" data-action="no" data-id="{{ answer.id }}">{{ "Deny"|t }}</button>
+      </div>
+    </div>
+  </div>
+</div>

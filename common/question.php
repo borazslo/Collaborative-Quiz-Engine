@@ -22,7 +22,9 @@ class Question {
             $this->$key = $val;
         }
         
-                                        
+        if(isset($settings->options) AND !is_array($settings->options) AND function_exists($settings->options))
+            $this->options = ($settings->options)();
+        
         $this->prepareQuestion();
         $this->prepareInput();
         
@@ -208,7 +210,7 @@ class Question {
                     question_id ";
                                
         $stmt = $connection->prepare($sql);
-        if(!$stmt->execute($params)) printr($connection->erroInfo());       
+        if(!$stmt->execute($params)) printr($connection->errorInfo());
         $this->others = $stmt->fetch(PDO::FETCH_ASSOC);  
     }
     
@@ -251,6 +253,26 @@ class Question {
             $return[$result['answer']] = $result['quantity'];
         }
         return $return;
+    }
+    
+    function pseudoRandom($from, $to, $unique) {
+        srand($unique * $this->id); // mindig ugyanazt fogja adni erre a unique-ra
+        return rand($from, $to);                  
+    }
+    
+    function setUnique() {
+        global $user;
+        if(!isset($this->unique)) $this->unique = 'user';
+        if(is_array($this->unique)) {
+            if(isset($this->unique[($user->level - 1)])) $this->unique = $this->unique[$user->level - 1];
+            else $this->unique = $this->unique[count($this->unique) -1 ];
+        }             
+        if($this->unique == 'user') $this->unique = 'id';
+        elseif($this->unique == 'group') $this->unique = 'group_id';
+        
+        $this->unique = $user->{$this->unique};
+        
+        return $this->unique;
     }
     
 }

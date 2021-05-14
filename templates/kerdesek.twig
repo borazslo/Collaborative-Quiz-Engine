@@ -6,6 +6,13 @@
         
     <nav class="navbar dfixed-top navbar-dark bg-dark">
         <a class="navbar-brand" href="index.php">{{ quiz.title }}</a>
+        {% if menu %}
+            <span class="navbar-text">
+                {% for title,url in menu %}
+                    [<a href="{{ url }}">{{ title }}</a>] 
+                {% endfor %}                
+            </span>
+        {% endif %}
         <span class="navbar-text">
         {{ user.name }} ({{ user.group }}{{ rankingTable[user.group].position ? ( " - " ~ rankingTable[user.group].position ~ ". " ~ "onPlace"|t ) }})
         <input type="hidden" name="tanaz" value="{{ user.tanaz }}">

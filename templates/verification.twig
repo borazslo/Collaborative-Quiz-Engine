@@ -1,0 +1,81 @@
+{%  extends 'html.twig' %}
+
+{% block container %}
+        
+      <h1>
+          {{ 'Questions that require manual attention'|t }}
+          <small><small><small>
+            {% for title,url in menu %}
+                [<a href="{{ url }}">{{ title }}</a>] 
+            {% endfor %}
+          </small></small></small>
+      </h1>
+      {% for question in quiz.questions %}
+          <div id="question{{ question.id }}">
+            <h2>{{ question.id }}. kérdés: <small>{{ question.question|striptags  }}</small></h2>
+            {{ question.forAdmin }}
+            {% if question.answersToCheck is  empty  %}<div class="alert alert-info nothingToCheck">{{ "There is nothing to check. But if you refresh the page, you could find new answers."|t }}</div>{% endif %}
+            {% for answer in question.answersToCheck %}
+                {% include 'answerToCheck.twig'  %}
+            {% endfor %}
+          </div>
+          <hr>
+      {% endfor %}
+  
+  {% endblock %}
+  
+
+{% block script %}
+<script>
+$(function() {
+      
+      $(document).on('click','.action',function(){
+          
+    var $this= $(this);
+
+    var action = $(this).attr("data-action");
+    var valaszid = $(this).attr("data-id");
+    
+    console.log("action: " + action + " id: " + valaszid);
+
+    $.ajax({
+       type:"POST",
+       url:"index.php",
+       data:"admin=verify&action="+action+"&id="+valaszid,
+       success:function(response){
+          console.log(response);
+          $(response).hide(400);          
+          
+      }, 
+    });
+  
+  });
+  
+  setInterval(function(){
+     var list = $(".card").filter(":visible").map(function(){return $(this).attr("data-id");}).get();     
+        if(list == '') { console.log('ok'); }
+        else {
+            console.log("admin=verify&action=update&ids=" + list );
+            $.ajax({
+                type:"POST",
+                url:"index.php",
+                data:"admin=verify&action=update&ids=" + list ,
+                success:function(response){
+                    console.log(response);
+                    $(response).hide(800);                    
+                }, 
+            });
+        }
+    }, 2000);
+
+});
+  </script>
+   <script>$(document).ready(function () {
+$('#ranglista').DataTable({
+"searching": false, // false to disable search (or any other option)
+"paging": false,
+"order": [[ 3, "asc" ]]
+});
+$('.dataTables_length').addClass('bs-select');
+});</script>
+{%  endblock %}

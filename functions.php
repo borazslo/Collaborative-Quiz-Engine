@@ -2,6 +2,10 @@
 
 include_once 'config.php';
 
+if(isset($config['addons'])) 
+    foreach($config['addons'] as $addon)
+        include_once('addons/'.$addon.".php");
+
 date_default_timezone_set("Europe/Budapest");
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -240,9 +244,10 @@ function getGroupSizes() {
    $sql = "SELECT groups.*, count(*) as members 
 	FROM quizegine.users 
             LEFT JOIN groups 
-                        ON groups.id = users.group_id ";
+                        ON groups.id = users.group_id 
+            WHERE users.active = 1 ";
    
-   if(!$development) $sql .= " WHERE users.name NOT LIKE '".Bulk::prefix()."%' ";
+   if(!$development) $sql .= " AND users.name NOT LIKE '".Bulk::prefix()."%' AND groups.name NOT LIKE '".Bulk::prefix()."%' ";
    $sql .=" GROUP BY groups.id
             ORDER BY members
     ";
@@ -334,9 +339,9 @@ function getRankingTable($quiz_id) {
             groups.name , 
             count(distinct user_id) as members,
        
-            count(if(result = -1, 1, null)) * ".$config['scoring']['badAnswer']."
-                +  ( count(if(result = 1, 1, null))* ".$config['scoring']['goodAnswer']." ) 
-                    +  ( count(if(result = 2, 1, null))* ".$config['scoring']['goodAnswer']." ) 
+            count(if(result = '-1', 1, null)) * ".$config['scoring']['badAnswer']."
+                +  ( count(if(result = '1', 1, null))* ".$config['scoring']['goodAnswer']." ) 
+                    +  ( count(if(result = '2', 1, null))* ".$config['scoring']['goodAnswer']." ) 
                         as points 
         
         FROM `answers`
@@ -344,11 +349,15 @@ function getRankingTable($quiz_id) {
             LEFT JOIN groups ON groups.id = users.group_id 
         
         WHERE quiz_id = :quiz_id 
+            AND users.active = 1 
 
         ";      
     
     
-    if(!$development)    $sql .= "AND timestamp <> '".Bulk::date()."'";
+    if(!$development)    $sql .= "AND "
+            . "timestamp <> '".Bulk::date()."' AND "
+            . "groups.name NOT LIKE '".Bulk::prefix()."%' AND "
+            . "users.name NOT LIKE '".Bulk::prefix()."%' ";
 
     $sql .=  " GROUP BY group_id"
             . " ORDER BY points DESC";    
@@ -376,7 +385,6 @@ function getRankingTable($quiz_id) {
         } elseif ($groupSizeCorrection == 'min') {
             $groupSizeCorrection = min($groupSizes);
         } elseif ($groupSizeCorrection == 'max') {
-            print_r($osztalyletszamok);
             $groupSizeCorrection = max($groupSizes);
         } elseif ($groupSizeCorrection == 'avg') {
             $groupSizeCorrection = (int) ( array_sum($groupSizes)/count($groupSizes) );
