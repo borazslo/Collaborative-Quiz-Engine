@@ -55,7 +55,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "pair", "pieces", "photo", "puzzle", "select", "wait"],
+                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {
@@ -177,7 +177,7 @@
                     
                     "folder" : {
                         "type" : "string",
-                        "description" : "A könyvtár ahonnan szedi vagy ahova feltölti a képeket. Relatív útvonal a kvíz json fájljához képest."
+                        "description" : "A könyvtár ahonnan szedi vagy ahova feltölti a képeket. Relatív útvonal a kvíz json fájljához képest. type=photo|photopair|puzzle"
                     },
                     
                     "unique" : {
