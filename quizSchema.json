@@ -170,6 +170,10 @@
                         "type" : "string",
                         "description" : "Az idő amíg látszik ez a kérdés. Olyan formában amit a strtotime() fel tud ismerni. Például: '1 week'. Felülírja a 'timing.duration'-t!"
                     },
+                    "wait" : {
+                        "type" : "string",
+                        "description" : "Az idő amíg nem érkezik újabb kérdés. Olyan formában amit a strtotime() fel tud ismerni. Például: '1 week'. Felülírja a 'timing.frequency'-t!"
+                    },
                     
                     "folder" : {
                         "type" : "string",

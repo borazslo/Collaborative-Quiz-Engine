@@ -95,7 +95,10 @@ class Quiz {
             else
                 $question->endTime = strtotime($question->duration,$question->startTime);
             
-            $last_start = $question->startTime;
+            $last_start = $question->startTime;            
+            if(isset($question->wait)) {
+                $last_start = strtotime($question->wait, $last_start - $frequency);
+            } 
         }                
     }
     
