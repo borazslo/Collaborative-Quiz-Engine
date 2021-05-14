@@ -18,7 +18,7 @@ $page = new stdClass();
 $page->data = [];
 
 if(isset($_SERVER['BASE'])){
-  $page->data['base_url'] = $_SERVER['BASE'];
+  $page->data['base_url'] = preg_replace("/(\/){2,10}$/","/",$_SERVER['BASE']);  
 }
 if($development == true) $page->data['development'] = true;
 $page->data['config']['debug'] = $config['debug'];
@@ -43,7 +43,8 @@ if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
      $page->data['menu'] = [
         'játék' => $page->data['base_url'],
         'statisztika' => $page->data['base_url'].'?admin=stats',
-        'ellenőrzés' => $page->data['base_url'].'?admin=verification'
+        'ellenőrzés' => $page->data['base_url'].'?admin=verification',
+        'képek' => $page->data['base_url'].'?admin=photos'
         ];
 }
 
@@ -65,6 +66,10 @@ if(empty((array) $user)) {
         
         case 'stats':
             Admin::stats();             
+            break;
+        
+        case 'photos':
+            Admin::photos();             
             break;
 
         case 'verification':
