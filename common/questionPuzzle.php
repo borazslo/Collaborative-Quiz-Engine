@@ -34,20 +34,32 @@ class questionPuzzle extends Question {
         $c = $this->pseudoRandom(0, count($files) - 1 , $this->setUnique() );
         $file = $files[$c];
 
-        //$file = $files[ rand(0,count($files)-1)];
+        $percentage = 28; //rand(1,15);
 
-        /*
-        if(!isset($scores[$user['tanosztaly']]) AND ( $user['tanosztaly'] == 'DEV' OR $user['tanosztaly'] == '')) {
-            $percentage = rand(1,50);
-        }
-        else 
-        if(!array_key_exists($user['tanosztaly'], $scores)) {
-            $percentage = 1;
-        } else 
-            $percentage = $scores[$user['tanosztaly']]['jatekos'];
-        */
-        $percentage = 8; //rand(1,15);
-                
+        // TODO: RM Regnum specifikus dolgok
+        $sql = "SELECT count(*) c  
+                    FROM users 
+                    LEFT JOIN groups ON groups.id = users.group_id 
+                    LEFT JOIN regnum_communities r ON r.name = groups.name 
+                    WHERE 
+                        users.name NOT LIKE '[bulk]%' AND
+                        r.localRM = :localRM 
+                    GROUP BY `localRM` 
+                    ORDER BY users.id desc;
+                    LIMIT 1 ";        
+        $sql = "SELECT count(*) c FROM regnum_communities WHERE name = :localRM GROUP BY averAge LIMIT 1";                
+        global $connection, $user;
+        $stnt = $connection->prepare($sql);
+        $stnt->execute([':localRM' => $user->group3]);
+        $result = $stnt->fetch();
+        
+        if(!$result or $result == []) {
+            srand(strtotime(date('Y-m-d H')));
+            $percentage = rand(8,30);    
+        } else
+            $percentage = $result[0];
+        
+                                                
         $filename = "puzzle_".md5($file."-".$percentage).'.jpg';
         
         if(!file_exists($this->folder. "/". $filename) ) {
