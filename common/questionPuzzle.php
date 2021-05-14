@@ -47,7 +47,7 @@ class questionPuzzle extends Question {
                     GROUP BY `localRM` 
                     ORDER BY users.id desc;
                     LIMIT 1 ";        
-        $sql = "SELECT count(*) c FROM regnum_communities WHERE name = :localRM GROUP BY averAge LIMIT 1";                
+        
         global $connection, $user;
         $stnt = $connection->prepare($sql);
         $stnt->execute([':localRM' => $user->group3]);
