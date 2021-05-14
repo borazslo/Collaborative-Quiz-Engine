@@ -54,7 +54,15 @@ class Quiz {
                 $question->quiz_id = $this->id;
                                 
                 //Cheking folders
-                if(isset($question->folder)) {                                        
+                if(isset($question->folder)) {
+                    $question->folder = preg_replace_callback('/\[(user|group|group2|group3)\]/', function($matches) {
+                        if($matches[1] == 'user ') $matches[1] = 'id';
+                        global $user;
+                        $user->group3 = '';
+                        return $user->{$matches[1]};
+                        
+                    } , $question->folder);
+                                                            
                     $question->folder = $this->folder.$question->folder;
                     if(!is_dir($question->folder)) throw new Exception('There is no folder called '.$question->folder);
                 }
