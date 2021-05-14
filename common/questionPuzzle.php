@@ -31,7 +31,8 @@ class questionPuzzle extends Question {
         }
 
         //Choose file               
-        $c = $this->pseudoRandom(0, count($files) - 1 , $this->setUnique() );
+        $c = $this->pseudoRandom(0, count($files) - 1 , $this->setUnique() );        
+        $c = rand(0,count($files)-1);
         $file = $files[$c];
 
         $percentage = 28; //rand(1,15);
@@ -55,15 +56,15 @@ class questionPuzzle extends Question {
         
         if(!$result or $result == []) {
             srand(strtotime(date('Y-m-d H')));
-            $percentage = rand(8,30);    
+            $percentage = rand(18,30);
+            srand();    
         } else
             $percentage = $result[0];
         
-                                                
+                                                        
         $filename = "puzzle_".md5($file."-".$percentage).'.jpg';
         
         if(!file_exists($this->folder. "/". $filename) ) {
-           //Nem az igazi, mert egészen újat generál mindig, nem pedig növekszik szépen.
            //TODO: nem törli a régit
            $this->createImagePuzzle($this->folder.'/'.$file, $this->folder. "/". $filename,$percentage);           
         } 
@@ -77,7 +78,8 @@ class questionPuzzle extends Question {
     }
 
     function createImagePuzzle($from,$to,$percentage) {
-        $felosztas = [6,12];
+        global $user;
+        $felosztas = [8,11];
         
         $visible = $felosztas[0]*$felosztas[1] * ( $percentage / 100 );
 
@@ -91,11 +93,13 @@ class questionPuzzle extends Question {
             die('Ez nem is képfájl: '.$from."!");        
             return false;
         }                  
+        if($image_data[0] > $image_data[1]) $felosztas = [$felosztas[1], $felosztas[0]];
+        
         $image = imagecreatefromstring( file_get_contents( $from ));
 
         $color = imagecolorallocate ($image, 211,211,211);
-
-        $whites = $this->randomNumbers($felosztas[0]*$felosztas[1] - $visible,$felosztas[0]*$felosztas[1]);
+        
+        $whites = $this->randomNumbers($felosztas[0]*$felosztas[1] - $visible,$felosztas[0]*$felosztas[1], $this->id * 1000 + $user->id );
         
         
     
@@ -110,7 +114,7 @@ class questionPuzzle extends Question {
             $y2 = $y1 + $block[1];
             imagefilledrectangle($image, $x1,$y1,$x2,$y2, $color);
         }
-        
+        //exit;
         imagejpeg ($image,$to);
         return true;
     }
@@ -125,12 +129,18 @@ class questionPuzzle extends Question {
         return $result;
     }
     
-    function randomNumbers($darab, $max) {
+    function randomNumbers($darab, $max, $seed) {
+        srand($seed);
+        
         $numbers = []; for($i=1;$i<=$max;$i++) $numbers[] = $i;
-        shuffle($numbers);
-        $numbers = array_slice($numbers, 0, $darab);
-        sort($numbers);
 
+        for($i=1;$i<=($max - $darab);$i++) {
+            $key = array_rand($numbers);
+            unset($numbers[$key]);
+        }
+
+        srand();
+        
         return $numbers;    
     }
 }
