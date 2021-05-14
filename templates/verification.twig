@@ -52,24 +52,20 @@ $(function() {
   });
   
   setInterval(function(){
-     var list = $(".card").filter(":visible").map(function(){return $(this).attr("data-id");}).get();
-     
-        console.log("admin=verify&action=update&ids=" + list );
-        
-        $.ajax({
-       type:"POST",
-       url:"index.php",
-       data:"admin=verify&action=update&ids=" + list ,
-       success:function(response){
-          console.log(response);
-          $(response).hide(800);                    
-      }, 
-      
-      
-    });
-    
-    
-  
+     var list = $(".card").filter(":visible").map(function(){return $(this).attr("data-id");}).get();     
+        if(list == '') { console.log('ok'); }
+        else {
+            console.log("admin=verify&action=update&ids=" + list );
+            $.ajax({
+                type:"POST",
+                url:"index.php",
+                data:"admin=verify&action=update&ids=" + list ,
+                success:function(response){
+                    console.log(response);
+                    $(response).hide(800);                    
+                }, 
+            });
+        }
     }, 2000);
 
 });

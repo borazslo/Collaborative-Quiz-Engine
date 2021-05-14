@@ -19,14 +19,6 @@ $config['addons'] = ['Regnum'];
 
 $config['lang'] = 'hu_HU';
 
-$config['game'] = [
-    'title' => 'Ez a neve a játéknak',
-    'description' => '<p>És mindenféle okosat tudunk róla írni.</p>',    
-    'localFile' => 'kerdesek.csv', //Always CSV format!
-    // 'remoteGoogleSheet' => 'ID', //Optional. Default false. Google sheet ID. Shoul be visible for anyone. It overwrites the localFile!
-    // 'remoteGoogleSheetCache' => '10 minutes' //Optional. Default: 10 min . strtotime pattern    
-];
-
 $config['authentication'] 
      = [
         'pdo' => [ # mysql vagy sok más minden is lehet 

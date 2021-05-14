@@ -244,9 +244,10 @@ function getGroupSizes() {
    $sql = "SELECT groups.*, count(*) as members 
 	FROM quizegine.users 
             LEFT JOIN groups 
-                        ON groups.id = users.group_id ";
+                        ON groups.id = users.group_id 
+            WHERE users.active = 1 ";
    
-   if(!$development) $sql .= " WHERE users.name NOT LIKE '".Bulk::prefix()."%' AND groups.name NOT LIKE '".Bulk::prefix()."%' ";
+   if(!$development) $sql .= " AND users.name NOT LIKE '".Bulk::prefix()."%' AND groups.name NOT LIKE '".Bulk::prefix()."%' ";
    $sql .=" GROUP BY groups.id
             ORDER BY members
     ";
