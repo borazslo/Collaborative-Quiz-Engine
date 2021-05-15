@@ -1,5 +1,6 @@
 <?php
 //echo 'RM Majális - "Újratervezés" - 2021. május 15. '; exit ;
+$start = microtime(true);
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
@@ -110,3 +111,4 @@ if(empty((array) $user)) {
     }
 }
 echo $twig->render($page->templateFile.".twig", $page->data);
+if($development)  echo "Lefutott: ".microtime(true) - $start;
