@@ -18,6 +18,7 @@ $config = [
 $config['addons'] = ['Regnum'];
 
 $config['lang'] = 'hu_HU';
+date_default_timezone_set("Europe/Budapest");
 
 $config['authentication'] 
      = [
