@@ -2,3 +2,4 @@ vendor/*
 nbproject/*
 config.php
 tmp/*
+quizzes/*
