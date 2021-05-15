@@ -53,7 +53,7 @@ PRIMARY KEY (`id`)) ENGINE = InnoDB;
 CREATE TABLE `answers` ( 
     `quiz_id` VARCHAR(50) NOT NULL , 
     `question_id` INT NOT NULL , 
-    `user_id` INT NOT NULL , 
+    `user_id` INT(11) NOT NULL , 
     `answer` VARCHAR(255) NULL , 
     `result` ENUM('-1','0','1','2') NOT NULL , 
     `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -62,4 +62,4 @@ UNIQUE KEY `unique` ( `quiz_id`, `question_id`, `user_id`),
 INDEX userId (user_id),
     FOREIGN KEY (user_id) 
         REFERENCES users(id)
-) ENGINE = InnoDB;
+)
