@@ -25,7 +25,10 @@
         
         {% if config.debug == true %}
             <small style="float:right">Start: <span title="{{ startTime|date('Y-m-d H:i:s') }}">{{ startTime|timeago }}</span>. End: <span title="{{ endTime|date('Y-m-d H:i:s') }}">{{ endTime|timeago }}</span></small>
+        {%  else  %}
+            <small style="float:right">Eltűnik: <span title="{{ endTime|date('Y-m-d H:i:s') }}">{{ endTime|timeago }}</span></small>        
         {% endif %}
+        
         
       </h5>
     </div>

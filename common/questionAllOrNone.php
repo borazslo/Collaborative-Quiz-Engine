@@ -47,7 +47,9 @@ class questionAllOrNone extends Question {
             $goodNumberShouldBe =  $numAnswers - ( $numAnswers  / 100 * $tolerance  );
             
             if( $numBestAnswers < $goodNumberShouldBe ) {
-                $this->hint .= " - A többségből legyen még egység.";
+                $text = "A többségből legyen még egység.";
+                if(!isset($this->hint)) $this->hint = $text;
+                else $this->hint .= ' - '.$text;
                 return 1;                  
             } else {
                 return 2;
