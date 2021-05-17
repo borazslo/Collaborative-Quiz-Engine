@@ -15,6 +15,19 @@ class Admin {
         }
        $page->data['players'] = $players;
         
+       global $connection;
+       $stmt = $connection->prepare("SELECT answer FROM answers WHERE question_id = 40 AND result = '2'");
+       $stmt->execute();
+       $results = $stmt->fetchAll();
+       $w = [];
+       foreach($results as $result) {
+               $w = array_merge(explode(',',$result[0]),$w);
+       }
+               
+       
+       $page->data['szavak'] = implode(' ',$w);
+       
+       
     }
     
     static function verification() {
