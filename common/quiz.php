@@ -84,7 +84,10 @@ class Quiz {
     }
     
     function loadQuestionsStartEnd() {
-        $start = strtotime(isset($this->timing->start) ? $this->timing->start : "today midnight" ); 
+        $start = isset($this->timing->start) ? $this->timing->start : "today midnight";
+        if(preg_match('/^date\(.*?\)$/i',$start)) eval('$start = '.$this->timing->start.';');        
+        $start = strtotime($start);
+        
         $frequency = isset($this->timing->frequency) ? ( strtotime($this->timing->frequency) - time() ) : 0 ; 
         $duration = isset($this->timing->duration) ? ( strtotime($this->timing->duration) - time() ) : 31556952 ;
                      
