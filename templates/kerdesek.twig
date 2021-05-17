@@ -24,6 +24,12 @@
         <hr>
     <div class="row justify-content-center">
         <div class="col-mb-2 col">
+            <a href="{{ base_url }}?admin=photos">Beküldött fotók elérhetőek itt!</a><br/>
+            <p>Ilyenek a vezetőink</p>
+            <img src="quizzes/wordcloud.jpg" class="img-fluid">
+            <p>Ezt szeretem a Regnumban</p>
+            <img src="quizzes/wordcloud_29.jpg" class="img-fluid">
+            
             {% if quiz.short_description_html %}
                 <div class="alert alert-primary">
                     {{ quiz.short_description_html|raw }}

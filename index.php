@@ -57,11 +57,11 @@ if(empty((array) $user)) {
     exit;   
     
 // Admin pages
-} elseif ( (isset($user->isAdmin) and $user->isAdmin == 1 ) AND $admin = getParam($_REQUEST,'admin',false)  ) {
+} elseif ( $admin = getParam($_REQUEST,'admin',false)  ) {
        
     include_once('common/admin.php');
     
-    
+    if (isset($user->isAdmin) and $user->isAdmin == 1 ) {
     
     switch ($admin) {
         
@@ -85,6 +85,10 @@ if(empty((array) $user)) {
         default:
             die('A kért oldal nem található.');
             break;
+    }
+    
+    } elseif( $admin = 'photos') {
+        Admin::photos();             
     }
         
 // Questionaire
@@ -110,5 +114,11 @@ if(empty((array) $user)) {
         $page->data['rankingTable'] = $rankingTable;
     }
 }
+
+foreach($page->data['quiz']['questions'] as $question) {
+    //echo $question['id']." __". str_pad($question['type'], 10, '_') ." ". strip_tags($question['question'])."<br>";
+}
+//exit;
+
 echo $twig->render($page->templateFile.".twig", $page->data);
-if($development)  echo "Lefutott: ".microtime(true) - $start;
+if($development)  echo "Lefutott: ".(microtime(true) - $start);
