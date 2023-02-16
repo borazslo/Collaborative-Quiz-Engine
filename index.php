@@ -5,6 +5,12 @@ require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
 $loader = new \Twig\Loader\FilesystemLoader(['templates']);
+
+if(isset($config['addons'])) {
+	foreach($config['addons'] as $addon) {
+		$loader->prependPath("addons/".strtolower($addon));	
+	}
+}
 $twig = new \Twig\Environment($loader);
 
 //$twig->getExtension(\Twig\Extension\CoreExtension::class)->setDateFormat('d/m/Y', '%d days');

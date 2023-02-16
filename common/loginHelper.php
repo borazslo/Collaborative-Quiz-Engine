@@ -391,7 +391,7 @@ class LoginHelper
 	if (count($d) > 0 && isset($d['email'])){
 		$page->data['email'] = $d['email'];
 	}
-    echo $twig->render("rm.registration.twig", $page->data);
+    echo $twig->render("login.twig", $page->data);
     exit;
   }
 
