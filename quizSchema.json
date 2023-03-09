@@ -25,6 +25,13 @@
             "type": "string",
             "description" : "Ha van 'author' akkor lehet hozzá egy link is."
         },
+		"addons" : {
+			"type": "array",
+            "uniqueItems": true,
+			"items": {
+				"type" : "string"
+			}
+		},
         
         "timing" : {
             "type": "object",
