@@ -4,9 +4,9 @@ $development = false;
 
 $config = [
   'dbconnection' => [
-        'dsn' => 'mysql:host=localhost;dbname=DBNAME;charset=utf8',
-        'username' => 'USERNAME',
-        'passwd' => 'PASSWD',
+        'dsn' => 'mysql:host=db;dbname=MY_DATABASE;charset=utf8',
+        'username' => 'MYSQL_USER',
+        'passwd' => 'MYSQL_PASSWORD',
   ],
   'debug' => false,
   'loginHelper' => false , // use login system of loginHelper (true) or not (false) 
