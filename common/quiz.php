@@ -60,13 +60,16 @@ class Quiz {
                                 
                 //Cheking folders
                 if(isset($question->folder)) {
+					/* TODO: Jobb lenne ha működne, de itt még nincs $users az index.php okán. */
+					$question->folder = preg_replace('/\[(user|group|group2|group3)\]/', "", $question->folder);
+					/*
                     $question->folder = preg_replace_callback('/\[(user|group|group2|group3)\]/', function($matches) {
                         if($matches[1] == 'user ') $matches[1] = 'id';
                         global $user;
                         return $user->{$matches[1]};
                         
                     } , $question->folder);
-                                                            
+                    */                                        
                     $question->folder = $this->folder.$question->quiz_id."/".$question->folder;
                     if(!is_dir($question->folder)) throw new Exception('There is no folder called '.$question->folder);
                 }
@@ -81,6 +84,11 @@ class Quiz {
                 }
             }                        
         }
+		
+		if(isset($data->addons)) {		
+			foreach($data->addons as $addon)
+				include_once('addons/'.strtolower($addon)."/".$addon.".php");
+		}
 
     }
     

@@ -255,7 +255,8 @@ class Question {
         return $return;
     }
     
-    function pseudoRandom($from, $to, $unique) {
+    function pseudoRandom($from, $to, $unique) {		
+		//if(!is_numeric($unique)) $unique = crc32($unique);
         srand($unique * $this->id); // mindig ugyanazt fogja adni erre a unique-ra
         return rand($from, $to);                  
     }

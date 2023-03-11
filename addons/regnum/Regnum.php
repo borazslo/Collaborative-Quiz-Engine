@@ -22,7 +22,7 @@ class Regnum {
                      
        $sql = "SELECT * FROM regnum_communities";
        
-       if($user->group2 != '' and $user->level < 2)
+       if(isset($user->group2) AND $user->group2 != '' and $user->level < 2)
            $sql .= " WHERE `group` = '".$user->group2."' ";
                       
        $stmt = $connection->prepare($sql);

@@ -271,7 +271,8 @@ class LoginHelper
                     'tanaz' => $row[0],
                     'level' => 1,
                     'name' => $row[2],
-                    'group' => $row[3]
+                    'group' => $row[3],
+					'group_id' => crc32 ($row[3])
                 ];
                 $_SESSION['login'] = 'normal';
 

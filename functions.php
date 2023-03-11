@@ -2,10 +2,6 @@
 
 include_once 'config.php';
 
-if(isset($config['addons'])) 
-    foreach($config['addons'] as $addon)
-        include_once('addons/'.strtolower($addon)."/".$addon.".php");
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates

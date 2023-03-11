@@ -27,6 +27,7 @@
         },
 		"addons" : {
 			"type": "array",
+			"description" : "Az addons mappába található osztályok közül amit használi akarunk."
             "uniqueItems": true,
 			"items": {
 				"type" : "string"
