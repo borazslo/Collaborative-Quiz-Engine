@@ -2,7 +2,7 @@
 
 {% block container %}
   <div class="jumbotron text-center ">
-        <h1 class="jumbotron-heading">{{ quiz.title }}sdsd</h1>
+        <h1 class="jumbotron-heading">{{ quiz.title }}</h1>
         {{ game.description|raw }}
   </div>
     <div class="row justify-content-center">
@@ -15,15 +15,42 @@
                         {{ 'Cannot login. Please check your credentials'|t }}
                 </div>
             {% endif %}
-        <form class="form-signin" action="index.php" method="post">
+        <form class="form-signin" action="{{ base_url }}" method="post">
+        
+            {% if registration %}       
+                <label for="name" class="sr-only">name</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="{{ 'name'|t }}" required {% if name %} value={{name}} {% endif %} >
+            {% endif %}
+            
+            {% if task != 'modifyPassword' %}
             <label for="tanaz" class="sr-only">tanaz</label>
-            <input type="text" id="tanaz" name="tanaz" class="form-control" placeholder="{{ 'name'|t }}" value="{{ tanaz }}" required autofocus>
-            <label for="tanazonosito" class="sr-only">tanazonosito</label>
-            <input type="password" id="tanazonosito" name="tanazonosito" class="form-control" placeholder="{{ 'password'|t }}" required>            
-                            
-			<input type="hidden" name="next_page" value="{{ next_page }}">  
-            <input type="hidden" name="task" value="{{ task }}" /> 							
-            <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top:10px">{{ 'Login'|t }}</button>      
+            <input type="email" id="email" name="email" class="form-control" placeholder="{{ 'email'|t }}" required autofocus {% if email %} value={{email}} {% endif %}>
+            {% endif %}
+            
+            {% if task != 'sendPassword' %}
+            <label for="password" class="sr-only">tanazonosito</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="{{ 'password'|t }}" required>    
+            {% endif %}
+            
+            
+            {% if task == 'login' %}
+
+            <small>
+            {% if  usermanagement.allowregistration %}
+                <a href="?task=reg&">{{ 'Registration'|t }}</a> |
+            {% endif %}
+            <a href="?task=lostPassword&">{{ 'LostPassword'|t }}</a>
+            
+            {% endif %}
+            <input type="hidden" name="next_page" value="{{ next_page }}">  
+            <input type="hidden" name="task" value="{{ task }}" /> 
+            
+            {% if task == 'modifyPassword' %}
+            <input type="hidden" name="token" value="{{ token }}" /> 
+            {% endif %}
+                                         
+            <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top:10px">{{ button_caption }}</button>   
+            <small>{{ details }}</small>            
             
         </form>
 

@@ -18,6 +18,10 @@ class LoginHelper
 {
 
   function __construct(){
+    global $page, $config;
+
+
+    $page->data['usermanagement'] = $config['usermanagement'];
   }
 
 	// https://raw.githack.com/xcash/bootstrap-autocomplete/master/dist/latest/index.html
@@ -404,7 +408,7 @@ class LoginHelper
 	$page->data['button_caption'] = t('SendPassword');
 	$page->data['task'] = 'sendPassword';
 	$page->data['details'] = t('LostPasswordDetails');
-	echo $twig->render("rm.registration.twig", $page->data);
+	echo $twig->render("login.twig", $page->data);
 	exit;
   }
 
@@ -420,7 +424,7 @@ class LoginHelper
 		$page->data['groupName'] = isset($d['groupName']) ? $d['groupName'] : '';
                 $page->data['email'] = isset($d['email']) ? $d['email'] : '';
 	}
-	echo $twig->render("rm.registration.twig", $page->data);
+	echo $twig->render("login.twig", $page->data);
 	exit;
   }
 
@@ -434,7 +438,7 @@ class LoginHelper
 	$page->data['button_caption'] = t('OK');
 	$page->data['task'] = 'modifyPassword';
 	$page->data['token'] =  $token;
-    echo $twig->render("rm.registration.twig", $page->data);
+    echo $twig->render("login.twig", $page->data);
     exit;
   }
 

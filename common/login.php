@@ -42,8 +42,10 @@ if ($action == "login"){
 	echo $loginHelper->getRMgroupsJSON(getParam( $_REQUEST, "term"));
 	exit;
 }else if ($action == "reg"){
+	if( $config['usermanagement']['allowregistration'] == false ) die('Registration is not allowed');
 	$loginHelper->registrationForm();
 }else if ($action == "registration"){
+	if( $config['usermanagement']['allowregistration'] == false ) die('Registration is not allowed');
 	$loginHelper->add($_REQUEST);
 }else if ($action == "confirm"){
 	$loginHelper->confirmReg($_REQUEST);

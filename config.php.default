@@ -20,6 +20,11 @@ $config['addons'] = ['Regnum'];
 $config['lang'] = 'hu_HU';
 date_default_timezone_set("Europe/Budapest");
 
+
+$config['usermanagement'] = [
+    'allowregistration' => true,
+];
+
 $config['authentication'] 
      = [
         'pdo' => [ # mysql vagy sok más minden is lehet 
