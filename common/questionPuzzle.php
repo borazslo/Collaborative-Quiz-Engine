@@ -40,13 +40,12 @@ class questionPuzzle extends Question {
         // TODO: RM Regnum specifikus dolgok
         $sql = "SELECT count(*) c  
                     FROM users 
-                    LEFT JOIN groups ON groups.id = users.group_id 
+                    LEFT JOIN `groups` ON groups.id = users.group_id 
                     LEFT JOIN regnum_communities r ON r.name = groups.name 
                     WHERE 
                         users.name NOT LIKE '[bulk]%' AND
                         r.localRM = :localRM 
                     GROUP BY `localRM` 
-                    ORDER BY users.id desc;
                     LIMIT 1 ";        
         
         global $connection, $user;

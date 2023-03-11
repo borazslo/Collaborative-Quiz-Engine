@@ -20,8 +20,8 @@ class LoginHelper
   function __construct(){
     global $page, $config;
 
-
-    $page->data['usermanagement'] = $config['usermanagement'];
+	if(isset($config['usermanagement']))
+		$page->data['usermanagement'] = $config['usermanagement'];
   }
 
 	// https://raw.githack.com/xcash/bootstrap-autocomplete/master/dist/latest/index.html
@@ -281,7 +281,7 @@ class LoginHelper
 
 
     if(!$result) {
-        $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.group_id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
+        $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.group_id, u.name as username, groups.name as groupname, groups.level FROM users u left join `groups` ON u.group_id=groups.id WHERE email=:email");
     	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
     	$stmt->execute();
     	
