@@ -201,13 +201,13 @@
                         "anyOf" : [
                             {
                                 "type" : "string",
-                                "enum" : ["user", "group"]
+                                "enum" : ["user", "group","group2"]
                             },
                             {
                                 "type" : "array",                                
                                 "items" : {
                                     "type" : "string",
-                                    "enum" : ["user", "group"]
+                                    "enum" : ["user", "group","group2"]
                                 }                                
                             }
                         ]

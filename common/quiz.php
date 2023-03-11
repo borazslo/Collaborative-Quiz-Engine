@@ -7,13 +7,13 @@ class Quiz {
     
     public $folder = 'quizzes/';
     
-    function __construct($jsonFile,$descriptionOnly = false) {
+    function __construct($id,$descriptionOnly = false) {
         
-        $this->id = preg_replace('/\.([a-zA-Z0-9]*?)$/i','',$jsonFile);
+        $this->id = $id; 
         
         $this->descriptionOnly = $descriptionOnly;
         
-        $this->loadAndValidateFile($jsonFile);
+        $this->loadAndValidateFile();
         
         if($this->descriptionOnly != true) {
             $this->loadQuestionsStartEnd();
@@ -22,14 +22,21 @@ class Quiz {
         
     }    
     
-    function loadAndValidateFile($jsonFile) {
+    function loadAndValidateFile() {
         
         // Get Json data file
-        $file = $this->folder.$jsonFile;                
-        if(!file_exists($file)) throw new Exception("Config file '". $file."' does not exists.");                        
-        if(! $data = json_decode(file_get_contents($file)) ) throw new Exception("Config file '". $file."' is not valid Json.");
-
-        // Validate Json data settings against schema
+        $configFile = $this->folder.$this->id."/".$this->id.".json";                
+        if(!file_exists($configFile)) throw new Exception("Config file '". $configFile."' does not exists.");                        
+        if(! $configData = json_decode(file_get_contents($configFile)) ) throw new Exception("Config file '". $configFile."' is not valid Json.");
+		
+		$questionsFile = $this->folder.$this->id."/questions.json";                
+        if(!file_exists($questionsFile)) throw new Exception("Questions' file '". $questionsFile."' does not exists.");                        
+        if(! $questionsData = json_decode(file_get_contents($questionsFile)) ) throw new Exception("Questions' file '". $questionsFile."' is not valid Json.");
+		
+		$data = $configData;
+		$data->questions = $questionsData;
+				
+		// Validate Json data settings against schema
         $validator = new JsonSchema\Validator;
         $validator->validate($data, (object)['$ref' => 'file://'.dirname(__FILE__)."/../quizSchema.json"], Constraint::CHECK_MODE_APPLY_DEFAULTS); //file://' . realpath('schema.json')]);
 
@@ -62,7 +69,7 @@ class Quiz {
                         
                     } , $question->folder);
                                                             
-                    $question->folder = $this->folder.$question->folder;
+                    $question->folder = $this->folder.$question->quiz_id."/".$question->folder;
                     if(!is_dir($question->folder)) throw new Exception('There is no folder called '.$question->folder);
                 }
                 if(in_array($question->type,['multi','puzzle'])) {

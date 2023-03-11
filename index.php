@@ -37,12 +37,12 @@ require_once 'common/user.php';
 
 require_once('common/login.php');
 
-$quiz = new Quiz($quizId.'.json');
+$quiz = new Quiz($quizId);
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
-
 
 CheckLogin();
 $page->data['user'] = (array) $user;
+
 
 
 if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
