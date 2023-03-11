@@ -1,5 +1,8 @@
 <?php
 
+if(!file_exists('config.php')) {
+	copy('config.php.default', 'config.php');
+}
 include_once 'config.php';
 
 /*
