@@ -189,13 +189,13 @@ class Question {
                 FROM answers ";
         
         if($groupName) {
-            $sql .= "LEFT JOIN users
+            $sql .= "LEFT JOIN `users`
                     ON users.id = answers.user_id
-                LEFT JOIN groups
+                LEFT JOIN `groups`
                     ON groups.id = users.group_id
                 WHERE  
 		groups.name = :group_name AND ";
-            $params = array_merge($this->params,[':group_name' => $groupName]); 
+            $params = array_merge($this->params,['group_name' => $groupName]); 
         }                
         else {
             $sql .= " WHERE ";

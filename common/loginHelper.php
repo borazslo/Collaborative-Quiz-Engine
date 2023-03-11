@@ -267,7 +267,7 @@ class LoginHelper
 
                 $result = [
                     'ok' => true,
-'id' => $row[1],
+                    'id' => crc32 ($row[1]),
                     'tanaz' => $row[0],
                     
                     'name' => $row[2],
