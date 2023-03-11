@@ -1,0 +1,6 @@
+FROM mysql
+
+# Copy content from .sql to Docker mysql container
+COPY ./db/SQLTemplate.sql /docker-entrypoint-initdb.d/init.sql
+
+EXPOSE 3306

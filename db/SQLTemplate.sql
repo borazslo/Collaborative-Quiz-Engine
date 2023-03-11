@@ -1,14 +1,12 @@
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * docker exec -i db mysql -uMYSQL_USER -pMYSQL_PASSWORD MY_DATABASE < db/SQLTemplate.sql
  */
 /**
  * Author:  borazslo
  * Updated: May 4, 2021
  */
 
-CREATE TABLE `groups` ( 
+CREATE TABLE IF NOT EXISTS `groups` ( 
     `id` INT NOT NULL AUTO_INCREMENT ,
     `name` VARCHAR(100) NOT NULL , 
     `level` INT NOT NULL DEFAULT '1' , 
@@ -20,7 +18,7 @@ UNIQUE KEY `name` (`name`)
 
 
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -33,14 +31,11 @@ CREATE TABLE `users` (
 
 PRIMARY KEY (`id`),
 -- UNIQUE KEY `name` (`name`),
-UNIQUE KEY `Email` (`email`),
-INDEX group_ind (group_id),
-    FOREIGN KEY (group_id)
-        REFERENCES groups(id)
+UNIQUE KEY `Email` (`email`)
 );
 
 
-CREATE TABLE `regnum_communities` (
+CREATE TABLE IF NOT EXISTS  `regnum_communities` (
     `id` INT NOT NULL AUTO_INCREMENT , 
     `name` VARCHAR(60) NOT NULL , 
     `group` VARCHAR(40) NULL , 
@@ -50,7 +45,7 @@ CREATE TABLE `regnum_communities` (
 PRIMARY KEY (`id`)) ENGINE = InnoDB;
 
 
-CREATE TABLE `answers` ( 
+CREATE TABLE IF NOT EXISTS  `answers` ( 
     `quiz_id` VARCHAR(50) NOT NULL , 
     `question_id` INT NOT NULL , 
     `user_id` INT(11) NOT NULL , 
@@ -59,7 +54,5 @@ CREATE TABLE `answers` (
     `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 UNIQUE KEY `unique` ( `quiz_id`, `question_id`, `user_id`),
-INDEX userId (user_id),
-    FOREIGN KEY (user_id) 
-        REFERENCES users(id)
+INDEX userId (user_id)
 )

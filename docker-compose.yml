@@ -24,5 +24,8 @@ services:
         MYSQL_PASSWORD: MYSQL_PASSWORD
     volumes:
       - ./db:/docker-entrypoint-initdb.d
+    build:
+      context: .
+      dockerfile: Dockerfile_mysql
     ports:
         - "9906:3306"
