@@ -15,7 +15,7 @@ class User {
     //put your code here
     public function __construct(&$d=array()) {
         
-	if (!isset($d) || count($d) < 6)
+	if (!isset($d) || count($d) < 10) // TODO: miért van itt ez a count($d)?? Ami 6 volt sokáig.
 		//return;
         foreach( ['name','id','level','group','group_id','group2','group3'=> false, 'admin' => false] as $key => $value) {
             $hasdefault = false;

@@ -269,7 +269,7 @@ class LoginHelper
                     'ok' => true,
                     'id' => crc32 ($row[1]),
                     'tanaz' => $row[0],
-                    
+                    'level' => 1,
                     'name' => $row[2],
                     'group' => $row[3]
                 ];

@@ -3,7 +3,6 @@
 class questionEncryption extends Question {
 
 	function prepareQuestion() {
-		printr($this);
 
 		if(isset($this->encryptedandhint) AND !is_array($this->encryptedandhint)) $this->encryptedandhint = ($this->encryptedandhint)();
         if($this->encryptedandhint === array()) return;

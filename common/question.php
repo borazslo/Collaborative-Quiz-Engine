@@ -270,8 +270,9 @@ class Question {
         if($this->unique == 'user') $this->unique = 'id';
         elseif($this->unique == 'group') $this->unique = 'group_id';
         
-        $this->unique = $user->{$this->unique};
-        
+		if(isset($user->{$this->unique}))
+			$this->unique = $user->{$this->unique};
+		        		
         return $this->unique;
     }
     

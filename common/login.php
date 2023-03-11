@@ -11,23 +11,18 @@ $loginHelper = new LoginHelper();
 $next_page = $_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
 $next_page = getParam( $_REQUEST, "next_page", $next_page);
 
-if ($action != false AND $action != "login"){
-    $quiz = new Quiz($quizId.'.json',true);
-    $page->data['quiz'] = json_decode(json_encode($quiz), true);
-}
-
 $continue = false;
 if ($action == "login"){
+
 	$loginHelper->login($_REQUEST);
+	
 	if (!$loginHelper->authenticated_user()){            
-                $quiz = new Quiz($quizId.'.json',true);
-                $page->data['quiz'] = json_decode(json_encode($quiz), true);
                 if($_SESSION['login'] == 'denied') 
                     $loginHelper->loginForm(t('WrongPassword'), $_REQUEST, $next_page);
                 elseif($_SESSION['login'] == 'inactive') 
                     $loginHelper->lostPasswordForm(t("InActvie"));
 		
-	}else{
+	}else{		
 		$user = new User($_SESSION['user']);
 	}
 
@@ -63,8 +58,6 @@ if ($action == "login"){
 
 
 if(! (array) $user ) { 
-    $quiz = new Quiz($quizId.'.json',true);
-    $page->data['quiz'] = json_decode(json_encode($quiz), true);
     $loginHelper->loginForm(false, $_REQUEST, $next_page);
     exit;
 }

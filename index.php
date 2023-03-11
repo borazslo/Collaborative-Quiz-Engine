@@ -35,14 +35,15 @@ $quizId = getParam($_REQUEST, 'q', isset($config['defaultQuizId']) ? $config['de
 
 require_once 'common/user.php';
 
-require_once('common/login.php');
-
 $quiz = new Quiz($quizId);
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
 
+require_once('common/login.php');
 CheckLogin();
+
 $page->data['user'] = (array) $user;
 
+$quiz->prepareQuestions();
 
 
 if(isset($user->isAdmin) and $user->isAdmin == 1 ) {

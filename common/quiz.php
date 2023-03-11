@@ -7,21 +7,19 @@ class Quiz {
     
     public $folder = 'quizzes/';
     
-    function __construct($id,$descriptionOnly = false) {
+    function __construct($id) {
         
         $this->id = $id; 
-        
-        $this->descriptionOnly = $descriptionOnly;
-        
         $this->loadAndValidateFile();
-        
-        if($this->descriptionOnly != true) {
-            $this->loadQuestionsStartEnd();
-            $this->deleteInactiveQuestions();
-        }
         
     }    
     
+	function prepareQuestions() {
+		$this->loadQuestions();
+		$this->loadQuestionsStartEnd();
+		$this->deleteInactiveQuestions();
+	}
+	
     function loadAndValidateFile() {
         
         // Get Json data file
@@ -50,12 +48,12 @@ class Quiz {
         
         // Load from Json data setting to $this
         foreach($data as $key => $val) {
-            if($key != 'questions') 
+            // if($key != 'questions') 
                 $this->$key = $val;
         }
                 
         // Process questions one by one         
-        if(isset($data->questions) AND $this->descriptionOnly != true) {
+        if(isset($data->questions)) {
             foreach($data->questions as $key => $question) {
                 $question->id = $key + 1;
                 $question->quiz_id = $this->id;
@@ -81,15 +79,26 @@ class Quiz {
                         }
                     }
                 }
-                
+            }                        
+        }
+
+    }
+    
+	function loadQuestions() {
+			$questions = $this->questions;
+			$this->questions = [];
+			
+            foreach($questions as $key => $question) {
+                $question->id = $key + 1;
+                $question->quiz_id = $this->id;
+                                
                 //Load question
                 $className = "question".ucfirst($question->type);
                 $this->questions[] = new $className($question);                
             }                        
-        }
-                
-    }
-    
+				
+	}
+	
     function loadQuestionsStartEnd() {
         $start = isset($this->timing->start) ? $this->timing->start : "today midnight";
         if(preg_match('/^date\(.*?\)$/i',$start)) eval('$start = '.$this->timing->start.';');        
