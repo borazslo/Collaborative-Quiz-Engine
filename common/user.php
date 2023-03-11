@@ -16,16 +16,18 @@ class User {
     public function __construct(&$d=array()) {
         
 	if (!isset($d) || count($d) < 6)
-		return;
-        $this->name = $d['name'];//'Kis Elemér';
-        $this->id = $d['id'];//1487;
-        $this->level = $d['level'];//2;
-        $this->group = $d['group'];//'Medve';
-        $this->group_id = $d['group_id'];
-        $this->group2 = $d['group2'];//"Emlős";
-        $this->group3 = isset($d['group3']) ? $d['group3'] : false;//"Emlős";
-        $this->isAdmin = $d['admin'];//true;
-        
+		//return;
+        foreach( ['name','id','level','group','group_id','group2','group3'=> false, 'admin' => false] as $key => $value) {
+            $hasdefault = false;
+            if(!is_numeric($key)) { $hasdefault = true; $default = $value; $value = $key; }
+
+            if(isset($d[$value]) )
+                $this->$value = $d[$value];
+            elseif($hasdefault == true) {
+                $this->$value = $default;
+            }                
+
+        }        
     }
 }
 

@@ -238,43 +238,95 @@ class LoginHelper
   function login(&$d){
 	  global $connection, $config;
 
-    $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.group_id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
-	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
-	$stmt->execute();
-	
-    if ($stmt->rowCount() > 0){
-      $r = $stmt->fetch(PDO::FETCH_ASSOC);      
-      if ($r['password'] == crypt($d['password'], $config['authentication']['salt'])){
-          
-                  if($r['active'] == 0 ) {
-                    $_SESSION['login'] = 'inactive';
-                    return false;
-                  }
-                   
-		  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
-		  $_SESSION['user_id'] = $r['id'];
-		  $_SESSION['name'] = $r['username'];
-		  
-		  $result = [];
-		  $result['ok'] = true;
-		  $result['id'] = $r['id'];
-		  $result['name'] = $r['username'];
-		  $result['admin'] = $r['admin'] == 1;
-		  $result['group'] = $r['groupname'];
-                  $result['group_id'] = $r['group_id'];
-		  $result['group2'] = false; // $r['group'];
-		  $result['level'] = $r['level'];
-                                    
-                  if(isset($config['addons'])) foreach($config['addons'] as $addon ) $result = $addon::login($result);
-                                      
-		  $_SESSION['user'] = $result;
-		  
-		  return true;
+    $result = false;
+
+     /* 
+     * Authentication with array defined in config.php 
+     */
+    if(isset($config['authentication']['array'])) {
+        $array = $config['authentication']['array'];
+        
+        if(!is_array($array) OR count(array_values($array)[0]) != 4) {
+            throw new Exception("Configuration error: Authentication by 'array' is misconfigured.");
+        }  
+        
+        if(isset($array['md5']) AND $array['md5'] != false ) {
+            if($array['md5'] === true ) $salt = $config['authentication']['salt'];
+            else  $salt = $array['md5'];                
+        } else {
+            $salt = $config['authentication']['salt'];
+        }
+
+        foreach($array as $row) {
+            if ($row[0] == $d['email']  AND ( $row[1] == $d['password'] OR $row[1] == md5($salt.$d['password']) OR $d['password'] == md5($salt.$row[1]) ) ) {
+                              
+                # Hash nélkül van nálunk a jelszó. Az nem jó ötlet.
+                if(!preg_match('/^[a-f0-9]{32}$/', $d['password'])) {
+                    $row[1] = md5($salt.$d['password']) ;
+                }
+
+                $result = [
+                    'ok' => true,
+'id' => $row[1],
+                    'tanaz' => $row[0],
+                    
+                    'name' => $row[2],
+                    'group' => $row[3]
+                ];
+                $_SESSION['login'] = 'normal';
+
+            }                
+        }      
+    }
+
+
+    if(!$result) {
+        $stmt = $connection->prepare("SELECT u.password, u.admin, u.active, u.id, u.group_id, u.name as username, groups.name as groupname, groups.level FROM users u left join groups ON u.group_id=groups.id WHERE email=:email");
+    	$stmt->bindValue(':email', $d['email'], PDO::PARAM_STR);  
+    	$stmt->execute();
+    	
+        if ($stmt->rowCount() > 0){
+          $r = $stmt->fetch(PDO::FETCH_ASSOC);      
+          if ($r['password'] == crypt($d['password'], $config['authentication']['salt'])){
+              
+                      if($r['active'] == 0 ) {
+                        $_SESSION['login'] = 'inactive';
+                        return false;
+                      }
+                       
+    		  $_SESSION['login'] = ($r['admin'] == 1 ? 'admin' : 'normal');
+    		  
+    		  
+    		  $result = [];
+    		  $result['ok'] = true;
+    		  $result['id'] = $r['id'];
+    		  $result['name'] = $r['username'];
+    		  $result['admin'] = $r['admin'] == 1;
+    		  $result['group'] = $r['groupname'];
+                      $result['group_id'] = $r['group_id'];
+    		  $result['group2'] = false; // $r['group'];
+    		  $result['level'] = $r['level'];
+      }                              
+
       }
     }
-    $this->logout();
-    $_SESSION['login'] = "denied";
-    return false;
+
+
+    if($result != false ) {
+      if(isset($config['addons'])) foreach($config['addons'] as $addon ) $result = $addon::login($result);
+
+      $_SESSION['user_id'] = $result['id'];
+      $_SESSION['name'] = $result['name'];                                      
+      $_SESSION['user'] = $result;    
+
+      return true;
+
+    } else {
+      $this->logout();
+      $_SESSION['login'] = "denied";
+      return false;
+
+    }
   }
 
   function logout(){

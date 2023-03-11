@@ -55,11 +55,12 @@ if ($action == "login"){
 	$loginHelper->sendPassword($_REQUEST);
 }else if ($action == "logout"){
 	$loginHelper->logout();
-	header("Location: index3.php");
+	header("Location: index.php");
         
 } else if ($action == false ) {
     $user = new User($_SESSION['user']);
 }
+
 
 if(! (array) $user ) { 
     $quiz = new Quiz($quizId.'.json',true);

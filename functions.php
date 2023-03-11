@@ -90,6 +90,7 @@ function loadTranslation($lang) {
 }
 
 // TODO: Biztonsági rés? A belépési oldalon rögtön be lehet lépni ha küldik a haselt változatot
+// Ezt felülírta már a loginHelpre->login() oda át kéne írni mindezeket!!
 function getUser($username, $passwd) {     
     global $config;
     
@@ -97,36 +98,7 @@ function getUser($username, $passwd) {
      * Authentication with array defined in config.php 
      */
     if(isset($config['authentication']['array'])) {
-        $array = $config['authentication']['array'];
-        
-        if(!is_array($array) OR count(array_values($array)[0]) != 4) {
-            throw new Exception("Configuration error: Authentication by 'array' is misconfigured.");
-        }  
-        
-        if(isset($array['md5']) AND $array['md5'] != false ) {
-            if($array['md5'] === true ) $salt = $config['authentication']['salt'];
-            else  $salt = $array['md5'];                
-        } else {
-            $salt = $config['authentication']['salt'];
-        }
-
-        foreach($array as $row) {
-            if ($row[0] == $username  AND ( $row[1] == $passwd OR $row[1] == md5($salt.$passwd) OR $passwd == md5($salt.$row[1]) ) ) {
-                              
-                # Hash nélkül van nálunk a jelszó. Az nem jó ötlet.
-                if(!preg_match('/^[a-f0-9]{32}$/', $passwd)) {
-                    $row[1] = md5($salt.$passwd) ;
-                }
-
-                return [
-                    'tanaz' => $row[0],
-                    'tanazonosito' => $row[1],
-                    'tannev' => $row[2],
-                    'tanosztaly' => $row[3]
-                ];
-
-            }                
-        }      
+        // átjutott már!   
     }
 
     /* Authentication with CSV file */

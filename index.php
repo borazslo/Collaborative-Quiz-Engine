@@ -121,9 +121,9 @@ if(empty((array) $user)) {
     }
 }
 
-foreach($page->data['quiz']['questions'] as $question) {
+//foreach($page->data['quiz']['questions'] as $question) {
     //echo $question['id']." __". str_pad($question['type'], 10, '_') ." ". strip_tags($question['question'])."<br>";
-}
+//}
 //exit;
 
 echo $twig->render($page->templateFile.".twig", $page->data);

@@ -41,12 +41,12 @@ $config['authentication']
             'md5' => false # md5 hash-ben vannak-e a jelszavak tárolva. ha van salt az elején akkor true helyett a salt stringéjvel legyne egyenlő 
         ], 
         'array' => [
-            ['csop1','CsoPortEgy','1. Csapat','Csop1'],
-            ['csop2','CSoPortKettő','2. Csapat','Csop2'],
-            ['csop3','CSOPort3','3. Csapat','Csop3'],
-            ['csop4','csoPort4','4. Csapat','Csop4'],
-            ['csop5','cSoPort5','5. Csapat','Csop5'],
-            ['csop6','CSOPort6','6. Csapat','Csop6'],
+            ['csop1@no.mail','CsoPortEgy','1. Csapat','Csop1'],
+            ['csop2@no.mail','CSoPortKettő','2. Csapat','Csop2'],
+            ['csop3@no.mail','CSOPort3','3. Csapat','Csop3'],
+            ['csop4@no.mail','csoPort4','4. Csapat','Csop4'],
+            ['csop5@no.mail','cSoPort5','5. Csapat','Csop5'],
+            ['csop6@no.mail','CSOPort6','6. Csapat','Csop6'],
             'md5' => 'vackamati'
         ],
         'csv' => [
