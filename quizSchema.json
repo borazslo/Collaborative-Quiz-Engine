@@ -62,7 +62,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "completion", "allOrNone", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
+                        "enum": ["text", "completion", "allOrNone", "encryption", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {
@@ -148,6 +148,14 @@
                         "description" : "Szöveg amiből véletlenszerűen hiányzik egy-egy szó, ami a helyes válasz. Kötelező, ha type=completion. Máskor felesleges",
                         "items" : {
                             "type" : "string"
+                        }
+                    },
+
+                    "encryptedandhint" : {
+                        "type" : "array",
+                        "description" : "Az eltolással kikódolnadó szöveg és segítő szövegek",
+                        "items" : {
+                            "type" : ["string", "array"]
                         }
                     },
                     
