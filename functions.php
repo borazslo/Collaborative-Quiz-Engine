@@ -459,7 +459,7 @@ function getParam( &$arr, $name, $def=null, $type=null) {
     * 
     * retuen string Random string.
     */ 
-   function readable_random_string($length = 6)
+   function readable_random_string($length = 6, $seed = false)
    {  
        $string = '';
        $vowels = array("a","e","i","o","u");  
@@ -471,6 +471,9 @@ function getParam( &$arr, $name, $def=null, $type=null) {
        $max = $length / 2;
        for ($i = 1; $i <= $max; $i++)
        {
+			if($seed != false) { srand( crc32($seed) + ( $i * 1000000 ) ); }
+			else srand();
+			
            $string .= $consonants[rand(0,19)];
            $string .= $vowels[rand(0,4)];
        }
