@@ -22,6 +22,11 @@ class Quiz {
     
 	function prepareQuestions() {
 		$this->loadQuestions();
+		
+		$start = isset($this->timing->start) ? $this->timing->start : "today midnight";
+        if(preg_match('/^date\(.*?\)$/i',$start)) eval('$start = '.$this->timing->start.';');        
+        $this->timing->start = strtotime($start);
+		
 		$this->loadQuestionsStartEnd();
 		$this->deleteInactiveQuestions();
 	}
@@ -128,10 +133,9 @@ class Quiz {
 	}
 	
     function loadQuestionsStartEnd() {
-        $start = isset($this->timing->start) ? $this->timing->start : "today midnight";
-        if(preg_match('/^date\(.*?\)$/i',$start)) eval('$start = '.$this->timing->start.';');        
-        $start = strtotime($start);
-        
+		hook(__CLASS__,__FUNCTION__,'before',$this);
+		       
+		$start = $this->timing->start;
         $frequency = isset($this->timing->frequency) ? ( strtotime($this->timing->frequency) - time() ) : 0 ; 
         $duration = isset($this->timing->duration) ? ( strtotime($this->timing->duration) - time() ) : 31556952 ;
                      
@@ -153,14 +157,16 @@ class Quiz {
             if(isset($question->wait)) {
                 $last_start = strtotime($question->wait, $last_start - $frequency);
             } 
-        }                
+        }
+		
+		hook(__CLASS__,__FUNCTION__,'after',$this);
+		
     }
     
     /**
      * Delete inactive Questions based on startTime - endTime
      */
     function deleteInactiveQuestions() {
-        global $user; 
 
         $now = time();
         $this->thereIsNoQuestion = true;
@@ -174,5 +180,6 @@ class Quiz {
                 $this->thereIsNoQuestion = false;
             }
         }
+		hook(__CLASS__,__FUNCTION__,'after',$this);
     }    
 }

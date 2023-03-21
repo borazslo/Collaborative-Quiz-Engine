@@ -1,0 +1,72 @@
+{%  extends 'html.twig' %}
+
+{% block container %}   
+    <form action="{{ base_url }}/index.php?q={{ quiz.id }}" enctype="multipart/form-data" method="post">
+   
+        
+    <nav class="navbar dfixed-top navbar-dark bg-dark">
+        <a class="navbar-brand" href="index.php">{{ quiz.title }}</a>
+        {% if menu %}
+            <span class="navbar-text">
+                {% for title,url in menu %}
+                    [<a href="{{ url }}">{{ title }}</a>] 
+                {% endfor %}                
+            </span>
+        {% endif %}
+        <span class="navbar-text">
+        {{ user.name }} ({{ user.group }}{{ rankingTable[user.group].position ? ( " - " ~ rankingTable[user.group].position ~ ". " ~ "onPlace"|t ) }})
+        <input type="hidden" name="tanaz" value="{{ user.tanaz }}">
+        <input type="hidden" name="tanazonosito" value="{{ user.tanazonosito }}">        
+        <a href="index.php?task=logout">{{ "Logout"|t }}</a>
+        </span>
+        
+    </nav>           
+        <hr>
+    <div class="row justify-content-center">
+        <div class="col-mb-2 col">
+                      
+            {% if quiz.short_description_html %}
+                <div class="alert alert-primary">
+                    {{ quiz.short_description_html|raw }}
+                </div>
+            {%  endif %}
+            {% if config.debug %}
+                <div class="alert alert-warning">Fejlesztői üzemmódban vagyunk. Sok valótlan tartalommal, meg csak úgy.</div>                
+                {% for devMessage in devMessages %}
+                    <div class="alert alert-warning">{{ devMessage | raw}}</div>
+                {% endfor %}
+            {% endif %}
+
+
+			<div class="alert alert-info"><strong><center>
+				{{ "GroupStart: Your group has not started the game."|t }}<br/><br/>
+				<button class="btn btn-outline-primary" name="gomb" value="mehet" type="submit">{{ "GroupStart_StartButton"|t }}</button>
+				</center></strong>
+			</div>
+		
+			<div class="alert alert-danger">
+				{{ "GroupStart: Attention! It starts to game for the whole team!"|t }}
+			</div>
+            </form>
+            
+            
+</div>
+        {% if rankingTable %}
+            <div class="col-lg-2">
+                        {% include 'rankingTable.twig' %}                    
+            </div>
+        {% endif %}
+            </div>
+            
+            </form>     
+
+        
+        {% if focusId %}
+            <script>    
+                window.onload = function (event) {
+                    window.location.hash = "#{{ focusId }}";
+                };
+            </script>
+        {% endif %}
+{% endblock %}
+{# empty Twig template #}
