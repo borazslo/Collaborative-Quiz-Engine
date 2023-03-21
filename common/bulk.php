@@ -7,18 +7,44 @@
  */
 class Bulk {
     private $date;
-    private $connection;
-
+    public $connection;
+	private $addedFunctions = [];
     static function prefix()  { return '[bulk]'; }
     static function date()    { return '2010-01-01 12:12:12'; }
     
+	
+	
     public function __construct(Quiz $quiz) {
         global $connection;
         $this->date = $this->date();
         $this->quiz = $quiz; //TODO: itt a konkrét User van, nem pedig a bulk-ban létrejövők
         $this->connection = $connection;
         $this->prefix = $this->prefix();
+		
+		global $config;
+		if(isset($config['addons'])) {
+			foreach($config['addons'] as $addon) {
+				if(method_exists($addon,'bulkFunctions')) {
+					$bulkFunctions = $addon::bulkFunctions();
+					foreach($bulkFunctions as $func) {
+						$this->addedFunctions[$func] = [$addon,$func];
+					}
+				}
+			}
+		}
     }
+	
+	public function __call($method, $args) {
+		if(array_key_exists($method, $this->addedFunctions)) {
+			$class = $this->addedFunctions[$method][0];
+			$function = $this->addedFunctions[$method][1];
+			$args[] = $this;
+			return $class::$function($args);								
+		} else 
+			trigger_error('Call to undefined method '.__CLASS__.'::'.$name.'()', E_USER_ERROR);
+
+	
+	}
     
     public function addAll() {
         $this->addGroups();
@@ -27,7 +53,7 @@ class Bulk {
     }
  
     public function addGroups($count = 10, $param = []) {
-        $stmt = $this->connection->prepare("INSERT IGNORE INTO groups (name, level) VALUES (:name, :level)");       
+        $stmt = $this->connection->prepare("INSERT IGNORE INTO `groups` (name, level) VALUES (:name, :level)");       
         $groups = [];
         for($i = 0; $i < $count; $i++ ) {
             $group = array(
@@ -39,7 +65,7 @@ class Bulk {
     }
     
     public function addUsers($count = 70, $param = []) {                
-        $stmt = $this->connection->prepare("SELECT id FROM groups WHERE name LIKE '".$this->prefix."%' ");       
+        $stmt = $this->connection->prepare("SELECT id FROM `groups` WHERE name LIKE '".$this->prefix."%' ");       
         $stmt->execute();        
         $groups = $stmt->fetchAll();
         $stmt = $this->connection->prepare("INSERT IGNORE INTO users (name, email, password, active, group_id) VALUES (:name, :email, :password, :active, :group_id)");       
@@ -106,6 +132,8 @@ class Bulk {
         
         $stmt = $this->connection->prepare("DELETE FROM groups WHERE name LIKE '".$this->prefix."%';");
         $stmt->execute();
+		
+		//TODO: addonokat nem törli!
     }
         
 }
