@@ -1,16 +1,13 @@
 <?php
-//echo 'RM Majális - "Újratervezés" - 2021. május 15. '; exit ;
+session_start();//to be able to make difference between users
+//print_r($_REQUEST); print_r($_SESSION);
+
 $start = microtime(true);
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
 
 $loader = new \Twig\Loader\FilesystemLoader(['templates']);
 
-if(isset($config['addons'])) {
-	foreach($config['addons'] as $addon) {
-		$loader->prependPath("addons/".strtolower($addon));	
-	}
-}
 $twig = new \Twig\Environment($loader);
 
 //$twig->getExtension(\Twig\Extension\CoreExtension::class)->setDateFormat('d/m/Y', '%d days');
@@ -38,13 +35,21 @@ require_once 'common/user.php';
 $quiz = new Quiz($quizId);
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
 
+$trans = loadTranslation('hu_HU'); //a new Quiz() után kell, mert az addonok fordítására is szükség van
+
+if(isset($config['addons'])) {
+	foreach($config['addons'] as $addon) {
+		$twig->getLoader()->prependPath("addons/".strtolower($addon));	
+	}
+}
+
 require_once('common/login.php');
 CheckLogin();
 
 $page->data['user'] = (array) $user;
 
 $quiz->prepareQuestions();
-
+$page->data['quiz'] = json_decode(json_encode($quiz), true);
 
 if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
      $page->data['config']['debug'] = $config['debug'] = true;
@@ -99,8 +104,23 @@ if(empty((array) $user)) {
     }
         
 // Questionaire
-} else {    
-    $page->templateFile = 'kerdesek';
+} else {
+
+	//Special pages, because why not.
+	$task = getParam( $_REQUEST, "task");
+	if($task != '') {
+		$task = explode('_',$task);
+		if(count($task) > 2) die('A kért oldal nem található. (E132)');
+		if(count($task) == 2) {
+			if(!method_exists ($task[0], "public_".$task[1])) die('A kért oldal nem található. (E134)');		
+			$result = $task[0]::{"public_".$task[1]}($page);
+		}
+	} 
+	
+	//OR let's see the questions
+	
+	if(!isset($page->templateFile))
+		$page->templateFile = 'kerdesek';
 
     /* Fókusz oda, ahova nyomkodott */
     //TODO: csakko mükszik, ha gombra kattint. Egyébként miért nem?

@@ -2,8 +2,6 @@
 require_once(realpath( dirname(__FILE__) . "/../config.php"));
 require_once("loginHelper.php");
 
-session_start();//to be able to make difference between users
-
 
 $action = getParam( $_REQUEST, "task");
 $loginHelper = new LoginHelper();
@@ -52,7 +50,8 @@ if ($action == "login"){
 	$loginHelper->logout();
 	header("Location: index.php");
         
-} else if ($action == false ) {
+} else {
+	
     $user = new User($_SESSION['user']);
 }
 
@@ -67,6 +66,7 @@ function CheckLogin($level = 'normal'){
 	global $loginHelper, $next_page, $relative_path, $config;
 	
 	if (!$config['loginHelper']) return;
+	
 	if ($loginHelper->authenticated_user()){
 		if (!$loginHelper->get_access_level($level)){
 			printr(t('AccessDenied') . " (". $_SESSION['login'] . ")");
@@ -77,7 +77,7 @@ function CheckLogin($level = 'normal'){
 		//if (!empty($next_page)) header('Location: ' . $next_page);
 	}else{
 
-                $d = array();
+		$d = array();
 		$loginHelper->loginForm('', $d, $next_page);
 		exit();
 	}

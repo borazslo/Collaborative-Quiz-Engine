@@ -14,8 +14,6 @@ include_once 'config.php';
 $imageFolder = 'images';
 $connection = new PDO($config['dbconnection']['dsn'], $config['dbconnection']['username'], $config['dbconnection']['passwd']);
 
-$trans = loadTranslation('hu_HU');
-
 function t($string, $arg = false) {
     global $trans;
     
@@ -75,11 +73,29 @@ function twigFilter_timeago($datetime) {
   };
 
 function loadTranslation($lang) {
+		
     $filePath = 'locale/'.$lang.'.csv';
-    if(!file_exists($filePath)) 
+	$csv = loadTranslationFile($filePath);
+    
+	global $config;
+	if(isset($config['addons'])) {
+		foreach($config['addons'] as $addon) {
+			$added = loadTranslationFile("addons/".strtolower($addon)."/".$filePath);
+			if($added)
+				$csv = array_merge($csv,$added);
+		}
+	}
+	return $csv;
+}
+
+function loadTranslationFile($filePath) {
+	
+	if(!file_exists($filePath)) 
         return false;
-       
-    $rows = array_map(function($v){return str_getcsv($v, ";","\"");}, file($filePath));
+    
+	//echo $filePath."<br/>";   
+    
+	$rows = array_map(function($v){return str_getcsv($v, ";","\"");}, file($filePath));
     
     $csv = [];
     foreach($rows as $row) {
@@ -397,6 +413,20 @@ function getRankingTable($quiz_id) {
     }   
     return $return; 
    
+}
+
+function hook($class, $function, $postfix, $param) {
+	global $config;
+	if(isset($config['addons'])) {
+		  foreach($config['addons'] as $addon ) {
+			$function = $class."_".$function."_".$postfix;			
+			if(method_exists ($addon, $function)) {
+				$result = $addon::$function($param);
+			}
+		  }
+	}
+
+
 }
 
 function printr($anything) {

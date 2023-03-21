@@ -27,7 +27,8 @@ class User {
                 $this->$value = $default;
             }                
 
-        }        
+        }
+        hook(__CLASS__,__FUNCTION__,'after',$this);
     }
 }
 
