@@ -11,7 +11,13 @@ class Quiz {
         
         $this->id = $id; 
         $this->loadAndValidateFile();
+		$this->loadSpecialConfig();
         
+		if(isset($this->config->addons)) {		
+			foreach($this->config->addons as $addon)
+				include_once('addons/'.strtolower($addon)."/".$addon.".php");
+		}
+		
     }    
     
 	function prepareQuestions() {
@@ -83,15 +89,29 @@ class Quiz {
                     }
                 }
             }                        
-        }
-		
-		if(isset($data->addons)) {		
-			foreach($data->addons as $addon)
-				include_once('addons/'.strtolower($addon)."/".$addon.".php");
-		}
-
+        }			
     }
+	
+	function loadSpecialConfig() {
+		global $config;
+		if(isset($this->config)) {
+			$config = $this->recursiveupdate($config, $this->config);		
+		}
+	}
     
+	function recursiveupdate($original, $new) {
+		foreach( $new as $key => $value ) {
+			if(!isset($original[$key])) $original[$key] = $value;
+			else {
+				if(!is_array($value)) $original[$key] = $value;
+				else {
+					$original[$key] = $this->recursiveupdate($original[$key],$value);
+				}						
+			}
+		}
+		return $original;
+	}
+	
 	function loadQuestions() {
 			$questions = $this->questions;
 			$this->questions = [];

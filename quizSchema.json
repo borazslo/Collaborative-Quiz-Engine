@@ -25,12 +25,12 @@
             "type": "string",
             "description" : "Ha van 'author' akkor lehet hozzá egy link is."
         },
-		"addons" : {
-			"type": "array",
-			"description" : "Az addons mappába található osztályok közül amit használi akarunk.",
+		"config" : {
+			"type": "object",
+			"description" : "Minden amivel felülírjuk az általános config-ot",
             "uniqueItems": true,
 			"items": {
-				"type" : "string"
+				"type" : ["string","array","object"]
 			}
 		},
         
