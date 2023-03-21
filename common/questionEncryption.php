@@ -19,9 +19,9 @@ class questionEncryption extends Question {
 
 	function prepareHint() {
 		
-		if($this->hint === true) {
+		if(isset($this->hint) AND $this->hint === true) {
 			$this->hint = $this->hinttext."<br/><br/>Minden betű ".$this->shift." karakterrel van arrébb tolva. (Kettős betűket nem veszünk figyelembe.)" ; 
-		} elseif($this->hint != "") {
+		} elseif(isset($this->hint) AND $this->hint != "") {
 			$this->hint = $this->hinttext."<br/><br/>".$this->hint ; 
 		} else
 			$this->hint = $this->hinttext;
