@@ -110,6 +110,9 @@ class Question {
         
         
         $result = $this->getUserResult($new_answer);
+		if(isset($this->uniqueAnswerRequired) AND in_array($result,[1,2]) AND !$this->validateUniqueAnswers($new_answer)) {
+			$result = -1;
+		}
         
         if($new_answer != false and $new_answer != $old_answer) {
             if($old_answer != false ) {
@@ -158,6 +161,10 @@ class Question {
     function getUserResult($user_answer) {
         if($user_answer == '') return 0;
         
+		if(!is_array($this->answer) AND preg_match("/^callback:(.*)$/i",$this->answer,$match) AND function_exists($match[1]) ) {
+			$this->answer = call_user_func($match[1]);
+		}
+		
         if(!is_array($this->answer)) $this->answer = [$this->answer];
         
         foreach($this->answer as $good_answer) {
@@ -224,7 +231,7 @@ class Question {
         if($groupName) {
             $sql .= "LEFT JOIN users
                     ON users.id = answers.user_id
-                LEFT JOIN groups
+                LEFT JOIN `groups`
                     ON groups.id = users.group_id
                 WHERE  
 		groups.name = :group_name AND ";
@@ -254,9 +261,19 @@ class Question {
         }
         return $return;
     }
+	
+	function validateUniqueAnswers($answer) {
+		global $user;
+		$answers = $this->getDifferentAnswers($user->group);
+		if(!array_key_exists($answer,$answers) OR $answers[$answer] == 1) 
+			return true;
+		else
+			return false;		
+	}
     
     function pseudoRandom($from, $to, $unique) {		
-		//if(!is_numeric($unique)) $unique = crc32($unique);
+	
+		if(!is_numeric($unique)) $unique = crc32($unique);
         srand($unique * $this->id); // mindig ugyanazt fogja adni erre a unique-ra
         return rand($from, $to);                  
     }

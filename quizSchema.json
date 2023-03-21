@@ -77,7 +77,7 @@
                     },
                     "answer" : {
                         "type" : ["string","integer","array"],
-                        "description" : "A helyes válasz ill. a helyes válasz minden variánsa. Kötelező, ha type=(text,select). Máskor felesleges.",
+                        "description" : "A helyes válasz ill. a helyes válasz minden variánsa. Kötelező, ha type=(text,select). Máskor felesleges. Lehet függvény is: 'callback:_fügvényneve_'",
                         "items" : {
                             "type" : ["string", "integer"]
                         },
@@ -213,6 +213,11 @@
                             }
                         ]
                     },
+					
+					"uniqueAnswerRequired" : {
+							"type" : "boolean",
+							"description" : "A csapatban mindenkinek eltérő választ kell megadnia ahhoz, hogy elfogadjuk jónak. "
+					},
                     
                     "forAdmin" : {
                         "type" : "string",
