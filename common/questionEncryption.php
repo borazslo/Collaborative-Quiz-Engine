@@ -8,15 +8,27 @@ class questionEncryption extends Question {
         if($this->encryptedandhint === array()) return;
 
 		$c = $this->pseudoRandom(0, count($this->encryptedandhint) - 1 , $this->setUnique() );
-		$shift = $this->pseudoRandom(5, 15 , $this->setUnique() );
+		$this->shift = $this->pseudoRandom(5, 15 , $this->setUnique() );
 
-		$this->question .= "<br/><blockquote class='blockquote'>".$this->shifttext($this->encryptedandhint[$c][0],$shift)."</blockquote>";
+		$this->question .= "<br/><blockquote class='blockquote'>".$this->shifttext($this->encryptedandhint[$c][0],$this->shift)."</blockquote>";
 		$this->answer = [ $this->encryptedandhint[$c][0], mb_strtolower($this->encryptedandhint[$c][0])];
-		if(!isset($this->hint)) $this->hint = '';
-		$this->hint .= $this->shifttext($this->encryptedandhint[$c][1],$shift);
+		if(!isset($this->hinttext)) $this->hinttext = '';
+		$this->hinttext .= $this->shifttext($this->encryptedandhint[$c][1],$this->shift);
 	}
 
 
+	function prepareHint() {
+		
+		if($this->hint === true) {
+			$this->hint = $this->hinttext."<br/><br/>Minden betű ".$this->shift." karakterrel van arrébb tolva. (Kettős betűket nem veszünk figyelembe.)" ; 
+		} elseif($this->hint != "") {
+			$this->hint = $this->hinttext."<br/><br/>".$this->hint ; 
+		} else
+			$this->hint = $this->hinttext;
+		
+		unset($this->hinttext);
+	}
+	
 	function shifttext($text, $number) {
 		
 		//Hide numbers
