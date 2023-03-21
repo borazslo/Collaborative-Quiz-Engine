@@ -2,7 +2,7 @@
 
 class Regnum {
             
-    static function login($result) {
+    static function login_after($result) {
         global $connection;
                 
         $stmt = $connection->prepare("SELECT * FROM regnum_communities WHERE name = :name ");

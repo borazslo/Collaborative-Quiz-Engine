@@ -171,7 +171,7 @@ class LoginHelper
   }
 
   function authenticated_user(){
-    if (isset($_SESSION['login']) && ($_SESSION['login'] != "denied" AND $_SESSION['login'] != "inactive" ))
+  	if (isset($_SESSION['login']) && ($_SESSION['login'] != "denied" AND $_SESSION['login'] != "inactive" ))
       return true;
     return false;
   }
@@ -314,7 +314,10 @@ class LoginHelper
 
 
     if($result != false ) {
-      if(isset($config['addons'])) foreach($config['addons'] as $addon ) $result = $addon::login($result);
+      if(isset($config['addons'])) 
+		  foreach($config['addons'] as $addon ) 
+			if(method_exists ($addon, "login_after"))
+				$result = $addon::login_after($result);
 
       $_SESSION['user_id'] = $result['id'];
       $_SESSION['name'] = $result['name'];                                      
@@ -334,6 +337,7 @@ class LoginHelper
     if (isset($_SESSION['login'])) unset($_SESSION['login']);
     if (isset($_SESSION['user_id'])) unset($_SESSION['user_id']);
 	if (isset($_SESSION['user'])) unset($_SESSION['user']);
+	if (isset($_SESSION['name'])) unset($_SESSION['name']);
   }
 
   function generateRandomToken($length = 32) {
