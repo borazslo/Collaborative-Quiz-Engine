@@ -104,6 +104,30 @@ function loadTranslationFile($filePath) {
     return $csv;
 }
 
+function recursiveupdate($original, $new) {
+	foreach( $new as $key => $value ) {
+		if(is_array($original)) {
+			if(!isset($original[$key])) $original[$key] = $value;
+			else {
+				if(!is_array($value)) $original[$key] = $value;
+				else {
+					$original[$key] = recursiveupdate($original[$key],$value);
+				}						
+			}
+		}
+		elseif(is_object($original)) {
+			if(!isset($original->$key)) $original->$key = $value;
+			else {
+				if(!is_array($value)) $original->$key = $value;
+				else {
+					$original->$key = recursiveupdate($original->$key,$value);
+				}						
+			}
+		}
+	}
+	return $original;
+}
+
 // TODO: Biztonsági rés? A belépési oldalon rögtön be lehet lépni ha küldik a haselt változatot
 // Ezt felülírta már a loginHelpre->login() oda át kéne írni mindezeket!!
 function getUser($username, $passwd) {     

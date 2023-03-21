@@ -100,23 +100,10 @@ class Quiz {
 	function loadSpecialConfig() {
 		global $config;
 		if(isset($this->config)) {
-			$config = $this->recursiveupdate($config, $this->config);		
+			$config = recursiveupdate($config, $this->config);		
 		}
 	}
-    
-	function recursiveupdate($original, $new) {
-		foreach( $new as $key => $value ) {
-			if(!isset($original[$key])) $original[$key] = $value;
-			else {
-				if(!is_array($value)) $original[$key] = $value;
-				else {
-					$original[$key] = $this->recursiveupdate($original[$key],$value);
-				}						
-			}
-		}
-		return $original;
-	}
-	
+    		
 	function loadQuestions() {
 			$questions = $this->questions;
 			$this->questions = [];

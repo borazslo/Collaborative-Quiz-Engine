@@ -222,7 +222,12 @@
                     "forAdmin" : {
                         "type" : "string",
                         "description" : "Csak adminisztrátorok számára olvasható üzenet. Például 'type=manual' esetén pár szó a kiértékelés szempontjairól"
-                    }                    
+                    } ,
+
+					"variationsByLevel" : {
+						"type" : "array",
+						"description" : "Egyes nehézségi szinteknek megfelelően egyedi beállításokat lehet csinálni / felül lehet írni azt ami van."						
+					}
                 },
                 "required" : ["type"],
                 "additionalProperties": false                

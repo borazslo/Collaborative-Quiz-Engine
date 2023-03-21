@@ -28,7 +28,7 @@ class questionPair extends Question {
                 $this->options[] = $option[1];
             }
             $this->options = array_unique($this->options);
-            sort($this->options);
+            natsort($this->options);
             unset($this->pairs);
 
         }

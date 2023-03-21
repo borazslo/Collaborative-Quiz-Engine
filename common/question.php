@@ -17,10 +17,22 @@ class Question {
     
     function __construct($settings) {
         
-        
+		if(isset($settings->variationsByLevel)) {
+			global $user;
+			foreach($settings->variationsByLevel as $key => $setting) {
+				if($key + 1 == $user->level) {					
+					$settings = recursiveupdate($settings,$setting);
+				}			
+			}
+		}
+		
         foreach($settings as $key => $val) {
             $this->$key = $val;
         }
+		
+		
+		
+		
         
         if(isset($settings->options) AND !is_array($settings->options) AND function_exists($settings->options))
             $this->options = ($settings->options)();
