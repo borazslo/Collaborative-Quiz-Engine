@@ -17,7 +17,7 @@ class User {
         
 	if (!isset($d) || count($d) < 10) // TODO: miért van itt ez a count($d)?? Ami 6 volt sokáig.
 		//return;
-        foreach( ['name','id','level','group','group_id','group2','group3'=> false, 'admin' => false] as $key => $value) {
+        foreach( ['name','id','level','group','group_id','group2','group3', 'admin'] as $key => $value) {
             $hasdefault = false;
             if(!is_numeric($key)) { $hasdefault = true; $default = $value; $value = $key; }
 

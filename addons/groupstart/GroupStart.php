@@ -51,7 +51,7 @@ class GroupStart {
 	static function public_startform(&$page) {
 		global $connection, $user, $quiz;
 		
-		if($user->groupstart == '') {
+		if($user->groupstart == '' AND !empty((array) $user)) {
 			$stmt = $connection->prepare("SELECT groupstart FROM groupstart WHERE group_id = :group_id AND quiz_id = :quiz_id LIMIT 1");
 			$stmt->execute([':group_id' => $user->group_id, ':quiz_id' => $quiz->id]);
 			$start = $stmt->fetch();

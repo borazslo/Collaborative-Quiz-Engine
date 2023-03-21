@@ -44,12 +44,17 @@ if(isset($config['addons'])) {
 }
 
 require_once('common/login.php');
-CheckLogin();
-
 $page->data['user'] = (array) $user;
 
 $quiz->prepareQuestions();
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
+
+$bulk = new Bulk($quiz); 
+//$bulk->addAnswers();
+//$bulk->addAll();
+//$bulk->addGroupOfGroups();
+//$bulk->deleteGroupOfGroups();
+
 
 if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
      $page->data['config']['debug'] = $config['debug'] = true;
@@ -60,19 +65,12 @@ if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
         'képek' => $page->data['base_url'].'?admin=photos'
         ];
 }
-
-// There is no user. 
-if(empty((array) $user)) {
-    $page->data['error'] = true;
-    $page->templateFile = 'koszonto';
-    echo $twig->render($page->templateFile.".twig", $page->data);
-    exit;   
     
 // Admin pages
-} elseif ( $admin = getParam($_REQUEST,'admin',false)  ) {
+if ( $admin = getParam($_REQUEST,'admin',false)  ) {
        
     include_once('common/admin.php');
-    
+    CheckLogin();
     if (isset($user->isAdmin) and $user->isAdmin == 1 ) {
     
     switch ($admin) {
@@ -105,9 +103,9 @@ if(empty((array) $user)) {
         
 // Questionaire
 } else {
-
+	
 	//Special pages, because why not.
-	$task = getParam( $_REQUEST, "task");
+	$task = getParam( $_REQUEST, "task");	
 	if($task != '') {
 		$task = explode('_',$task);
 		if(count($task) > 2) die('A kért oldal nem található. (E132)');
@@ -115,10 +113,18 @@ if(empty((array) $user)) {
 			if(!method_exists ($task[0], "public_".$task[1])) die('A kért oldal nem található. (E134)');		
 			$result = $task[0]::{"public_".$task[1]}($page);
 		}
-	} 
+	} elseif(empty((array) $user)) {
+		CheckLogin();
+		$page->data['error'] = true;
+		$page->templateFile = 'koszonto';
+		echo $twig->render($page->templateFile.".twig", $page->data);
+		exit;   
+	}
 	
-	//OR let's see the questions
 	
+	
+	
+	//OR let's see the questions	
 	if(!isset($page->templateFile))
 		$page->templateFile = 'kerdesek';
 
