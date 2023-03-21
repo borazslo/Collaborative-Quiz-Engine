@@ -19,6 +19,7 @@
 			  <th scope="col">{{ "Name"|t }}</th>
 			  <th scope="col">{{ "Id"|t }}</th>
 			  <th scope="col">{{ "Password"|t }}</th>
+			  <th scope="col">{{ "Answers"|t }}</th>
 			</tr>
 		  </thead>
 		  <tbody>
@@ -28,6 +29,7 @@
 			  <td>{{ user.user }}</td>
 			  <td>{{ user.email }}</td>
 			  <td>{{ user.pwd }}</td>
+			  <td>{{ user.answers ?: "0" }}</td>
 			</tr>
 			{% endfor %}
 			

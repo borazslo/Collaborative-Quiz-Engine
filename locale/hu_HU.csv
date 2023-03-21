@@ -3,6 +3,7 @@ password;jelszó
 Password;Jelszó
 name;név
 Name;Név
+Answers;Válaszok
 Id;Azonosító
 Cannot login. Please check your credentials;Nem sikerült azonosítani! Ellenőrizd az adataidat!
 File not found: %s;A fájl nem található: %s

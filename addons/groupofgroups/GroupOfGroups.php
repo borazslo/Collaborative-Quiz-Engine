@@ -92,15 +92,17 @@ class GroupOfGroups {
 			users.name as user, users.id as user_id, 
 			`groups`.name as `group`,
 			groupofgroups.name as groupofgroups,
+			answers.answers,
 			groups.id as group_id, users.email, users.active, groups.level 
 			
 		 FROM users 
 			LEFT JOIN `groups` ON users.group_id = groups.id 
 			LEFT JOIN lookup_groupofgroups ON users.group_id = lookup_groupofgroups.group_id
 			LEFT JOIN groupofgroups ON lookup_groupofgroups.groupofgroups_id = groupofgroups.id
+			LEFT JOIN ( SELECT user_id, count(*) as answers FROM answers WHERE quiz_id = :quiz_id GROUP BY user_id ) as answers ON answers.user_id = users.id
 		WHERE groupofgroups.code = :code
-		ORDER BY `group`, user ");
-		$stmt->execute([':code'=>$code]);
+		ORDER BY `group`, user ");		
+		$stmt->execute([':code'=>$code,':quiz_id'=>$page->data['quiz']['id']]);
 		$results = $stmt->fetchAll();
 		
 		$page->data['groups'] = [];
