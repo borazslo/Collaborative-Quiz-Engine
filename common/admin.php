@@ -102,6 +102,32 @@ class Admin {
         $page->data['quiz'] = json_decode(json_encode($quiz), true);
     }
     
+    static function public_install() {
+        global $config;
+
+        global $connection;
+        $sqlFiles[] = 'db/SQLTemplate.sql';
+        if(isset($config['addons'])) {
+            foreach($config['addons'] as $addon) {
+                $file = 'addons/'.$addon."/".$addon.".sql";
+                if(file_exists($file)) {
+                    $sqlFiles[] = $file;
+                }
+            }
+
+        }
+
+        foreach($sqlFiles as $file) {
+            $sql = file_get_contents($file);
+            $result = $connection->exec($sql);
+            var_dump($result);
+        }
+
+        global $page;
+        $page->templateFile = 'html';
+
+    }
+
     static function verify() {
         global $connection;
                 
