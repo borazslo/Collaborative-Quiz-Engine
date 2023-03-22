@@ -83,6 +83,11 @@
                 <input type="text" class="{{ user_result >= 1 ? 'text-success' }}{{ user_result == -1 ? 'text-danger' }} form-control" name="questions[{{ id }}]" id="inputId{{ id }}" placeholder="" value="{{ user_answer}}" {{ ( user_result == 2  ) ? 'readonly'  }}>
             
             
+            {% elseif inputType == 'textarea' %}    
+             
+                <textarea class="{{ user_result >= 1 ? 'text-success' }}{{ user_result == -1 ? 'text-danger' }} form-control" name="questions[{{ id }}]" id="inputId{{ id }}" {{ ( user_result == 2  ) ? 'readonly'  }}>{{ user_answer}}</textarea>
+            
+            
             {% endif %}
             
                      
