@@ -34,10 +34,10 @@ class questionEncryption extends Question {
 		//Hide numbers
 		$text = preg_replace('/[0-9]/i','0',$text);
 
-		$text = $this->str_split_unicode($text);
+		$text = str_split_unicode($text);
 		
-		$dictionaryLowecase = $this->str_split_unicode('_aábcdeéfghiíjklmnoóöőpqrstuúüűwxyz');
-		$dictionaryUppercase = $this->str_split_unicode('_AÁBCDEÉFGHIÍJKLMNOÓÖŐPQRSTUÚÜŰWXYZ');
+		$dictionaryLowecase = str_split_unicode('_aábcdeéfghiíjklmnoóöőpqrstuúüűvwxyz');
+		$dictionaryUppercase = str_split_unicode('_AÁBCDEÉFGHIÍJKLMNOÓÖŐPQRSTUÚÜŰVWXYZ');
 
 		
 		foreach($text as $i => $char) {
@@ -65,15 +65,5 @@ class questionEncryption extends Question {
 
 
 
-	function str_split_unicode($str, $l = 0) {
-    if ($l > 0) {
-        $ret = array();
-        $len = mb_strlen($str, "UTF-8");
-        for ($i = 0; $i < $len; $i += $l) {
-            $ret[] = mb_substr($str, $i, $l, "UTF-8");
-        }
-        return $ret;
-    }
-    return preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY);
-}
+
 }
