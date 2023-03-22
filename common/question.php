@@ -32,8 +32,6 @@ class Question {
 		
 		
 		
-		
-        
         if(isset($settings->options) AND !is_array($settings->options) AND function_exists($settings->options))
             $this->options = ($settings->options)();
         
@@ -43,6 +41,7 @@ class Question {
         $this->prepareHint();
         if(isset($this->video))
             $this->prepareVideo();
+        $this->prepareImage();
 
         global $user;
         if(isset($user->id)) { 
@@ -112,6 +111,36 @@ class Question {
         
     }
     
+    function prepareImage() {
+        if(isset($this->image)) {
+
+            $quiz_folder = "quizzes/".$this->quiz_id."/";
+            
+            if(is_dir($quiz_folder.$this->image)) {
+                $extensions = "JPG|jpeg|jpg|png";
+                $files = array_values(preg_grep('~\.('.$extensions.')$~', scandir($quiz_folder.$this->image)));
+
+                global $user;
+                $this->image = $quiz_folder.$this->image."/".$files[$this->pseudoRandom(0, count($files) - 1, $user->id)];
+                return true;
+            } 
+
+            else if(file_exists($this->image)) { 
+                return true; 
+            }   
+            
+            else if(file_exists($quiz_folder.$this->image)) {
+
+                $this->image = $quiz_folder.$this->image;
+                return true;
+            }
+
+
+
+        }
+        
+    }
+
     function loadUserAnswer() {
         global $connection;
         
