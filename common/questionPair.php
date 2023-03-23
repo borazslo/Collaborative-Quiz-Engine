@@ -17,14 +17,21 @@ class questionPair extends Question {
 			
 			
             $this->question .= "<br/><blockquote class='blockquote'>".$this->pairs[$c][0]."</blockquote>";
-            $this->answer = [ $this->pairs[$c][1] ];
+            if(!is_array($this->pairs[$c][1])) $this->answer = [ $this->pairs[$c][1] ];
+            else $this->answer = $this->pairs[$c][1];
+
             foreach($this->pairs as $pair) {
-                if( $this->pairs[$c][0] == $pair[0] )
-                    $this->answer[] = $pair[1];
+                if( $this->pairs[$c][0] == $pair[0] ) {
+                    if(!is_array($pair[1]))
+                        $this->answer[] = $pair[1];
+                    else
+                        $this->answer = array_merge($this->answer,$pair[1]);
+                }
             }
 
             $this->options = [];
             foreach($this->pairs as $option) {
+                if(is_array($option[1])) $option[1] = $option[1][0];
                 $this->options[] = $option[1];
             }
             $this->options = array_unique($this->options);
