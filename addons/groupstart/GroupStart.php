@@ -35,6 +35,7 @@ class GroupStart {
 	static function Quiz_deleteInactiveQuestions_after(&$quiz) {
 		global $user;
 		
+		if ( $quiz->timing->start > time() ) return; 
 		// The group has not started the quiz yet
 		if($user->groupstart == '') {
 			foreach($quiz->questions as $key => $value) {
