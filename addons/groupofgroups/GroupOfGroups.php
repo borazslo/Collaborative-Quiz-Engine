@@ -105,8 +105,10 @@ class GroupOfGroups {
 		$stmt->execute([':code'=>$code,':quiz_id'=>$page->data['quiz']['id']]);
 		$results = $stmt->fetchAll();
 		
+		$levels = ['','5-8. évfolyam','9-12. évfolyam','felnőtt'];
 		$page->data['groups'] = [];
 		foreach($results as $result) {
+			$result['level'] = $levels[$result['level']];
 			//Generate simple password with pseudo random.
 			$result['pwd'] = readable_random_string(6,$result['user']."-".$result['group_id']);
 			$stmt = $connection->prepare("UPDATE users SET password = :pwd WHERE id=:id");
