@@ -15,6 +15,11 @@
                         {{ 'Cannot login. Please check your credentials'|t }}
                 </div>
             {% endif %}
+             {% if info %}
+                <div class="alert alert-info" role="alert">
+                        {{ info }}
+                </div>
+            {% endif %}
         <form class="form-signin" action="{{ base_url }}" method="post">
         
             {% if registration %}       

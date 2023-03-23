@@ -153,7 +153,7 @@ class Admin {
 
 
                         $gog_id = 1000 + $s;
-                        $gog = [":id"=> $gog_id,":name"=>$data[$name],":code"=>"ihs-".readable_random_string(6),':option1'=>$data[$option1],':option2'=>$data[$option2]];
+                        $gog = [":id"=> $gog_id,":name"=>$data[$name],":code"=>"ihs-".readable_random_string(6,$gog_id),':option1'=>$data[$option1],':option2'=>$data[$option2]];
                         $stmt = $connection->prepare("INSERT IGNORE INTO groupofgroups (id, name, code, option1, option2) VALUES (:id, :name, :code, :option1, :option2) ");
                         $stmt->execute($gog);
 
@@ -198,7 +198,7 @@ class Admin {
             }
 
         //INSERT 
-        printr($create);
+        //printr($create);
 
     }
 
