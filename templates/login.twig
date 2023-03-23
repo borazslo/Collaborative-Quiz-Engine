@@ -3,7 +3,7 @@
 {% block container %}
   <div class="jumbotron text-center ">
         <h1 class="jumbotron-heading">{{ quiz.title }}</h1>
-        {{ game.description|raw }}
+        {{ quiz.description_html|raw }}
   </div>
     <div class="row justify-content-center">
         <div class="col-lg-4 col">
