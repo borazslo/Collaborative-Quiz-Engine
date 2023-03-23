@@ -516,3 +516,36 @@ function getParam( &$arr, $name, $def=null, $type=null) {
 
        return $string;
    }
+
+
+   function slugify($text, string $divider = '-')
+{
+
+  $search = ['Ș', 'Ț', 'ş', 'ţ', 'Ş', 'Ţ', 'ș', 'ț', 'î', 'í', 'â', 'á', 'ă', 'Î', 'Ă', 'ë', 'Ë','é','É','ö','Ö','ő','Ő','ó','Ó','ú','Ú','ü','Ü','ű','Ű'];
+  $replace = ['s', 't', 's', 't', 's', 't', 's', 't', 'i', 'i', 'a', 'a', 'a', 'i', 'a', 'e', 'E','e','e','o','o','o','o','o','o','u','u','u','u','u','u'];
+  $text = str_ireplace($search, $replace, strtolower(trim($text)));
+
+  // replace non letter or digits by divider
+  $text = preg_replace('~[^\pL\d]+~u', $divider, $text);
+
+  // transliterate
+  $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+  // remove unwanted characters
+  $text = preg_replace('~[^-\w]+~', '', $text);
+
+  // trim
+  $text = trim($text, $divider);
+
+  // remove duplicate divider
+  $text = preg_replace('~-+~', $divider, $text);
+
+  // lowercase
+  $text = strtolower($text);
+
+  if (empty($text)) {
+    return 'n-a';
+  }
+
+  return $text;
+}

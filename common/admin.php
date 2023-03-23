@@ -102,6 +102,107 @@ class Admin {
         $page->data['quiz'] = json_decode(json_encode($quiz), true);
     }
     
+    static function public_prepareihs() {
+
+        global $page, $connection;
+        $page->templateFile = 'html';
+
+        $fak = file_get_contents("db/fak.txt");
+        $fak = explode("\n",$fak);
+        unset($fak[0]);unset($fak[1]);unset($fak[2]);
+        $fak = array_values($fak);
+
+        $nevek = file_get_contents("db/nevek.txt");
+        $nevek = explode("\n",$nevek);
+        foreach($nevek as &$nev) {
+            if(trim($nev) == '') unset($nev);
+        }
+        //printr($nevek);
+        unset($nevek[0]);unset($nevek[1]);unset($nevek[2]);
+        $nevek = array_values($nevek);
+
+        
+
+        $create = []; $s = $ss = $sss = 0;
+        $file_to_read = fopen('db/ihs.csv', 'r');
+            if($file_to_read !== FALSE){
+                while(($data = fgetcsv($file_to_read, 10000, ',')) !== FALSE){
+                    
+                    //Line By Line
+                    if(in_array($data[1],["5-8. évfolyam - 5 fős csapatok","9-12. évfolyam - 4 fős csapatok"])) {
+                        $s++;
+                        if($data[1] == "5-8. évfolyam - 5 fős csapatok" ) {
+                            $level = 1;
+                            $name = 6;
+                            $count = 9;
+                            $option1 = 5;
+                            $option2 = 8;
+
+                            $player = 5;
+
+
+                        } elseif($data[1] == "9-12. évfolyam - 4 fős csapatok" ) {
+                            $level = 2;
+                            $name = 15;
+                            $count = 18;
+                            $option1 = 14;
+                            $option2 = 17;
+
+                            $player = 4;
+                        }
+
+
+                        $gog_id = 1000 + $s;
+                        $gog = [":id"=> $gog_id,":name"=>$data[$name],":code"=>"ihs-".readable_random_string(6),':option1'=>$data[$option1],':option2'=>$data[$option2]];
+                        $stmt = $connection->prepare("INSERT IGNORE INTO groupofgroups (id, name, code, option1, option2) VALUES (:id, :name, :code, :option1, :option2) ");
+                        $stmt->execute($gog);
+
+
+                        for($i=0;$i< (int) $data[$count] + 2;$i++) { 
+                            $ss++;                           
+                            $k = rand(0,count($fak)-1);
+                            printr($fak);
+                            $groupName = trim($fak[$k]);
+                            $group_id = 1000  + $ss;
+                            $group = [":id"=>  $group_id ,":name"=>$groupName,":level"=>$level];
+                            unset($fak[$k]);
+                            $fak = array_values($fak);
+                            $stmt = $connection->prepare("INSERT IGNORE INTO `groups` (id, name, level) VALUES (:id, :name, :level) ");
+                            $stmt->execute($group);
+
+                            $stmt = $connection->prepare("INSERT  IGNORE INTO `lookup_groupofgroups` (groupofgroups_id, group_id) VALUES (:groupofgroups_id, :group_id) ");
+                            $stmt->execute([':groupofgroups_id'=> $gog_id,':group_id'=> $group_id]);
+
+                            $names = $nevek;
+                            for($c=0;$c< $player;$c++) {
+                                $sss++;
+                                $k = rand(0,count($names)-1);
+                                $user = [":id" => 1000 + $sss, ":name"=>$names[$k],":email"=>slugify($names[$k])."@".slugify($groupName).".ihs",":group_id" => $group_id];
+                                $group['users'][] = $user;
+                                unset($names[$k]);                                
+                                $names = array_values($names);
+
+                                $stmt = $connection->prepare("INSERT IGNORE INTO `users` (id, name, active, email, group_id) VALUES (:id, :name, 1, :email, :group_id) ");
+                                $stmt->execute($user);
+                            }
+
+                            $gog['groups'][] = $group;  
+                        }
+                        $create[] = $gog;
+                    }
+
+
+                    //printr($data);
+                }
+                fclose($file_to_read);
+            }
+
+        //INSERT 
+        printr($create);
+
+    }
+
+
     static function public_install() {
         global $config;
 
@@ -118,6 +219,7 @@ class Admin {
         }
 
         foreach($sqlFiles as $file) {
+            echo "<h3>".$file."</h3>";
             $sql = file_get_contents($file);
             $result = $connection->exec($sql);
             var_dump($result);
