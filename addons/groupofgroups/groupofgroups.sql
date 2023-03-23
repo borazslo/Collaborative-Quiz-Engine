@@ -11,5 +11,4 @@ CREATE TABLE IF NOT EXISTS `groupofgroups` (
   CREATE TABLE IF NOT EXISTS `lookup_groupofgroups` (
   `groupofgroups_id` INT NOT NULL,
   `group_id` BIGINT NOT NULL,
-  PRIMARY KEY (`groupofgroups_id`),
   UNIQUE INDEX `unique` (`groupofgroups_id` ASC, `group_id` ASC) VISIBLE);
