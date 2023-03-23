@@ -1,4 +1,4 @@
-CREATE TABLE `groupstart` (
+CREATE TABLE IF NOT EXISTS `groupstart` (
   `group_id` BIGINT NOT NULL,
   `quiz_id` VARCHAR(50) NOT NULL,
   `groupstart` TIMESTAMP NULL);
