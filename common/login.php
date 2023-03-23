@@ -55,8 +55,9 @@ if ($action == "login"){
     $user = new User($_SESSION['user']);
 }
 
+$task = getParam( $_REQUEST, "task");
 
-if(! (array) $user ) { 
+if(! (array) $user AND !in_array($task,["GroupOfGroups_startform","GroupOfGroups_enter","GroupOfGroups_Enter"])) { //fusi fusi mátka 
     $loginHelper->loginForm(false, $_REQUEST, $next_page);
     exit;
 }

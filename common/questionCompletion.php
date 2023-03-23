@@ -18,7 +18,7 @@ class questionCompletion extends Question {
 			}
 			$words = array_values($words);
 			
-            $k = $this->pseudoRandom(0,count($words)-1, $user->group_id );			
+            $k = $this->pseudoRandom(0,count($words)-1, isset($user->group_id) ? $user->group_id : 0 );			
 			$this->answer = $hidden = $words[$k];
 			$blank = '';
 			for($i=0;$i<count(str_split_unicode($hidden));$i++) { $blank .= '?'; }

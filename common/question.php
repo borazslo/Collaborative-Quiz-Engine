@@ -20,7 +20,7 @@ class Question {
 		if(isset($settings->variationsByLevel)) {
 			global $user;
 			foreach($settings->variationsByLevel as $key => $setting) {
-				if($key + 1 == $user->level) {					
+				if($key + 1 == isset($user->level) ? $user->level : 1) {					
 					$settings = recursiveupdate($settings,$setting);
 				}			
 			}
@@ -121,7 +121,7 @@ class Question {
                 $files = array_values(preg_grep('~\.('.$extensions.')$~', scandir($quiz_folder.$this->image)));
 
                 global $user;
-                $this->image = $quiz_folder.$this->image."/".$files[$this->pseudoRandom(0, count($files) - 1, $user->id)];
+                $this->image = $quiz_folder.$this->image."/".$files[$this->pseudoRandom(0, count($files) - 1, isset($user->id) ? $user->id : 0 )]  ;
                 return true;
             } 
 

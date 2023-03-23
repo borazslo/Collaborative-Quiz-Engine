@@ -49,7 +49,7 @@ $page->data['user'] = (array) $user;
 $quiz->prepareQuestions();
 $page->data['quiz'] = json_decode(json_encode($quiz), true);
 
-$bulk = new Bulk($quiz); 
+//$bulk = new Bulk($quiz); 
 //$bulk->addAnswers();
 //$bulk->addAll();
 //$bulk->addGroupOfGroups();
@@ -107,6 +107,7 @@ if ( $admin = getParam($_REQUEST,'admin',false)  ) {
 	//Special pages, because why not.
 	$task = getParam( $_REQUEST, "task");	
 	if($task != '') {
+
 		$task = explode('_',$task);
 		if(count($task) > 2) die('A kért oldal nem található. (E132)');
 		if(count($task) == 2) {
