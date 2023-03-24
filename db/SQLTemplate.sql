@@ -34,6 +34,10 @@ PRIMARY KEY (`id`),
 UNIQUE KEY `Email` (`email`)
 );
 
+INSERT IGNORE INTO `groups` (id, name, `level`) VALUES (1, "Tesztelők", 1 );
+INSERT IGNORE INTO users (id, name, email, password, active, admin, group_id) VALUES (1, "Isten", "admin@quiz.nomail", "vaRcM6VvDPmDY", 1, 1, 1 );
+
+
 
 CREATE TABLE IF NOT EXISTS  `regnum_communities` (
     `id` INT NOT NULL AUTO_INCREMENT , 
