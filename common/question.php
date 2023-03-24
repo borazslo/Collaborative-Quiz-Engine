@@ -20,7 +20,7 @@ class Question {
 		if(isset($settings->variationsByLevel)) {
 			global $user;
 			foreach($settings->variationsByLevel as $key => $setting) {
-				if($key + 1 == isset($user->level) ? $user->level : 1) {					
+				if($key + 1 == ( isset($user->level) ? $user->level : 1) ) {	
 					$settings = recursiveupdate($settings,$setting);
 				}			
 			}

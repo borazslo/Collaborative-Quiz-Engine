@@ -232,6 +232,24 @@ class Admin {
 
     }
 
+    static function public_changelevel() {
+        global $user, $connection;
+        $level = getParam( $_REQUEST, "level", 1);
+
+        if($user->admin == 1) {
+            //printr($user);
+            $stmt = $connection->prepare("UPDATE `groups` SET level = :level WHERE id = :group_id LIMIT 1");
+            $stmt->execute([':level'=>$level,':group_id' => $user->group_id]);
+            $user->level = $level;
+            $_SESSION['user']['level'] = $level;
+        }
+        
+        header("Location: index.php");
+        exit;
+        
+
+    }
+
     static function verify() {
         global $connection;
                 
