@@ -24,19 +24,20 @@ class GroupStart {
 		global $user;
 		
 		if($quiz->timing->start > time() ) return;
-				
+			
 		if($user->groupstart == '') {
-			$quiz->timing->start = strtotime("+10 years"); // Elvileg megy enélkül is, hiszen tök más oldalt hoz be. De biztosra megyünk.
+			//$quiz->timing->start = strtotime("+10 years"); // Elvileg megy enélkül is, hiszen tök más oldalt hoz be. De biztosra megyünk.
+		} else {
+			$quiz->timing->start = $user->groupstart;
 		}
-						
-		$quiz->timing->start = $user->groupstart;
-		
+
 	}
 	static function Quiz_deleteInactiveQuestions_after(&$quiz) {
 		global $user;
 		
 		if ( $quiz->timing->start > time() ) return; 
 		// The group has not started the quiz yet
+		
 		if($user->groupstart == '') {
 			foreach($quiz->questions as $key => $value) {
 				$quiz->questions[$key]->active = false;
