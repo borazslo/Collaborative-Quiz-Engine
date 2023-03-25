@@ -202,8 +202,11 @@ class Question {
     function getUserResult($user_answer) {
         if($user_answer == '') return 0;
         
-		if(!is_array($this->answer) AND preg_match("/^callback:(.*)$/i",$this->answer,$match) AND function_exists($match[1]) ) {
-			$this->answer = call_user_func($match[1]);
+		if(!is_array($this->answer) AND preg_match("/^callback:(.*)$/i",$this->answer,$match)) {
+			if(function_exists($match[1]) ) 
+				$this->answer = call_user_func($match[1], $this);
+			else
+				throw new Exception('Question '.$this->id.' is asking for "'.$match[1].'", but function does not exists.');
 		}
 		
         if(!is_array($this->answer)) $this->answer = [$this->answer];
