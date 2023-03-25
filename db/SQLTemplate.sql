@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
 PRIMARY KEY (`id`),
 UNIQUE KEY `name` (`name`)
 
-) ENGINE = InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 DEFAULT COLLATE utf8_unicode_ci;
 
 
 
@@ -32,10 +32,10 @@ CREATE TABLE IF NOT EXISTS `users` (
 PRIMARY KEY (`id`),
 -- UNIQUE KEY `name` (`name`),
 UNIQUE KEY `Email` (`email`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 DEFAULT COLLATE utf8_unicode_ci;
 
 INSERT IGNORE INTO `groups` (id, name, `level`) VALUES (1, "Tesztelők", 1 );
-INSERT IGNORE INTO users (id, name, email, password, active, admin, group_id) VALUES (1, "Isten", "admin@quiz.nomail", "vaRcM6VvDPmDY", 1, 1, 1 );
+INSERT IGNORE INTO users(id, name, email, password, active, admin, group_id)VALUES(1, "Isten", "admin@quiz.nomail", "vaRcM6VvDPmDY", 1, 1, 1);
 
 
 
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS  `regnum_communities` (
     `localRM` VARCHAR(60) NULL , 
     `averAge` INT(2) NULL , 
 
-PRIMARY KEY (`id`)) ENGINE = InnoDB;
+PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8 DEFAULT COLLATE utf8_unicode_ci;
 
 
 CREATE TABLE IF NOT EXISTS  `answers` ( 
@@ -59,4 +59,4 @@ CREATE TABLE IF NOT EXISTS  `answers` (
 
 UNIQUE KEY `unique` ( `quiz_id`, `question_id`, `user_id`),
 INDEX userId (user_id)
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 DEFAULT COLLATE utf8_unicode_ci;
