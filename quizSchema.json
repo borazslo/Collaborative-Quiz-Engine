@@ -63,7 +63,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "completion", "allOrNone", "encryption", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
+                        "enum": ["text", "completion", "allOrNone", "encryption", "equation", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
                     "prefix" : {
@@ -159,6 +159,11 @@
                             "type" : ["string", "array"]
                         }
                     },
+					
+					"variables" : {
+						"type" : "object",
+						"description" : "Függvényes dolgoknál a változók lehetséges értékei"
+					},
                     
                     "hardcore" : {
                         "type" : "boolean",
