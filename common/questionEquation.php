@@ -31,9 +31,17 @@ class questionEquation extends Question {
 			$varkey = $this->pseudoRandom(0, count($var) - 1 , $this->setUnique() ); //Vigyázz! Ha ezt módsítod akkor a prepareQuestion-ben is módosítani kell!
 			if(is_array($var[$varkey])) $var[$varkey] = $var[$varkey][1]; 
 			$this->vars[$key] = $var[$varkey];        
-			//$$key = $var[$varkey];        
+			$$key = $var[$varkey];        
 											
 		}    
+		
+		if(!is_array($this->answer)) $this->answer = [$this->answer];
+		foreach($this->answer as $answer) {
+			if(preg_match("/^eval\((.*?)\)$/i",$answer,$match)) {
+				eval('$this->answer =  '.$match[1].";");
+			}
+		}
+
 		return parent::getUserResult($user_answer);    
 
 	}
