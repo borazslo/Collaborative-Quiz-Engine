@@ -155,7 +155,8 @@ class Question {
 			$result = -1;
 		}
         
-		if(isset($config['debug']) AND $config['debug'] > 0) {
+		if(isset($config['debug']) AND $config['debug'] > 0 AND isset($this->answer)) {
+			if(!is_array($this->answer)) $this->answer = [$this->answer];
 			if(!isset($this->forAdmin)) $this->forAdmin = '';
 			else $this->forAdmin .= "<br/>";
 			$this->forAdmin .= t('Correct answer').": \"".implode("\",\"",$this->answer)."\"";
