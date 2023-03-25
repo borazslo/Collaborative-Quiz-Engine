@@ -17,9 +17,8 @@
         {{ user.name }} ({{ user.group }}{{ rankingTable[user.group].position ? ( " - " ~ rankingTable[user.group].position ~ ". " ~ "onPlace"|t ) }}{% if user.admin %}, Level: 
             {% for l in 1..3 %}            
                 {% if l == user.level %}({% endif %}<a href="?task=Admin_changelevel&level={{ l }}">{{ l }}</a>{% if l == user.level %}){% endif %}
-            {% endfor %}
-
-            oké
+            {% endfor %}			
+			{% if config.debug %}Random: {% if random %}({% endif %}<a href="?task=Admin_changelevel&random=true">Igen</a>{% if  random %}){% endif %}/{% if not  random %}({% endif %}<a href="?task=Admin_changelevel&random=false">Nem</a>{% if not random %}){% endif %}{% endif %}
         {% endif %})
         <input type="hidden" name="tanaz" value="{{ user.tanaz }}">
         <input type="hidden" name="tanazonosito" value="{{ user.tanazonosito }}">        

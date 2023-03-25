@@ -256,14 +256,21 @@ class Admin {
 
     static function public_changelevel() {
         global $user, $connection;
-        $level = getParam( $_REQUEST, "level", 1);
+        $level = getParam( $_REQUEST, "level", false);
+		$random = getParam( $_REQUEST, "random", -1);
 
         if($user->admin == 1) {
+			if(in_array($level,[1,2,3,4])) {
             //printr($user);
-            $stmt = $connection->prepare("UPDATE `groups` SET level = :level WHERE id = :group_id LIMIT 1");
-            $stmt->execute([':level'=>$level,':group_id' => $user->group_id]);
-            $user->level = $level;
-            $_SESSION['user']['level'] = $level;
+				$stmt = $connection->prepare("UPDATE `groups` SET level = :level WHERE id = :group_id LIMIT 1");
+				$stmt->execute([':level'=>$level,':group_id' => $user->group_id]);
+				$user->level = $level;
+				$_SESSION['user']['level'] = $level;
+			} else if ($random == 'true') {	
+				$_SESSION['random'] = true;
+			} else if ($random == 'false') {
+				$_SESSION['random'] = false;
+			}
         }
         
         header("Location: index.php");

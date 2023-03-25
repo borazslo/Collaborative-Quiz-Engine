@@ -159,6 +159,7 @@ class Question {
 			if(!is_array($this->answer)) $this->answer = [$this->answer];
 			if(!isset($this->forAdmin)) $this->forAdmin = '';
 			else $this->forAdmin .= "<br/>";
+			natsort($this->answer);
 			$this->forAdmin .= t('Correct answer').": \"".implode("\",\"",$this->answer)."\"";
 		}
 		
@@ -323,7 +324,16 @@ class Question {
 	}
     
     function pseudoRandom($from, $to, $unique) {		
-	
+		global $config, $user, $page;
+				
+
+		if($user->admin AND isset($_SESSION['random']) AND $_SESSION['random'] == true ) {
+			$page->data['random'] = true;
+			srand(floor(time()));
+			return rand($from, $to);
+		} 
+		//echo $unique."<br>";
+		//exit;
 		if(!is_numeric($unique)) $unique = crc32($unique);
         srand($unique * $this->id); // mindig ugyanazt fogja adni erre a unique-ra
         return rand($from, $to);                  
