@@ -263,14 +263,14 @@ function getGroupSizes() {
    
    $groups = [];
    
-   $sql = "SELECT groups.*, count(*) as members 
-	FROM quizegine.users 
-            LEFT JOIN groups 
-                        ON groups.id = users.group_id 
+   $sql = "SELECT `groups`.*, count(*) as members 
+	FROM users 
+            LEFT JOIN `groups` 
+                        ON `groups`.id = users.group_id 
             WHERE users.active = 1 ";
    
-   if(!$development) $sql .= " AND users.name NOT LIKE '".Bulk::prefix()."%' AND groups.name NOT LIKE '".Bulk::prefix()."%' ";
-   $sql .=" GROUP BY groups.id
+   if(!$development) $sql .= " AND users.name NOT LIKE '".Bulk::prefix()."%' AND `groups`.name NOT LIKE '".Bulk::prefix()."%' ";
+   $sql .=" GROUP BY `groups`.id
             ORDER BY members
     ";
    
@@ -368,7 +368,7 @@ function getRankingTable($quiz_id) {
         
         FROM `answers`
             LEFT JOIN users ON users.id = answers.user_id
-            LEFT JOIN groups ON groups.id = users.group_id 
+            LEFT JOIN `groups` ON groups.id = users.group_id 
         
         WHERE quiz_id = :quiz_id 
             AND users.active = 1 
