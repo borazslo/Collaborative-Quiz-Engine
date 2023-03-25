@@ -49,6 +49,14 @@
                 "duration" : {
                     "type" : "string",
                     "description" : "Egy-egy kérdésnek az ideje, amíg látszik olyan formában amit a strtotime() fel tud ismerni. Például: '1 week' "
+                },
+				"length" : {
+                    "type" : "string",
+                    "description" : "A játék hossza. Hiába nagyobb duration és alacsonyabb frequency, ebből ki lehet csúszni, és akkor véget ér."
+                },
+				"end" : {
+                    "type" : "string",
+                    "description" : "A játék abszolút vége, ami után nincs semmi. Opcionális."
                 }
             },
             "additionalProperties": false
@@ -66,6 +74,11 @@
                         "enum": ["text", "completion", "allOrNone", "encryption", "equation", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
+					"inputType" : {
+						"type": "string",
+						"enum": ["text","textarea","select"],
+						"description": "Ha esetleg nem a question.type alapérzelmezett html form input type-ját szeretnénk használni."
+					},
                     "prefix" : {
                         "type": "string",
                         "description": "Rövid kifejezés, ami a kérdés sorszáma után jelenik meg összecsukott módban.",

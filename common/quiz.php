@@ -125,6 +125,12 @@ class Quiz {
 		$start = $this->timing->start;
         $frequency = isset($this->timing->frequency) ? ( strtotime($this->timing->frequency) - time() ) : 0 ; 
         $duration = isset($this->timing->duration) ? ( strtotime($this->timing->duration) - time() ) : 31556952 ;
+		if(isset($this->timing->length)) {
+			$length = strtotime('+'.$this->timing->length) - time(); 		
+		} 
+		if(isset($this->timing->end)) {
+			$end = $this->timing->end;
+		} 
                      
         if(isset($this->questions))
         foreach($this->questions as &$question) {            
@@ -140,6 +146,12 @@ class Quiz {
             else
                 $question->endTime = strtotime($question->duration,$question->startTime);
             
+			if(isset($end) AND $end < $question->endTime ) {
+				$question->endTime = $endTime;
+			}			
+			if( isset($length) AND ( $start + $length ) < $question->endTime)
+				$question->endTime = $start + $length;
+			
             $last_start = $question->startTime;            
             if(isset($question->wait)) {
                 $last_start = strtotime($question->wait, $last_start - $frequency);
