@@ -104,7 +104,7 @@ class Admin {
     
     static function public_prepareihs() {
 
-        global $page, $connection;
+        global $page, $connection, $config;
         $page->templateFile = 'html';
 
         $fak = file_get_contents("db/fak.txt");
@@ -123,7 +123,7 @@ class Admin {
 
         
 
-        $create = []; $s = $ss = $sss = 0;
+        $create = []; $s = $ss = $sss = $g =  0;
         $file_to_read = fopen('db/ihs.csv', 'r');
             if($file_to_read !== FALSE){
                 while(($data = fgetcsv($file_to_read, 10000, ',')) !== FALSE){
@@ -191,7 +191,29 @@ class Admin {
                             $gog['groups'][] = $group;  
                         }
                         $create[] = $gog;
-                    }
+                    } elseif($data[1] == "Felnőttek - 3 fős csapatok - 18+")  {
+						$g++;
+						$first = [];
+						
+						foreach( [24,28,32] as $cell)  {
+							$chars = str_split_unicode($data[$cell]);
+							$first[] = $chars[0].$chars[1];
+						}
+						natsort($first);
+						$pw = implode("",$first);
+												
+						$group_id = 3000 + $g;
+						$stmt = $connection->prepare("INSERT IGNORE  INTO `groups` (id, name, level) VALUES (:id, :name, :level) ");
+						$stmt->execute([':id'=> $group_id,':name'=> $data[20], ':level' => 3]);
+
+						foreach( [ [24,25,26], [28,29,30], [32,33,34] ] as $k => $keys )  {
+							$user_id = 3000 + ( 3 * $g ) + $k;
+							$stmt = $connection->prepare("INSERT IGNORE INTO `users` (id, name, active, email, password, group_id) VALUES (:id, :name, 1, :email, :pwd ,:group_id) ");
+							$stmt->execute([':id'=> $user_id,':name'=> $data[$keys[0]]." ".$data[$keys[1]], ':email' => $data[$keys[2]], ':group_id' => $group_id, ':pwd' => crypt($pw, $config['authentication']['salt'])]);
+						}
+						
+						echo $pw."<br/>\n";
+					}
 
 
                     //printr($data);
