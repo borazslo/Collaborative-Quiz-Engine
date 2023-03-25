@@ -110,9 +110,9 @@
                 {% endif %}
            {% endif %}
            
-           {% if forAdmin and user.isadmin %}
-               <small id="input{{ id }}HelpBlock" class="form-text text-muted">Adminisztrátoroknak: {{ forAdmin }}</small>
-            {% endif %}
+           {% if forAdmin and user.admin == 1 %}
+               <small id="input{{ id }}HelpBlock" class="form-text text-muted">Adminisztrátoroknak: {{  forAdmin|striptags('<br><i><strong>')|raw }}</small>
+			{% endif %}
            
       </div>
     </div>

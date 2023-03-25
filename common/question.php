@@ -142,7 +142,7 @@ class Question {
     }
 
     function loadUserAnswer() {
-        global $connection;
+        global $connection, $config;
         
         $old_answer = $this->getOldAnswer();
         $new_answer = $this->getNewAnswer();
@@ -155,6 +155,12 @@ class Question {
 			$result = -1;
 		}
         
+		if(isset($config['debug']) AND $config['debug'] > 0) {
+			if(!isset($this->forAdmin)) $this->forAdmin = '';
+			else $this->forAdmin .= "<br/>";
+			$this->forAdmin .= t('Correct answer').": \"".implode("\",\"",$this->answer)."\"";
+		}
+		
         if($new_answer != false and $new_answer != $old_answer) {
             if($old_answer != false ) {
                 $stmt = $connection->prepare("UPDATE answers SET "
