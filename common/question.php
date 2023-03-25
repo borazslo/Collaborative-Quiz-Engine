@@ -159,6 +159,7 @@ class Question {
 			if(!is_array($this->answer)) $this->answer = [$this->answer];
 			if(!isset($this->forAdmin)) $this->forAdmin = '';
 			else $this->forAdmin .= "<br/>";
+			$this->answer = array_unique($this->answer);
 			natsort($this->answer);
 			$this->forAdmin .= t('Correct answer').": \"".implode("\",\"",$this->answer)."\"";
 		}

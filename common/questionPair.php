@@ -15,7 +15,7 @@ class questionPair extends Question {
             $c = $this->pseudoRandom(0, count($this->pairs) - 1 , $this->setUnique() );
 
 			
-			
+			if(!isset($this->question)) $this->question = '';
             $this->question .= "<br/><blockquote class='blockquote'>".$this->pairs[$c][0]."</blockquote>";
             if(!is_array($this->pairs[$c][1])) $this->answer = [ $this->pairs[$c][1] ];
             else $this->answer = $this->pairs[$c][1];
