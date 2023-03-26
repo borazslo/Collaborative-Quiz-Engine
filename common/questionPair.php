@@ -23,7 +23,15 @@ class questionPair extends Question {
 				} else 
 					$question = $this->pairs[$c][0];
 			
-            $this->question .= "<br/><blockquote class='blockquote'>".$question."</blockquote>";
+			if(preg_match("/^image:(.*)$/",$question,$match)) {			
+				if(file_exists(dirname(__FILE__)."/..".$match[1])) $image = $match[1];
+				if(file_exists(dirname(__FILE__)."/../quizzes/".$this->quiz_id.$match[1])) $image = "/quizzes/".$this->quiz_id.$match[1];											
+			}
+					
+			if(isset($image)) {
+					$this->question .= "<center><img class=\"img-fluid\" src=\"".$image."\"></img></center>";
+			} else				
+				$this->question .= "<br/><blockquote class='blockquote'>".$question."</blockquote>";
             if(!is_array($this->pairs[$c][1])) $this->answer = [ $this->pairs[$c][1] ];
             else $this->answer = $this->pairs[$c][1];
 
