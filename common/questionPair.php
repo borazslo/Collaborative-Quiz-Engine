@@ -29,6 +29,8 @@ class questionPair extends Question {
 			}
 					
 			if(isset($image)) {
+					//$image = alterImage($image);
+			
 					$this->question .= "<center><img class=\"img-fluid\" src=\"".$image."\"></img></center>";
 			} else				
 				$this->question .= "<br/><blockquote class='blockquote'>".$question."</blockquote>";
@@ -54,4 +56,34 @@ class questionPair extends Question {
             unset($this->pairs);
 
         }
+}
+
+function alterImage($image) {
+	$ext = mb_strtolower(explode(".",$image)[count( explode(".",$image))-1]);
+	//var_dump($ext);
+	if( $ext == "jpg" OR $ext == "jpeg") {
+		$im = imagecreatefromjpeg(dirname(__FILE__)."/..".$image);
+	}
+	if(!isset($im)) return $image;
+	
+	$newImage = preg_replace_callback("/\/([a-z0-9]*?)(\.".$ext.")$/i",
+		function($matches) { 						
+			return "/modified/".md5($matches[1]).$matches[2];
+		},$image);
+	
+		
+	if(!imagefilter($im, IMG_FILTER_GRAYSCALE)) echo "IMG_FILTER_GRAYSCALE error";
+	if(!imagefilter($im, IMG_FILTER_CONTRAST, 11)) echo "IMG_FILTER_CONTRAST error";	
+	if(!imagefilter($im, IMG_FILTER_SELECTIVE_BLUR)) echo "IMG_FILTER_SELECTIVE_BLUR error";	
+	if(!imagefilter($im, IMG_FILTER_SCATTER, 1, 4)) echo "IMG_FILTER_SCATTER error";
+	if(!imageflip($im, IMG_FLIP_HORIZONTAL)) echo "imageflip error";
+	
+	
+	
+	imagejpeg($im, dirname(__FILE__)."/..".$newImage );		
+	imagedestroy($im);
+	return $newImage;
+	
+
+
 }
