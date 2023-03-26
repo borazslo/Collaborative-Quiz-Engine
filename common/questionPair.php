@@ -16,7 +16,14 @@ class questionPair extends Question {
 
 			
 			if(!isset($this->question)) $this->question = '';
-            $this->question .= "<br/><blockquote class='blockquote'>".$this->pairs[$c][0]."</blockquote>";
+			
+				if(is_array($this->pairs[$c][0])) {
+					$d = $this->pseudoRandom(0, count($this->pairs[$c][0]) - 1 , "user" );
+					$question = $this->pairs[$c][0][$d];
+				} else 
+					$question = $this->pairs[$c][0];
+			
+            $this->question .= "<br/><blockquote class='blockquote'>".$question."</blockquote>";
             if(!is_array($this->pairs[$c][1])) $this->answer = [ $this->pairs[$c][1] ];
             else $this->answer = $this->pairs[$c][1];
 
