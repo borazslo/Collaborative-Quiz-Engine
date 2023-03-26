@@ -71,7 +71,7 @@
                 "properties" : {
                     "type" : {
                         "type": "string",
-                        "enum": ["text", "completion", "allOrNone", "encryption", "equation", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
+                        "enum": ["text", "abbreviation", "completion", "allOrNone", "encryption", "equation", "manual", "multi", "pair", "pieces", "photo", "photopair", "puzzle", "select", "wait"],
                         "description" : "A kérdés fajtája. "
                     },
 					"inputType" : {
@@ -198,6 +198,11 @@
                         "type" : "integer",
                         "description" : "Hány darab, vesszővel elválasztott szövegből álljon a válasz. Szabad használni, ha type=manual. Máskor felesleges"
                     },
+					
+					"abbreviation" : {
+						"type" : "string",
+						"description" : "A rövidítés amit fel kell oldani szövegben. Kötelező használni, ha type=abbreviation. Máskor felesleges."
+					},
                     
                     "relativeStart" : {
                         "type" : "string",
