@@ -30,6 +30,8 @@ class Question {
             $this->$key = $val;
         }
 		
+		if(isset($this->question) AND is_array($this->question))
+			$this->question = $this->question[$this->pseudoRandom(0, count($this->question) - 1, $this->setUnique())];
 		
 		
         if(isset($settings->options) AND !is_array($settings->options) AND function_exists($settings->options))

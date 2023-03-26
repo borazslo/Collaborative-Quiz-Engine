@@ -85,8 +85,11 @@
                         "maxLength" :  25
                     },
                     "question" : {
-                        "type" : "string",
-                        "description": "A kérdés amit fel akarunk tenni. Kötelező, ha type!=multi. Máskor felesleges."
+                        "type" : ["string","array"],
+                        "description": "A kérdés amit fel akarunk tenni. Kötelező, ha type!=multi. Máskor felesleges.",
+						"items" : {
+								"type" : "string"
+						}
                     },
                     "answer" : {
                         "type" : ["string","integer","array"],
