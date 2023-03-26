@@ -38,8 +38,22 @@ class questionCompletion extends Question {
 						
             } 
 			$text = str_replace("\n","<br/>",$text);
-            
-            $this->question .= "<br/><blockquote class='blockquote'>".$text."</blockquote>";                                               
+			
+			$fileName = md5($text); 
+			$folder = "/".(isset($this->folder) ? $this->folder : "temp" )."/";
+			if(!file_exists(dirname(__FILE__)."/..".$folder."/".$fileName.".png")) {
+				$img = new TextToImage;
+				$img->createImage($text);
+				//$img->addBorder(1,8);
+				$img->saveAsPng($fileName, dirname(__FILE__)."/..".$folder);				
+				//$img->showImage();
+			}
+		
+			if(file_exists(dirname(__FILE__)."/..".$folder.$fileName.".png")) {
+				$this->question .= "<center><img src='".$folder.$fileName.".png'></img></center>";
+			} else {			
+				$this->question .= "<br/><blockquote class='blockquote'>".$text."</blockquote>";
+			};                                               
         }
 		
 	function getUserResult($user_answer) {

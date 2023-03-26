@@ -219,7 +219,7 @@
                     
                     "folder" : {
                         "type" : "string",
-                        "description" : "A könyvtár ahonnan szedi vagy ahova feltölti a képeket. Relatív útvonal a kvíz json fájljához képest. type=photo|photopair|puzzle"
+                        "description" : "A könyvtár ahonnan szedi vagy ahova feltölti a képeket. Relatív útvonal a kvíz json fájljához képest. type=photo|photopair|puzzle|completion"
                     },
                     
                     "unique" : {
