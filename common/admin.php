@@ -102,10 +102,98 @@ class Admin {
         $page->data['quiz'] = json_decode(json_encode($quiz), true);
     }
     
-    static function public_prepareihs() {
-
-        global $page, $connection, $config;
+	
+	static function public_prepareihs() {
+		global $page;
         $page->templateFile = 'html';
+		
+		Admin::ihsFeliratkozokFelvitel();
+		Admin::ihsTemplomokLetoltese();
+	}
+	
+	static private function ihsTemplomokLetoltese() {
+	/*
+		SELECT nev, ismertnev, megye.megyenev, varos, lat, lon, imageurl 
+			FROM templomok as t
+			LEFT JOIN megye ON megye.id = t.megye 
+			LEFT JOIN (
+				SELECT church_id, CONCAT("https://miserend.hu/kepek/templomok/",church_id,"/",filename) as imageurl 
+				FROM miserend.photos 
+				GROUP By church_id 
+				ORDER BY id desc
+				) as kepek
+				ON kepek.church_id = t.id
+			WHERE varos IN ( 
+				SELECT varos FROM (
+					SELECT varos, megye,  count(*) as c 
+					FROM miserend.templomok 			
+					WHERE varos NOT LIKE 'Budapest%' AND templomok.orszag = 12 
+					AND nev NOT LIKE '%ápolna%' AND nev NOT LIKE '%isézőhely%'
+					GROUP BY varos order by megye, count(*) desc 
+					) as varosok 
+				WHERE c > 3
+			) 
+			AND nev NOT LIKE '%ápolna%' AND nev NOT LIKE '%isézőhely%' AND imageurl IS NOT NULL    
+			ORDER BY megyenev, varos
+    */ 
+	
+		global $connection, $config;
+
+		$folder = "";
+		
+		$file_to_read = fopen('db/templomok.csv', 'r');
+		if($file_to_read !== FALSE){
+			$c = 0; $varosok = [];
+			while(($data = fgetcsv($file_to_read, 10000, ',')) !== FALSE){
+				if($c > 0) {				
+					//if($c>10) break; printr($data); 
+					
+					$tmp = explode(".",$data[6]);
+					$extension = $tmp[count($tmp)-1];
+					$filePath = "/quizzes/ihs/templomok/".md5($data[6]).".".$extension;
+					
+					$fileok = false;
+					if(!file_exists(dirname(__FILE__)."/..".$filePath)) {
+						$image = file_get_contents($data[6]);
+						if(!$image) $fileok = false;
+						if(file_put_contents(dirname(__FILE__)."/..".$filePath,$image)) {
+							echo "Letöltve: <a href=\"".$filePath."\">".$filePath."</a><br/>\n";
+							$fileok = true;
+						} else {							
+							$fileok = false;
+						}
+					} else {
+						$fileok = true;
+					}
+					
+					if($fileok) {
+						if(!isset($varosok[$data[3]])) $varosok[$data[3]] = [];
+						$varosok[$data[3]][] = preg_replace("/^\/quizzes\/ihs/i","",$filePath);						
+					} else {
+						echo ":( ";
+					}
+				}
+				$c++;
+			}
+			
+			if(count($varosok) > 0) {
+				$string = "[<br/>";
+				foreach($varosok as $varos => $kepek) {
+					if(count($kepek)>=4) {
+						$string .= '[["image:'.implode('","image:',$kepek).'"],"'.$varos.'"]';
+						$string .= next($varosok) ? ",<br/>" : "<br/>";
+					}
+				}
+				$string .= "]";
+				echo $string;
+			}
+		}
+		
+	}
+	
+    static private function ihsFeliratkozokFelvitel() {
+
+        global $connection, $config;
 
         $fak = file_get_contents("db/fak.txt");
         $fak = explode("\n",$fak);
@@ -225,8 +313,7 @@ class Admin {
         //printr($create);
 
     }
-
-
+	
     static function public_install() {
         global $config;
 
