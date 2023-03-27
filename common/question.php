@@ -17,6 +17,7 @@ class Question {
     
     function __construct($settings) {
         
+		$this->settings = $settings;
 		if(isset($settings->variationsByLevel)) {
 			global $user;
 			foreach($settings->variationsByLevel as $key => $setting) {

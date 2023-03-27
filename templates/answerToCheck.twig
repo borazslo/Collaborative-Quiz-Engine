@@ -2,11 +2,16 @@
 <div class="card" id="cardid{{ answer.id }}" data-id="{{ answer.id }}" >
   <div class="row no-gutters">
     <div class="col-md-8 col">
+		
         {% if question.type== 'photo' %}
-          <img src="{{ answer.answer}}" class="card-img" >
+			<img class="card-img" src="{{ answer.answer}}" style="width: 100%; height: 100%; object-fit: cover;">
+			{% if answer.question  %}
+				<div class="card-text" style = "width:100%; padding: 3px; position: absolute; bottom: 0; background-color: rgba(255,255,255,0.5)"><i>{{ answer.question }}</i></div> 
+			{% endif %}
         {% else %}
+			{% if answer.question  %}<p style="padding:20px"><i>{{ answer.question }}</i></p>{% endif %}
             <p style="padding:20px">{{ answer.answer}}</p>
-        {% endif %}
+        {% endif %}		
     </div>
     <div class="col-md-4 col">
       <div class="card-body">

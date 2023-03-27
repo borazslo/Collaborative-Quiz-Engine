@@ -4,6 +4,7 @@ Password;Jelszó
 name;név
 Name;Név
 Answers;Válaszok
+Multiple questions;Többféle kérdés
 Correct answer;Helyes válasz
 Id;Azonosító
 Cannot login. Please check your credentials;Nem sikerült azonosítani! Ellenőrizd az adataidat!

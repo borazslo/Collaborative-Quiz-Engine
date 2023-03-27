@@ -43,8 +43,8 @@ class Admin {
                         
             $sql = "SELECT 
                     CONCAT(:quiz_id, '-', :question_id, '-', users.id) as id, 
-                    users.name as `user`, 
-                    groups.name as `group`, 
+                    users.name as `user`, users.id as `user_id`, 
+                    groups.name as `group`, groups.id as `group_id`, groups.level as `level`,
                     answers.answer, answers.result, answers.timestamp                    
                 FROM answers 
                 LEFT JOIN users ON users.id = answers.user_id 
@@ -64,7 +64,37 @@ class Admin {
             $stmt = $connection->prepare($sql);
             if(!$stmt->execute(['quiz_id'=>$quiz->id, ':question_id' => $question->id ])) printr($connection->errorInfo());
             $quiz->questions[$key]->answersToCheck = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            //printr($quiz->questions[$key]->answersToCheck );exit;
+			global $user;
+			$savedUser = $user;
+			if(is_array($quiz->questions[$key]->settings->question)) {
+				$quiz->questions[$key]->question = "<i>".t("Multiple questions")."</i>";
+				foreach($quiz->questions[$key]->answersToCheck as &$answerToCheck) {
+					$tmpQuestion = $quiz->questions[$key];
+					$user = [
+						'name' => $answerToCheck['user'],
+						'id' => $answerToCheck['user_id'],
+						"level" => $answerToCheck['level'],
+						"group" => $answerToCheck['group'],
+						"group_id" => $answerToCheck['group_id'],
+						"group2" => "",
+						"admin" => false
+					];
+					$user = (object) $user;
+					$className = "question".ucfirst($tmpQuestion->type);
+					$tmpQuestion = new $className($tmpQuestion->settings);                
+					$tmpQuestion->prepareQuestion();
+					
+					$answerToCheck['question'] = $tmpQuestion->question;
+					
+				}
+			
+			}
+			$user = $savedUser;
+			// $this->question = $this->question[$this->pseudoRandom(0, count($this->question) - 1, $this->setUnique())];
+			
+			
+//			printr($quiz->questions[$key]);
+//            printr($quiz->questions[$key]->answersToCheck );exit;
         }
         
         
