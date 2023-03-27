@@ -10,7 +10,7 @@
 			{% endif %}
         {% else %}
 			{% if answer.question  %}<p style="padding:20px"><i>{{ answer.question }}</i></p>{% endif %}
-            <p style="padding:20px">{{ answer.answer}}</p>
+            <p style="padding:20px">{{ answer.answer|striptags('<br>')|nl2br|raw }}</p>
         {% endif %}		
     </div>
     <div class="col-md-4 col">

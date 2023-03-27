@@ -127,16 +127,34 @@ class Admin {
 					$quiz->questions[$key]->answers = $answers;
 				else {
 					$tmp = []; $count = [];
-					foreach($answers as $k => $answer) {
-						if(!isset($tmp[$answer['answer']])) {
-							$tmp[$answer['answer']] = $answer;
-							$tmp[$answer['answer']]['count'] = 0;
-							$count[$k] = 0;
+					$temp = $answers;
+					foreach($temp as $k => $answer) {
+						if(isset($quiz->questions[$key]->commas) ) {
+							$words = explode(",",$answer['answer']);
+							$answers = [];
+							foreach($words as $word) {
+								$answers[] = [
+									'answer' => mb_strtolower(trim($word))
+								];
+							}
+							
+							
+						
+						} else {
+							$answers = [$answer];
 						}
-						$tmp[$answer['answer']]['count']++;
-						$count[$k]++;
+						
+						foreach($answers as $answer) {
+							if(!isset($tmp[$answer['answer']])) {
+								$tmp[$answer['answer']] = $answer;
+								$tmp[$answer['answer']]['count'] = 0;
+								$count[$k] = 0;
+							}
+							$tmp[$answer['answer']]['count']++;
+							$count[$k]++;
+						}
 					}
-					
+					 
 					$col = array_column( $tmp, "answer" );
 					array_multisort( $col, SORT_ASC, $tmp );
 					$col = array_column( $tmp, "count" );
