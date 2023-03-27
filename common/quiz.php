@@ -129,7 +129,7 @@ class Quiz {
 			$length = strtotime('+'.$this->timing->length) - time(); 		
 		} 
 		if(isset($this->timing->end)) {
-			$end = $this->timing->end;
+			$end = strtotime($this->timing->end);
 		} 
                      
         if(isset($this->questions))
