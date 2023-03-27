@@ -24,6 +24,7 @@ $page->data = [];
 
 if(isset($_SERVER['BASE'])){
   $page->data['base_url'] = preg_replace("/(\/){2,10}$/","/",$_SERVER['BASE']);  
+  $page->data['base_url'] = trim($page->data['base_url'],'/');
 }
 if($development == true) $page->data['development'] = true;
 $page->data['config']['debug'] = $config['debug'];
