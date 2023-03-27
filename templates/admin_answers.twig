@@ -18,7 +18,7 @@
         <div class="card-header " id="question{{ heading.id }}" data-toggle="collapse" href="#collapse{{ question.id }}" role="button" aria-expanded="false" aria-controls="collapse{{ question.id }}">
         
             <h2>{{ question.id }}. kérdés: <small>{{ question.question|striptags  }}</small></h2>
-            {{ question.forAdmin }}
+            {{ question.forAdmin|striptags("<br><i><a>")|raw }}
         </div>
         
         <div class="collapse show" aria-labelledby="heading{{ question.id }}" data-parent="#accordion" id="collapse{{ question.id }}"> 
@@ -27,14 +27,22 @@
 
             <div class="row">
             {% for answer in question.answers %}
-                <a href="{{ answer.answer }}" target="_blank">
+				{% if question.type == 'photo' %}
                     <div class="card float-left" style="width: 17rem; height: 17rem; position:relative">
-                        <img class="" src="{{ answer.answer}}" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div class="card-text" style = "width:100%; padding: 3px; position: absolute; bottom: 0; background-color: rgba(255,255,255,0.5)">
-                            <!--{{ answer.name }}<br>-->({{ answer.group }})
-                        </div>  
+						
+						<a href="{{ answer.answer }}" target="_blank">
+							<img class="" src="{{ answer.answer}}" style="width: 100%; height: 100%; object-fit: cover;">
+							<div class="card-text" style = "width:100%; padding: 3px; position: absolute; bottom: 0; background-color: rgba(255,255,255,0.5)">
+								<!--{{ answer.name }}<br>-->({{ answer.group }})
+							</div>  
+						</a>											
                     </div>
-                </a>
+				{% else %}
+					<div class="card float-left" style="padding:20px;  position:relative">
+						{{ answer.answer|striptags('<br>')|raw }}{% if answer.count > 1 %} ({{ answer.count }}){% endif %}
+					</div>
+				{% endif %}
+                
             {% endfor %}
             </div>
 

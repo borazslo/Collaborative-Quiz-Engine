@@ -102,13 +102,13 @@ class Admin {
         
     }
     
-    static function photos() {
+    static function public_answers() {
         global $connection, $page, $quiz, $development;
         
-        $page->templateFile = 'photos';
+        $page->templateFile = 'admin_answers';
         
         foreach($quiz->questions as $key => $question) {
-            if($question->type == 'photo') {
+            if(in_array($question->type, ['photo','manual','abbreviation'])) {
                 $sql = "SELECT answer, result , users.name, groups.name as `group` 
                             FROM answers 
                             LEFT JOIN users ON users.id = answers.user_id 
@@ -122,7 +122,28 @@ class Admin {
                 
                 $stmt = $connection->prepare($sql);
                 $stmt->execute([':question_id'=>$question->id, ':quiz_id' => $quiz->id]);
-                $quiz->questions[$key]->answers = $stmt->fetchAll();
+				$answers = $stmt->fetchAll();
+                if($question->type == 'photo')
+					$quiz->questions[$key]->answers = $answers;
+				else {
+					$tmp = []; $count = [];
+					foreach($answers as $k => $answer) {
+						if(!isset($tmp[$answer['answer']])) {
+							$tmp[$answer['answer']] = $answer;
+							$tmp[$answer['answer']]['count'] = 0;
+							$count[$k] = 0;
+						}
+						$tmp[$answer['answer']]['count']++;
+						$count[$k]++;
+					}
+					
+					$col = array_column( $tmp, "answer" );
+					array_multisort( $col, SORT_ASC, $tmp );
+					$col = array_column( $tmp, "count" );
+					array_multisort( $col, SORT_ASC, $tmp );
+					
+					$quiz->questions[$key]->answers = $tmp;
+				}
                 
             } else {
                 unset($quiz->questions[$key]);

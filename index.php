@@ -66,7 +66,7 @@ if(isset($user->admin) and $user->admin == 1 ) {
         'játék' => $page->data['base_url'],
         'statisztika' => $page->data['base_url'].'?admin=stats',
         'ellenőrzés' => $page->data['base_url'].'?admin=verification',
-        'képek' => $page->data['base_url'].'?admin=photos'
+        'válaszok' => $page->data['base_url'].'?task=Admin_answers'
         ];		
 }
     
