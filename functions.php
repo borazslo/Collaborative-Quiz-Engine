@@ -572,7 +572,7 @@ class TextToImage {
     function createImage($text, $fontSize = 20){
 
 		$angle = 0;
-        $font = 'Montserrat-Bold.ttf';
+        $font = dirname(__FILE__).'/Montserrat-Bold.ttf';
 		$padding = 40; 
 		$lineheight = 2;
 		
