@@ -2,6 +2,7 @@
 session_start();//to be able to make difference between users
 //print_r($_REQUEST); print_r($_SESSION);
 
+
 $start = microtime(true);
 require_once 'vendor/autoload.php';
 require_once 'functions.php';
@@ -56,14 +57,16 @@ $page->data['quiz'] = json_decode(json_encode($quiz), true);
 //$bulk->deleteGroupOfGroups();
 
 
-if(isset($user->isAdmin) and $user->isAdmin == 1 ) {
-     $page->data['config']['debug'] = $config['debug'] = true;
+if(isset($user->admin) and $user->admin == 1 ) {
+     //$page->data['config']['debug'] = $config['debug'] = true;
+	 $page->data['base_url'] = '';
+	 
      $page->data['menu'] = [
         'játék' => $page->data['base_url'],
         'statisztika' => $page->data['base_url'].'?admin=stats',
         'ellenőrzés' => $page->data['base_url'].'?admin=verification',
         'képek' => $page->data['base_url'].'?admin=photos'
-        ];
+        ];		
 }
     
 // Admin pages
@@ -71,7 +74,7 @@ if ( $admin = getParam($_REQUEST,'admin',false)  ) {
        
     include_once('common/admin.php');
     CheckLogin();
-    if (isset($user->isAdmin) and $user->isAdmin == 1 ) {
+    if (isset($user->admin) and $user->admin == 1 ) {
     
     switch ($admin) {
         
@@ -135,7 +138,10 @@ if ( $admin = getParam($_REQUEST,'admin',false)  ) {
         $page->data['focusId'] = 'card'.$_REQUEST['gomb'];
     }
 
-    if(!empty((array) $user) AND ( isset($config['rankingTablePublic']) AND $config['rankingTablePublic'] == true )) {
+    if(!empty((array) $user) AND 
+		( 
+		( isset($config['rankingTablePublic']) AND $config['rankingTablePublic'] == true ) or $user->admin == 5)
+		) {
         $rankingTable = getRankingTable($quiz->id);
             if(!array_key_exists($user->group,$rankingTable)) {
             $rankingTable[$user->group] = [

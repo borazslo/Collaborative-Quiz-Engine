@@ -36,7 +36,7 @@ class Admin {
         $page->templateFile = 'verification';
         
         foreach($quiz->questions as $key => $question) {
-            if(!in_array($question->type, ['photo','manual'])) {
+            if(!in_array($question->type, ['photo','manual','abbreviation'])) {
                 unset($quiz->questions[$key]);
                 continue;
             } 
@@ -48,7 +48,7 @@ class Admin {
                     answers.answer, answers.result, answers.timestamp                    
                 FROM answers 
                 LEFT JOIN users ON users.id = answers.user_id 
-                LEFT JOIN groups ON users.group_id = groups.id 
+                LEFT JOIN `groups` ON users.group_id = groups.id 
                 WHERE 
                     quiz_id = :quiz_id AND
                     question_id = :question_id AND
@@ -82,7 +82,7 @@ class Admin {
                 $sql = "SELECT answer, result , users.name, groups.name as `group` 
                             FROM answers 
                             LEFT JOIN users ON users.id = answers.user_id 
-                            LEFT JOIN groups ON users.group_id = groups.id 
+                            LEFT JOIN `groups` ON users.group_id = groups.id 
                             WHERE
                                 quiz_id = :quiz_id AND 
                                 question_id = :question_id AND
@@ -108,7 +108,7 @@ class Admin {
         $page->templateFile = 'html';
 		
 		Admin::ihsFeliratkozokFelvitel();
-		Admin::ihsTemplomokLetoltese();
+		//Admin::ihsTemplomokLetoltese();
 	}
 	
 	static private function ihsTemplomokLetoltese() {
