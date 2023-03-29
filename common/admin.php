@@ -145,12 +145,18 @@ class Admin {
 						}
 						
 						foreach($answers as $answer) {
-							if(!isset($tmp[$answer['answer']])) {
-								$tmp[$answer['answer']] = $answer;
-								$tmp[$answer['answer']]['count'] = 0;
+							$keya = $answer['answer'];
+							$keya = trim(preg_replace('/\s\s+/', ' ', $keya));
+							$keya = preg_replace("/[,.! ]{1}/i","",$keya);
+							$keya = mb_strtolower($keya);
+							//$answer['answer'] = $keya;
+
+							if(!isset($tmp[$keya])) {
+								$tmp[$keya] = $answer;
+								$tmp[$keya]['count'] = 0;
 								$count[$k] = 0;
 							}
-							$tmp[$answer['answer']]['count']++;
+							$tmp[$keya]['count']++;
 							$count[$k]++;
 						}
 					}
