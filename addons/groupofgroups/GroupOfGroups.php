@@ -182,6 +182,35 @@ class GroupOfGroups {
         
     }
        
+       static function Ranking_getTable_after(&$ranking) {
+       		global $connection; 
+
+       		$group_ids = [];
+       		foreach($ranking->results as $result) {
+       			$group_ids[] = $result['group_id'];
+       		}
+
+       		$sql = "SELECT * FROM `lookup_groupofgroups` 
+       			LEFT JOIN `groupofgroups` ON groupofgroups.id = lookup_groupofgroups.groupofgroups_id 
+       			WHERE group_id IN (".implode(",",$group_ids)."); ";       			
+
+       		$stmt = $connection->prepare($sql);
+        	$stmt->execute();
+        	$results = $stmt->fetchAll();
+
+        	$tmp = [];
+        	foreach($results as $result) {
+        		$tmp[$result['group_id']] = $result;
+
+        	}
+        	$results = $tmp;
+        	
+        	foreach($ranking->results as &$result ) {
+        		$result['parent'] = $tmp[$result['group_id']]['name'];
+
+        	}
+       		
+       }
     
    
 }
