@@ -51,3 +51,9 @@ Points;Pontok
 onPlace;helyen
 Members;Játékosok
 Rankingtable;Ranglista
+header_group_id;Csoport azonosító
+header_name;Csapat
+header_level;Level
+header_members;Tagok
+header_points;Pontszám
+header_position;#

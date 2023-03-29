@@ -16,19 +16,17 @@
     <table id="ranglista" class="table table-striped table-bordered  table-sm">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">{{ "Group"|t }}</th>
-                <th scope="col">{{ "Points"|t }}</th>
-                <th scope="col">{{ "Members"|t }}</th>
+                {% for key,value in rankingTable|first %}
+                    <th scope="col">{{ ( "header_" ~ key ) | t }}</th>
+                {% endfor %}
             </tr>
         </thead>
         <tbody>           
             {% for place in rankingTable|slice( kezdo ,darab) %}
                 <tr>
-                    <th scope="row">{{ place.position }}</th>
-                    <td>{{ place.name }}</td>
-                    <td>{{ place.points }}</td>      
-                    <td>{{ place.members }}</td>      
+                    {% for col in place %}
+                        <td>{{ col }}</td>
+                    {% endfor %}    
                 </tr>
             {% endfor %}    
         </tbody>

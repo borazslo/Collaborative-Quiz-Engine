@@ -358,7 +358,7 @@ function getRankingTable($quiz_id) {
     $sql = "
         SELECT 
             users.group_id, 
-            groups.name , 
+            groups.name , groups.level, 
             count(distinct user_id) as members,
        
             count(if(result = '-1', 1, null)) * ".$config['scoring']['badAnswer']."
@@ -425,6 +425,7 @@ function getRankingTable($quiz_id) {
     /* Egy kis igazítás azzal, hogy hányan csináltak bármit az osztályból */
     foreach($ranglista as $key => $group) {
         $ranglista[$key]['points'] += ( $ranglista[$key]['members'] * $config['scoring']['forEachParticipants'] );
+
     }
     
     /* Ki szedjük a DEV csoportot */
@@ -444,7 +445,9 @@ function getRankingTable($quiz_id) {
     
     $return = [];
     foreach($ranglista as $key => $value) {
+        unset($value['group_id']);
         $value['position'] = $key + 1;
+        //array_unshift($value,["position"=>$key + 1]);
         $return[$value['name']] = $value;
     }   
     return $return; 
