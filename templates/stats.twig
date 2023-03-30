@@ -25,7 +25,7 @@
             {% for place in rankingTable|slice( kezdo ,darab) %}
                 <tr>
                     {% for col in place %}
-                        <td>{{ col }}</td>
+                        <td>{{ col|striptags("<a><i><b><strong>")|raw }}</td>
                     {% endfor %}    
                 </tr>
             {% endfor %}    

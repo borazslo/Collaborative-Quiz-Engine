@@ -50,6 +50,7 @@ class GroupStart {
 		
 	}
 	
+
 	static function public_startform(&$page) {
 		global $connection, $user, $quiz;
 		
@@ -73,8 +74,60 @@ class GroupStart {
 		header("Location: index.php");
 		exit;
 	}
+
+	static function public_reset(&$page) {
+		global $connection, $user, $quiz;
+		
+		if($user->admin == 1) {
+
+			$group_id = getParam($_REQUEST, 'group_id');						
+			$quiz_id = getParam($_REQUEST, 'quiz_id');									
+		
+			$stmt = $connection->prepare("DELETE FROM groupstart WHERE group_id = :group_id AND  quiz_id = :quiz_id LIMIT 1;");
+			$stmt->execute([':group_id' => $group_id, ':quiz_id' => $quiz_id ]);				
+			
+		}
+		
+		header("Location: index.php?admin=stats");
+		exit;
+	}
     
-	
+	 static function Ranking_getTable_after(&$ranking) {	 	
+       		global $connection; 
+
+       		$group_ids = [];
+       		foreach($ranking->results as $result) {
+       			$group_ids[] = $result['group_id'];
+       		}
+
+       		$sql = "SELECT * FROM `groupstart`        			
+       			WHERE group_id IN (".implode(",",$group_ids).") AND quiz_id = :quiz_id ; ";       			
+
+       		$stmt = $connection->prepare($sql);
+        	$stmt->execute(['quiz_id'=>$ranking->quiz_id]);
+        	$results = $stmt->fetchAll();
+
+        	$tmp = [];
+        	foreach($results as $result) {
+        		$tmp[$result['group_id']] = $result;
+
+        	}
+        	$results = $tmp;
+        	
+
+        	global $twig;
+    		$template = $twig->createTemplate('{{ groupstart|timeago }} <a  href="?task=GroupStart_reset&group_id={{ group_id }}&quiz_id={{ quiz_id }}">[nullázás]</a>');
+    		
+			
+        	foreach($ranking->results as &$result ) {
+        		if(isset($tmp[$result['group_id']]))
+        			$result['started'] = $template->render($tmp[$result['group_id']]);
+        		else
+        			$result['started'] = t('Group not yet started');
+
+        	}
+       		
+       }
     
    
 }
