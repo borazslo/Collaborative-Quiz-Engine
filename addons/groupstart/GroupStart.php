@@ -116,7 +116,7 @@ class GroupStart {
         	
 
         	global $twig;
-    		$template = $twig->createTemplate('{{ groupstart|timeago }} <a  href="?task=GroupStart_reset&group_id={{ group_id }}&quiz_id={{ quiz_id }}">[nullázás]</a>');
+    		$template = $twig->createTemplate('{{ groupstart|timeago }} <a  href="?task=GroupStart_reset&group_id={{ group_id }}&quiz_id={{ quiz_id }}" onclick="return confirm(\'{{ "Are you sure?"|t  }}\')">[nullázás]</a>');
     		
 			
         	foreach($ranking->results as &$result ) {
